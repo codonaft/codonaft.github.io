@@ -1,0 +1,107 @@
+baseurl: ""
+permalink: /:title/
+url: "https://codonaft.com"
+title: codonaft
+description: "Продвинутые советы для начинающих программистов"
+excerpt_separator: <!--more-->
+
+theme_settings:
+  title: codonaft
+  avatar: assets/img/avatar.jpg
+  gravatar:
+
+  header_text_feature_image: assets/img/pexels/computer.jpg
+  footer_text: >
+   Александр Лопатин © 2018—&infin;
+
+  date_format: "%d.%m.%Y"
+
+  rss: false
+  email_address:
+  behance:
+  bitbucket:
+  dribbble:
+  facebook: codonaft
+  flickr:
+  gitlab:
+  github:
+  google_plus:
+  instagram:
+  telegram: codonaft
+  keybase:
+  linkedin:
+  pinterest:
+  reddit:
+  soundcloud:
+  stack_exchange:
+  steam:
+  tumblr:
+  twitter: codonaft
+  vimeo:
+  vk: codonaft
+  wordpress:
+  youtube: "channel/UCjNAnQpPQydNLTHcVz0s44A"
+
+  share_buttons:
+    vk: true
+    telegram: true
+    facebook: true
+    twitter: true
+    viber: true
+    whatsapp: false
+    google_plus: false
+    email: false
+    tumblr:
+    pinterest:
+    pocket:
+    reddit:
+    linkedin:
+    wordpress:
+
+  google_analytics: # Tracking ID, e.g. "UA-000000-01"
+  disqus_shortname:
+  typed: true
+  katex: false
+
+  special_page:
+    search: 
+      icon: "search" # Assuming page link and icon are the same
+      enabled: false
+    tags:
+      icon: "tags"
+      enabled: false
+  
+  # Localization strings
+  str_follow_on: "Подписаться на"
+  str_rss_follow: "RSS"
+  str_share_on: "Поделиться на"
+  str_add_to: "Add to"
+  str_email: "Email"
+  str_tweet: "Твитнуть"
+  str_pin_it: "Pin it"
+  str_next_post: "Следующий пост"
+  str_previous_post: "Предыдущий пост"
+  str_next_page: "Дальше"
+  str_previous_page: "Назад"
+  str_continue_reading: "Читать дальше &rightarrow;"
+  str_javascript_required_disqus: "Please enable JavaScript to view comments."
+
+  google_fonts: "PT Sans|Roboto:100"
+
+  post_navigation: false
+  
+paginate: 5
+paginate_path: "blog/page:num"
+
+collections:
+  portfolio:
+    output: true
+    permalink: /:collection/:name
+
+markdown: kramdown
+timezone: Europe/Moscow
+highlighter: rouge
+sass:
+  sass_dir: _sass
+  style: :compressed
+plugins: [jekyll-paginate, jekyll-seo-tag]
