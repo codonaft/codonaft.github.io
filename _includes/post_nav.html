@@ -1,18 +1,16 @@
 <div id="post-nav">
   {% if page.previous.url %}
-  <div id="previous-post" class="post-nav-post">
-      <p>{{ site.theme_settings.str_previous_post }}</p>
-      <a href="{{ site.baseurl }}{{ page.previous.url }}">
-        {{ page.previous.title }}
-      </a>
+  <div id="previous-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ page.previous.thumbnail }}); background-position: center; background-size: 90%; background-repeat: no-repeat; background-position-y: 15%">
+    <a href="{{ page.previous.url | prepend: site.baseurl }}">
+      <div class="title">{{ page.previous.title }}</div>
+    </a>
   </div>
   {% endif %}
   {% if page.next.url %}
-  <div id="next-post" class="post-nav-post">
-      <p>{{ site.theme_settings.str_next_post }}</p>
-      <a href="{{ site.baseurl }}{{ page.next.url }}">
-        {{ page.next.title }}
-      </a>
+  <div id="next-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ page.next.thumbnail }}); background-position: center; background-size: 90%; background-repeat: no-repeat; background-position-y: 15%">
+    <a href="{{ page.next.url | prepend: site.baseurl }}">
+      <div class="title">{{ page.next.title }}</div>
+    </a>
   </div>
   {% endif %}
 </div>

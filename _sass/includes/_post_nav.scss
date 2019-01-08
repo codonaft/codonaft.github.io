@@ -4,9 +4,9 @@
     @extend %padding-small;
    
     a {
+        display: block;
         width: 100%;
-        padding: 0;
-        margin: 0;
+        height: 100%;
     }
     p {
         @extend .meta;
@@ -14,9 +14,42 @@
     
     #previous-post {
         float: left;
+        clip-path: polygon(6% 50%, 30% 0, 100% 0, 100% 100%, 30% 100%);
+        .title {
+            transform: translate(6%, -50%);
+        }
     }
     
     #next-post {
         float: right;
+        clip-path: polygon(0 0, 70% 0, 94% 50%, 70% 100%, 0 100%);
+        .title {
+            transform: translate(-6%, -50%);
+        }
+    }
+}
+
+.post-nav-post {
+    width: 40%;
+    height: 5em;
+    @media screen and (max-width: $break) {
+        height: 2em;
+    }
+    overflow: hidden;
+    position: relative;
+
+    .title {
+        padding: 3em;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        color: #fff;
+        font-family: $font-family-headings;
+        font-weight: bold;
+        font-size: 1em;
+        width: 100%;
+        @media screen and (max-width: $break) {
+            display: none;
+        }
     }
 }
