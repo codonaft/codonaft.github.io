@@ -247,6 +247,14 @@
 </li>
 {% endif %}
 
+{% if site.theme_settings.patreon %}
+<li>
+  <a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" title="Patreon">
+    <i class="fab fa-patreon fa-3x"></i>
+  </a>
+</li>
+{% endif %}
+
 {% if site.theme_settings.rss %}
 <li>
   <a href="{{ site.url }}{{ site.baseurl }}/feed.xml" title="{{ site.theme_settings.str_rss_follow }}">
