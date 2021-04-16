@@ -1,6 +1,6 @@
 Sources of my website [codonaft.com](https://codonaft.com)
 
-Copyright (C) 2018 Alexander Lopatin
+Copyright (C) 2018—∞ Alexander Lopatin
 
 Powered by
 - [Jekyll](https://jekyllrb.com)
