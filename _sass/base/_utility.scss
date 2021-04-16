@@ -26,6 +26,19 @@
     }
 }
 
+%padding-large {
+    padding: $padding-large $padding-x-large;
+    @media (max-width: 1800px) {
+        padding: $padding-small $padding-large;
+    }
+    @media (max-width: 1000px) {
+        padding: $padding-small * 1.5 $padding-large / 1.6;
+    }
+    @media (max-width: 576px) {
+        padding: $padding-medium;
+    }
+}
+
 .header-txt-shadow {
     text-shadow: 1px 1px 1px $text-shadow;
 }

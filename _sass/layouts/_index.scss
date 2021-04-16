@@ -72,7 +72,7 @@
 .posts {
     .post-teaser {
         line-height: 1.5;
-        @extend %padding-regular;
+        @extend %padding-large;
 
         @media (min-width: $break) {
             padding-top: $padding-medium;
