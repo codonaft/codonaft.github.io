@@ -27,7 +27,7 @@ theme_settings:
   github:
   google_plus:
   instagram:
-  telegram: codonaft
+  telegram: codonaft_official
   keybase:
   linkedin:
   patreon:
@@ -41,7 +41,7 @@ theme_settings:
   vimeo:
   vk: codonaft
   wordpress:
-  youtube: "channel/UCjNAnQpPQydNLTHcVz0s44A"
+  youtube: "@codonaft"
 
   share_buttons:
     vk: true
