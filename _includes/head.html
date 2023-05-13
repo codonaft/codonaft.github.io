@@ -1,75 +1,108 @@
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <script defer=true src="{{ site.baseurl }}/assets/js/main.min.js"></script>
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
-  <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#5bbad5">
-  <link rel="shortcut icon" href="/assets/favicon.ico">
-  <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="msapplication-config" content="/assets/browserconfig.xml">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
-  <link rel="alternate" type="application/atom+xml" title="{{ site.theme_settings.title }}" href="{{ site.url }}/{{ site.baseurl }}feed.xml"/>
-{% if page.bootstrap %}
-   <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/vendor/bootstrap-iso.min.css">
-   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous" defer></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous" defer></script>
+<meta charset="utf-8">
+{% include normalize_url.html %}
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<script type="module" src="/assets/js/main.min.js" defer></script>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+{% include lazy_load_css.html href="/assets/css/main.css" %}
+{% include lazy_load_css.html href="/assets/css/vendor/iosevka.min.css" %}
+
+{% if page.content contains '"ytdefer"' or page.content contains 'include youtube_player.html' %}
+<script src="/assets/js/vendor/ytdefer.min.js" defer></script>
 {% endif %}
+
+
+<script src="/assets/js/vendor/bootstrap.bundle.min.js" defer></script>
+{% include lazy_load_css.html href="/assets/css/vendor/bootstrap.min.css" %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+ const tooltipTriggers = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+ const tooltips = [...tooltipTriggers].map(i => {
+  i.removeAttribute('title');
+  return new bootstrap.Tooltip(i);
+ });
+});
+</script>
+
+
+{% if site.theme_settings.external_google_fonts %}
+{% assign google_fonts_url="https://fonts.googleapis.com/css?family=" | append: site.theme_settings.google_fonts %}
+{% else %}
+{% assign google_fonts_url="/assets/css/vendor/google-fonts.min.css" %}
+{% endif %}
+{% include lazy_load_css.html href=google_fonts_url %}
 
 {% if site.theme_settings.typed %}
-  <script src="{{ site.baseurl }}/assets/js/vendor/typed.min.js" defer></script>
+<script src="/assets/js/vendor/typed.min.js" defer></script>
 {% endif %}
+
+
+{% if page.content contains '$' %}
 
 {% if site.theme_settings.katex %}
-  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/vendor/katex.min.css" lazyload>
-  <script src="{{ site.baseurl }}/assets/js/vendor/katex.min.js" defer>
-  </script>
+<link rel="stylesheet" type="text/css" href="/assets/css/vendor/katex.min.css">
+<script src="/assets/js/vendor/katex.min.js" defer></script>
 {% endif %}
 
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-        inlineMath: [['$','$']]
-      }
-    });
-  </script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+ tex2jax: {
+  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+  inlineMath: [['$','$']]
+ }
+});
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+{% endif %}
+
 
 {% if site.theme_settings.google_analytics %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.theme_settings.google_analytics }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ site.theme_settings.google_analytics }}');
-  </script>
+<script src="https://www.googletagmanager.com/gtag/js?id={{ site.theme_settings.google_analytics }}" async></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '{{ site.theme_settings.google_analytics }}');
+</script>
 {% endif %}
 
-  <meta name="twitter:site" content="@{{ site.theme_settings.twitter }}">
-  <meta name="twitter:title" content="{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}">
+{% if site.theme_settings.zapthreads %}
+<script type="text/javascript" src="/assets/js/vendor/zapthreads.iife.js"></script> <!-- TODO: debug flag for all vendor .min.js? -->
+{% endif %}
 
-  {% if page.summary %}
-  <meta name="twitter:description" content="{{ page.summary }}">
-  {% else %}
-  <meta name="twitter:description" content="{{ site.description }}">
-  {% endif %}
+<meta name="twitter:site" content="@{{ site.theme_settings.twitter }}">
 
-  {% if page.thumbnail %}
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="{{ site.url }}/{{ page.thumbnail }}">
-  {% else %}
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:image" content="{{ site.title_image }}">
-  {% endif %}
+{% if page.summary %}
+<meta name="twitter:description" content="{{ page.summary }}">
+{% else %}
+<meta name="twitter:description" content="{% if page.lang == 'en' %}{{ site.description | xml_escape }}{% else %}{{ page.str.description | xml_escape }}{% endif %}">
+{% endif %}
 
+{% if page.thumbnail %}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ site.url }}/{{ page.thumbnail }}">
+{% else %}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="{{ site.title_image }}">
+{% endif %}
+
+{% if page.lang != 'en' and page.layout == 'home' %}
+<title>{{ site.title }} | {{ page.str.description | xml_escape }}</title>
+{% seo title=false %}
+{% else %}
 {% seo %}
-  <!-- Manual seo tags -->
-  <!--
-  <title>{% if page.title %}{{ page.title }} |{% endif %} {{ site.theme_settings.title }}</title>
-  <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.theme_settings.description }}{% endif %}">
-  -->
+{% endif %}
+
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.url }}/{% if page.lang != 'en' %}{{ page.lang }}/{% endif %}{{ site.baseurl }}feed.xml"/>
+
 </head>

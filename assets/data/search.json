@@ -4,7 +4,7 @@
   {% if site.theme_settings.special_page.search.enabled %}
    {% for post in site.posts %}
       {
-        "title"    : "{{ post.title | escape }}",
+        "title"    : "{{ post.title | strip_html | escape }}",
         "category" : "{{ post.category }}",
         "tags"     : "{{ post.tags | join: ', ' | prepend: " " }}",
         "url"      : "{{ site.baseurl }}{{ post.url }}",

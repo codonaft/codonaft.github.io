@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
+document.addEventListener("DOMContentLoaded", function(event) {
 
     /*
     * Display the menu items on smaller screens
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     window.addEventListener('scroll', function() {
         var x = window.pageYOffset | document.body.scrollTop;
         var m = document.getElementById("main"), c = m.style;
-        
-        c.backgroundPosition = '100% ' + parseInt(-x/3) + 'px' + ', 0%, center top';
+
+        c.backgroundPosition = 'center ' + parseInt(-x/3) + 'px' + ', 0%, center top';
     });
 });

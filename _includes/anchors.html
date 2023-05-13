@@ -1,0 +1,61 @@
+<script>
+function findParentElement(element, tagName) {
+ if (element === null) {
+  return null;
+ }
+ let parent = element.parentElement;
+ while (parent) {
+  if (parent.tagName.toLowerCase() === tagName) {
+   return parent;
+  }
+  parent = parent.parentElement;
+ }
+ return parent;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+ const hs = document.querySelectorAll('h2, h3, h4, h5, h6');
+ hs.forEach(function(h) {
+  const id = h.getAttribute('id');
+  if (id) {
+{% if page.layout == 'home' %}
+   const postSpan = findParentElement(h, 'span');
+   const postLink = postSpan ? postSpan.querySelector('header h1 a.post-link').href : '';
+{% else %}
+   const postLink = '';
+{% endif %}
+   const uri = postLink + '#' + id;
+
+   const link = document.createElement('a');
+   link.setAttribute('href', uri);
+   h.insertAdjacentElement('afterend', link);
+   link.appendChild(h);
+   link.classList.add('header-link');
+
+   const anchor = document.createElement('a');
+   anchor.classList.add('header-anchor-character');
+   anchor.innerHTML = '#';
+   anchor.setAttribute('href', uri);
+   h.insertBefore(anchor, h.firstChild);
+  }
+ });
+});
+
+const onLoadBeforeAnchors = window.onload;
+window.onload = function() {
+ if (onLoadBeforeAnchors) {
+  onLoadBeforeAnchors();
+ }
+ const initialAnchor = decodeURIComponent(window.location.hash);
+ if (initialAnchor) {
+  const h = document.querySelector(initialAnchor);
+  if (h) {
+   const details = findParentElement(h, 'details');
+   if (details) {
+    details.open = true;
+   }
+   requestAnimationFrame(() => h.scrollIntoView());
+  }
+ }
+};
+</script>

@@ -1,108 +1,221 @@
-// Mix-ins
 %padding-small {
-    padding: $padding-x-small $padding-x-small * 2;
-    @media (max-width: 1000px) {
-        padding: $padding-x-small $padding-x-small;
-    }
+  padding: $padding-x-small $padding-x-small * 2;
+  @media (max-width: 1200px) {
+    padding: $padding-x-small $padding-x-small;
+  }
 }
 
 %padding-regular {
-    padding: $padding-small $padding-large;
-    @media (max-width: 1000px) {
-        padding: $padding-small * 1.5 $padding-large / 1.6;
-    }
-    @media (max-width: 576px) {
-        padding: $padding-small;
-    }
+  padding: $padding-small $padding-large * 1.5;
+  @media (max-width: 1200px) {
+    padding: $padding-small * 1.5 $padding-large / 1.6;
+  }
+  @media (max-width: 576px) {
+    padding: $padding-small;
+  }
 }
 
 %padding-medium {
-    padding: $padding-medium $padding-large;
-    @media (max-width: 1000px) {
-        padding: $padding-medium * 1.5 $padding-large / 1.6;
-    }
-    @media (max-width: 576px) {
-        padding: $padding-medium;
-    }
+  padding: $padding-medium $padding-large;
+  @media (max-width: 1200px) {
+    padding: $padding-medium * 1.5 $padding-large / 1.6;
+  }
+  @media (max-width: 576px) {
+    padding: $padding-medium;
+  }
 }
 
 %padding-large {
-    padding: $padding-large $padding-x-large;
-    @media (max-width: 1800px) {
-        padding: $padding-small $padding-large;
-    }
-    @media (max-width: 1000px) {
-        padding: $padding-small * 1.5 $padding-large / 1.6;
-    }
-    @media (max-width: 576px) {
-        padding: $padding-medium;
-    }
+  padding: $padding-large $padding-x-large;
+  @media (max-width: 1800px) {
+    padding: $padding-small $padding-large;
+  }
+  @media (max-width: 1200px) {
+    padding: $padding-small * 1.5 $padding-large / 1.6;
+  }
+  @media (max-width: 576px) {
+    padding: $padding-medium;
+  }
 }
 
 .header-txt-shadow {
-    text-shadow: 1px 1px 1px $text-shadow;
+  //text-shadow: 1px 1px 1px $text-shadow;
+  span {
+    background-color: #0288d1;
+    padding-left: 0.05em;
+    padding-right: 0.05em;
+  }
 }
 
-// Buttons
 .button {
-    border-radius: 10px;
-    border: 1px solid;
-    display: inline-block;
-    margin-top: 1em;
-    padding: 0.5em 0.9em;
+  border-radius: 10px;
+  border: 1px solid;
+  display: inline-block;
+  margin-top: 1em;
+  padding: 0.5em 0.9em;
 }
 
 @media screen and (max-width: $break) {
-    .button {
-        margin-top: 0.3em;
-    }
+  .button {
+    margin-top: 0.3em;
+  }
 }
 
 a.button {
-    @extend .button-link;
+  @extend .button-link;
 }
 
 .button-link {
-    &:hover {
-        background: $link-color;
-        border: 1px solid $link-color;
-        color: $background-color;
-        text-decoration: none;
-    }
+  &:hover {
+    background: $link-color;
+    border: 1px solid $link-color;
+    color: $background-color;
+    text-decoration: none;
+  }
 }
 
 .body-link {
-    &:hover {
-        text-decoration: underline;
-        color: darken($link-color, 15%);
-    }
+  &:hover {
+    text-decoration: underline;
+    color: darken($link-color, 15%);
+  }
 }
 
 .post-link {
-    &:hover {
-        text-decoration: none;
-        color: lighten($link-color, 10%);
-    }
+  &:hover {
+    text-decoration: none;
+    color: lighten($link-color, 10%);
+  }
 }
 
-// States
 .disabled {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
-// Custom
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .right {
-    float: right;
+  float: right;
 }
 
-img[alt="minipic"] {
-  max-width: 250px;
-  margin: 5px 5px 5px 5px;
-  @media (max-width: 576px) {
-    max-width: 200px;
+.pros-cons {
+  ul {
+    list-style-type: none;
+    ul ul li {
+      list-style-type: disc;
+      margin-left: 1em;
+    }
   }
+}
+
+.example {
+  background-color: #eee;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  margin-bottom: 0.8em;
+}
+
+.faq {
+  margin-top: 4rem;
+  margin-bottom: 2.5rem;
+
+  ol li {
+    margin-bottom: 1em;
+    ul li {
+      margin-bottom: 0;
+    }
+  }
+
+  hr {
+    margin-top: 3em;
+    margin-bottom: 3em;
+  }
+
+  h2, h3 {
+    padding-bottom: 0.5em;
+  }
+
+  h2 {
+    letter-spacing: 0.2em;
+  }
+}
+
+@media screen and (min-width: $break) {
+  .quote hr {
+    margin-top: 3em;
+    margin-bottom: 3em;
+  }
+}
+
+.quote, .quote-small {
+  text-align: center;
+}
+
+.quote-small h3 {
+  padding-bottom: 0;
+}
+
+.quote-small hr {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+[data-bs-toggle=tooltip] {
+  border-bottom: 3px dotted;
+  white-space: nowrap;
+}
+
+[data-bs-toggle=tooltip][data-bs-trigger=focus]:hover {
+  cursor: pointer;
+}
+
+.large-tooltip {
+  --bs-tooltip-max-width: 28rem !important;
+  @media screen and (max-width: $break) {
+    --bs-tooltip-max-width: 20rem !important;
+  }
+}
+
+.tooltip-inner {
+  a {
+    color: $selection-color !important;
+  }
+  p {
+    margin-top: 1em;
+  }
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.brand {
+  @extend .no-wrap;
+  font-family: $font-family-brand;
+  font-size: 110%;
+}
+
+.brand::after {
+  content: '\2122'
+}
+
+.esoteric-crypto {
+  width: 36rem;
+  background-color: #eee;
+  details {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media screen and (max-width: $break) {
+    width: 21.5rem;
+  }
+}
+
+.padding-top-small {
+  padding-top: $padding-small;
 }
