@@ -1,21 +1,85 @@
 .site-footer {
-    @extend %padding-regular;
-    display: inline-block;
-    text-align: center;
-    width: 100%;
-    color: lighten($text-color, 30%);
-    font-size: 0.7em;
+  display: inline-block;
+  text-align: center;
+
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 1.5rem;
+
+  color: lighten($text-color, 30%);
+  background-color: #f0f0f0;
+
+  a:hover {
+    color: darken($link-color, 15%);
+  }
+
+  .text {
+    margin-top: 3.5rem;
+    font-size: 1rem;
+  }
+
+  .footer-icons {
+    margin-top: 3.5rem;
+    ul {
+      display: flex;
+      list-style: none;
+      justify-content: center;
+      li {
+        display: inline;
+        padding: $padding-x-small / 2;
+        svg {
+          width: 2.7rem;
+          height: 2.7rem;
+          fill: currentColor;
+        }
+      }
+    }
+  }
+
+  .language-icons {
+    margin-top: 3.5rem;
+    margin-bottom: 2.5rem;
+    ul {
+      list-style: none;
+      li {
+        display: inline;
+        padding: $padding-x-small / 3;
+        a {
+          display: inline-block;
+          position: relative;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $break) {
+    font-size: 0.7rem;
+    padding: 1rem;
+
+    .text {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+    }
 
     .footer-icons {
-        ul {
-            list-style: none;
-            li {
-                display: inline;
-                padding: $padding-x-small / 2;
-            }
-            a:hover {
-                color: darken($link-color, 15%);
-            }
+      margin-top: 2rem;
+      ul {
+        li {
+          //padding: $padding-x-small;
+          padding: $padding-x-small / 1.4;
         }
+      }
     }
+
+    .language-icons {
+      margin-top: 2rem;
+      margin-bottom: 1.4rem;
+      ul {
+        li {
+          //padding: $padding-x-small / 1.5;
+          padding: $padding-x-small / 1.1;
+        }
+      }
+    }
+  }
 }

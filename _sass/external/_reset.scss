@@ -107,7 +107,8 @@ a:hover {
  */
 
 abbr[title] {
-  border-bottom: 1px dotted;
+  text-decoration: none;
+  border-bottom: 3px dotted;
 }
 
 /**
@@ -230,8 +231,8 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
-  font-size: 1em;
+  font-family: $font-monospace;
+  font-size: $font-size-code;
 }
 
 /* Forms
