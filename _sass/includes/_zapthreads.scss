@@ -1,0 +1,20 @@
+:root {
+  --ztr-action-color: #0288d1; // TODO: $link-color
+  --ztr-action-hover-color: #{darken(#0288d1, 15%)};
+  --ztr-font-size: 1.1rem;
+  @media screen and (max-width: $break) {
+    --ztr-font-size: 0.8rem;
+  }
+}
+
+.btn {
+  min-width: 6rem;
+}
+
+.form-check-label {
+  width: 100%;
+}
+
+.form-check {
+  margin-bottom: 0.8rem !important;
+}

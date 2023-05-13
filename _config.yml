@@ -2,21 +2,73 @@ baseurl: ""
 permalink: /:title/
 url: "https://codonaft.com"
 title: codonaft
-description: "Продвинутые советы для начинающих программистов"
-excerpt_separator: <!--more-->
+description: Conscious Free and Open Source Software Crafting
+
+#collections:
+#  posts:
+#    output: true
+#    permalink: /:title
+#    lang: en
+
+defaults:
+  - scope:
+      path: 'legacy/*'
+    values: {}
+  - scope:
+      path: ''
+    values:
+      lang: en
+      str:
+        share: Please Share, Follow and all this!
+        fix_typo: Fix typo
+        support_other_ways: Support me in other ways
+        share_or_support_other_ways: Like what I do?<br>Please share with friends<br>or support me in other ways!
+        read_more: Read more &rightarrow;
+        share_on: Share on
+        add_to: Add to
+        email: Email
+        tweet: Tweet
+        pin_it: Pin it
+        next_post: Next post
+        previous_post: Previous post
+        next_page: Next
+        previous_page: Prev
+        javascript_required_comments: Please enable JavaScript to view comments.
+  - scope:
+      path: 'ru/*'
+    values:
+      permalink: /ru/:title/
+      lang: ru
+      str:
+        description: Осознанная разработка свободного ПО
+        share: Поделись находкой с друзьями!
+        fix_typo: Исправить опечатку
+        support_other_ways: Поддержать меня другими способами
+        share_or_support_other_ways: Нравится то, что я делаю?<br>Буду рад репосту и другой поддержке!
+        read_more: Читать дальше &rightarrow;
+        share_on: Поделиться на
+        add_to: Add to
+        email: Email
+        tweet: Твитнуть
+        pin_it: Pin it
+        next_post: Следующий пост
+        previous_post: Предыдущий пост
+        next_page: Дальше
+        previous_page: Назад
+        javascript_required_comments: Please enable JavaScript to view comments.
 
 theme_settings:
-  title: codonaft
-  avatar: assets/img/avatar.jpg
+  site_repo_url: https://github.com/codonaft/codonaft.github.io
+  site_repo_branch: master
+
+  avatar: assets/img/avatar.webp
   gravatar:
 
-  header_text_feature_image: assets/img/pexels/computer.jpg
-  footer_text: >
-   Александр Лопатин © 2018—&infin;
+  header_text_feature_image: assets/img/pexels/motherboard.jpg
 
-  date_format: "%d.%m.%Y"
+  date_format: "%Y-%m-%d"
 
-  rss: false
+  rss:
   email_address:
   behance:
   bitbucket:
@@ -24,13 +76,12 @@ theme_settings:
   facebook: codonaft
   flickr:
   gitlab:
-  github:
-  google_plus:
+  github: codonaft
   instagram:
-  telegram: codonaft_official
+  telegram_ru: codonaft_official
   keybase:
-  linkedin:
-  patreon: checkout/alopatindev/3380240
+  linkedin: AlexanderLopatin
+  patreon: alopatindev
   pinterest:
   reddit:
   soundcloud:
@@ -41,71 +92,63 @@ theme_settings:
   vimeo:
   vk: codonaft
   wordpress:
-  youtube: "@codonaft"
+  youtube: "@codonaftFOSS"
+  youtube_ru: "@codonaft"
 
   share_buttons:
     vk: true
     telegram: true
     facebook: true
     twitter: true
-    viber: true
-    whatsapp: false
-    google_plus: false
-    email: false
+    viber:
+    whatsapp:
+    email:
     tumblr:
     pinterest:
     pocket:
     reddit:
-    linkedin:
+    linkedin: true
     wordpress:
 
   google_analytics:
   disqus_shortname:
-  typed: true
+  typed: false
   katex: false
+  zapthreads: false
+
+  nostr:
+    npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
+    community: Codonaft
+    max_comment_length: 5000
+    min_read_pow: 7
+    relays:
+    - wss://nostr-pub.wellorder.net
+    - wss://relay.damus.io
+    - wss://relay.nostr.bg
 
   special_page:
-    search: 
-      icon: "search" # Assuming page link and icon are the same
+    search:
+      icon: search # Assuming page link and icon are the same
       enabled: false
     tags:
-      icon: "tags"
+      icon: tags
       enabled: false
-  
-  # Localization strings
-  str_follow_on: "Подписаться на"
-  str_rss_follow: "RSS"
-  str_share_on: "Поделиться на"
-  str_add_to: "Add to"
-  str_email: "Email"
-  str_tweet: "Твитнуть"
-  str_pin_it: "Pin it"
-  str_next_post: "Следующий пост"
-  str_previous_post: "Предыдущий пост"
-  str_next_page: "Дальше"
-  str_previous_page: "Назад"
-  str_continue_reading: "Читать дальше &rightarrow;"
-  str_javascript_required_disqus: "Please enable JavaScript to view comments."
 
-  google_fonts: "PT Sans|Roboto:100"
+  #external_google_fonts: "Noto Color Emoji:400|Open Sans:400|Open Sans:700|Roboto:100|Roboto:300|Roboto Condensed:400"
 
   post_navigation: true
-  
-paginate: 50
-paginate_path: "blog/page:num"
 
-collections:
-  portfolio:
-    output: true
-    permalink: /:collection/:name
+exclude:
+  - scripts
 
+excerpt_separator: <!--more-->
 markdown: kramdown
-timezone: Europe/Moscow
+timezone: UTC
 highlighter: rouge
 sass:
   sass_dir: _sass
-  style: :compressed
-plugins: [jekyll-paginate, jekyll-seo-tag]
+  style: compressed
+plugins: [jekyll-seo-tag]
 compress_html:
   clippings: all
   comments: ["<!-- ", " -->"]
@@ -114,3 +157,5 @@ compress_html:
   blanklines: true
   ignore:
     envs: []
+exclude: [vendor]
+include: [.well-known]

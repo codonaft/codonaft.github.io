@@ -1,0 +1,24 @@
+<script>
+{
+ let url = new URL(window.location.href);
+{% if site.theme_settings.mirror %}
+ if (url.hostname.endsWith(".b32.i2p")) {
+  window.stop();
+  document.documentElement.style.display = 'none';
+  url.hostname = url.hostname.replace(/(.*\.|)(.*?)\.b32(\.i2p)$/, '$1codonaft$3');
+  let params = url.search.length === 0 ? new URLSearchParams : url.searchParams;
+  params.set('i2paddresshelper', 'A9sqr1xBu6Eo9lnow0V6nC3Kq7qGQ5b4PI0hZ-5SUkeIvrYfrfpcLvmTWXbJMyFUrt2rT7TdblQ0SPKT2vdjhCRCMpL--1Tgva2-7pv6DPKN3TY7A5hwga0XF1tDwfTv0b2bqTXqtXUkS5fL5gSk08NXi5I4OrizL4eVzCZSZcmf80wJpSnbLIkijoGhzwNIbIK-DxUBJ12qZZqTUrOfACs9CNkjvE0ALCB~vUTKDeagsFX85DxZZQ7IDtvsjWZzsDC4UetBFtwnSDCrZjpqnmE73l2jSZsiJ94MR2A~TgtsBLPqbDuhw3vWlflEumO2CmVHu3UdCUIcjM7NA5rc0f21j4Y3-Gg8eK~pJQE7Ab-g9r6BEHmqZsZzSJunVDzY~bWPhjf4aDx4r-klATsBv6D2voEQeapmxnNIm6dUPNjcDJFBN~hoPHiv6SUBOwG~oPa-gRB5qmbGc0ibp1Q82PrVkwRxyOA5kBv8yNE4qpyhJD-60zxP9wSWOglL-LaRBQAEAAcAAA==');
+  url.search = '?' + params.toString();
+  url.port = '';
+  window.location = url;
+ }
+{% else %}
+ if (url.hostname.endsWith('codonaft.com') && url.protocol === 'http:') {
+  window.stop();
+  document.documentElement.style.display = 'none';
+  url.protocol = 'https:';
+  window.location = url;
+ }
+}
+{% endif %}
+</script>

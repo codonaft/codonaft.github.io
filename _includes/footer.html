@@ -1,13 +1,20 @@
-{% if site.theme_settings.footer_text %}
 <footer class="site-footer">
-    <p class="text">{{ site.theme_settings.footer_text }}</p>
-            <div class="footer-icons">
-                <ul>
-                <!-- Social icons from Font Awesome, if enabled -->
-                {% include icons.html %}
-                </ul>
-            </div>
+
+ {% assign powered_by_foss = "<span class='no-wrap'><a href='https://jekyllrb.com' target='_blank'>Jekyll</a> + <a href='https://github.com/Sylhare/Type-on-Strap#readme' target='_blank'>Type-on-Strap</a> + <a href='https://github.com/codonaft/zapthreads-codonaft#readme' target='_blank'>ZapThreads</a> + </span><br><span class='no-wrap'><a href='https://wooorm.com/franc' target='_blank'>franc</a> + <a href='https://github.com/groupboard/ytdefer#readme' target='_blank'>ytdefer</a> + <a href='https://github.com/sibiraj-s/browser-dtector#readme' target='_blank'>browser-dtector</a> + </span><br><span class='no-wrap'><a href='https://fontawesome.com' target='_blank'>Font Awesome</a> + <a href='https://github.com/be5invis/Iosevka/releases/tag/v2.3.3' target='_blank'>Iosevka</a> + </span><br><span class='no-wrap'><a href='https://github.com/googlefonts/opensans#readme' target='_blank'>Open Sans</a> + <a href='https://github.com/googlefonts/roboto#readme' target='_blank'>Roboto</a> × (1 + <a href='https://github.com/googlefonts/roboto-classic#readme' target='_blank'>Condensed</a>) +</span><br> everything that depends on all of these." %}
+ <p class="text">© 2018—&infin; codonaft.com ⚡ by ❤️ × {% include span_with_tooltip.html body="FOSS" tooltip=powered_by_foss clickable=true large=true %} + <a href="https://github.com/alopatindev">@alopatindev</a></p>
+
+ <div class="footer-icons">
+  <ul>
+{% include icons.html %}
+  </ul>
+ </div>
+
+ <div class="language-icons">
+  <ul>
+   <li>&#127760;</li>
+   <li><a href="{% if page.lang-en-uri %}{{ page.lang-en-uri }}{% else %}/{% endif %}">EN</a></li>
+   <li><a href="{% if page.lang-ru-uri %}{{ page.lang-ru-uri }}{% else %}/ru{% endif %}">RU</a></li>
+  </ul>
+ </div>
+
 </footer>
-{% endif %}
-
-

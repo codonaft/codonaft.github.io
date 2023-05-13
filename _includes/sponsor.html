@@ -1,0 +1,15 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+ for (const i of document.querySelectorAll('.site-header .clear a')) {
+  i.innerHTML = i.innerHTML.replace('♡', '❤️');
+ }
+
+ document.querySelectorAll('ul.share-buttons li a').forEach(i => {
+  if (i.hostname == window.location.hostname && i.pathname + '/' == window.location.pathname) {
+   i.setAttribute('style', 'cursor: pointer');
+   i.setAttribute('onclick', "if(window.location.hash){history.replaceState(null,null,window.location.href.split('#')[0])};window.scrollTo({top:0,behavior:'smooth'})");
+   i.removeAttribute('href');
+  }
+ });
+});
+</script>

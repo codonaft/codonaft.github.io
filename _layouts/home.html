@@ -1,54 +1,51 @@
 ---
 layout: default
 ---
-
 <div class="home">
   <div id="main"></div>
 
   <div class="posts">
-    {% for post in paginator.posts %}
+{% assign post_index = 0 %}
+{% for post in site.posts %}
+{% if post.lang != page.lang %}{% continue %}{% endif %}
     <div class="post-teaser">
-      {% if post.thumbnail %}
+{% if post.thumbnail %}
       <a href="{{ post.url | prepend: site.baseurl }}">
         <div class="post-img">
-          <img src="{{ site.baseurl }}/{{ post.thumbnail }}" alt="{{ post.thumbnail | split: '/' | last | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' }}">
+          <img src="{{ site.baseurl }}/{{ post.thumbnail }}"{% if post_index > 0 %}loading="lazy"{% endif %} alt="{{ post.thumbnail | split: '/' | last | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' }}">
         </div>
       </a>
-      {% endif %}
+{% endif %}
       <span>
         <header>
-          <h1>
-            <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">
-              {{ post.title }}
-            </a>
-          </h1>
-          <p class="meta">
-            {{ post.date | date: site.theme_settings.date_format }}
-          </p>
+          <h1><a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h1>
+          <p class="meta">{{ post.date | date: site.theme_settings.date_format }}</p>
         </header>
-        <div class="excerpt">
-            {{ post.excerpt }}
+        <div class="excerpt">{{ post.excerpt }}
+{% if post.content contains site.excerpt_separator or post.origin-url != null %}
           <a class="button" href="{{ post.url | prepend: site.baseurl }}">
-            {{ site.theme_settings.str_continue_reading }}
+            {{ page.str.read_more }}
           </a>
+{% endif %}
         </div>
       </span>
     </div>
-    {% endfor %}
+{% assign post_index = post_index | plus:1 %}
+{% endfor %}
   </div>
 
   {% if paginator.total_pages > 1 %}
   <div class="pagination">
     {% if paginator.previous_page %}
     <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="button" >
-      <i class="fa fa-chevron-left"></i>
-      {{ site.theme_settings.str_previous_page }}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+      {{ page.str.previous_page }}
     </a>
     {% endif %}
     {% if paginator.next_page %}
     <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="button" >
-      {{ site.theme_settings.str_next_page }}
-      <i class="fa fa-chevron-right"></i>
+      {{ page.str.next_page }}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
     </a>
     {% endif %}
   </div>
