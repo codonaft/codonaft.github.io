@@ -1,15 +1,38 @@
+{%- assign current_lang_posts = site.posts | where: 'lang', page.lang %}
+
+{% for p in current_lang_posts %}
+  {% if p.url == page.url %}
+    {% assign post_index0 = forloop.index0 %}
+    {% assign post_index1 = forloop.index %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% for p in current_lang_posts %}
+  {% if post_index0 == forloop.index %}
+    {% assign next_post = p %}
+  {% endif %}
+  {% if post_index1 == forloop.index0 %}
+    {% assign previous_post = p %}
+  {% endif %}
+
+  {% if next_post and previous_post %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
 <div id="post-nav">
-  {% if page.previous.url %}
-  <div id="previous-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ page.previous.thumbnail }}); background-position: center; background-size: 90%; background-repeat: no-repeat; background-position-y: 15%">
-    <a href="{{ page.previous.url | prepend: site.baseurl }}">
-      <div class="title">{{ page.previous.title }}</div>
+  {% if previous_post %}
+  <div id="previous-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ previous_post.thumbnail }}); background-position: center; background-size: 150%">
+    <a href="{{ previous_post.url | prepend: site.baseurl }}" title="{{ previous_post.title | strip_html }}">
+      <div class="title">{{ previous_post.title }}</div>
     </a>
   </div>
   {% endif %}
-  {% if page.next.url %}
-  <div id="next-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ page.next.thumbnail }}); background-position: center; background-size: 90%; background-repeat: no-repeat; background-position-y: 15%">
-    <a href="{{ page.next.url | prepend: site.baseurl }}">
-      <div class="title">{{ page.next.title }}</div>
+  {% if next_post %}
+  <div id="next-post" class="post-nav-post" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url({{ site.baseurl }}/{{ next_post.thumbnail }}); background-position: center; background-size: 150%">
+    <a href="{{ next_post.url | prepend: site.baseurl }}" title="{{ next_post.title | strip_html }}">
+      <div class="title">{{ next_post.title }}</div>
     </a>
   </div>
   {% endif %}

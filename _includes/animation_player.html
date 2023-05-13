@@ -1,0 +1,8 @@
+<p style="text-align: center">
+  <video class="lazy" playsinline loop autoplay {% if include.controls %}controls="controls" {% endif %} width="{% if include.width %}{{ include.width }}{% else %}100%{% endif %}" onclick="this.play()">
+    <source data-src="{{ include.uri }}" type="video/mp4">
+    <noscript>
+      <source src="{{ include.uri }}" type="video/mp4">
+    </noscript>
+  </video>
+</p>

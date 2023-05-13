@@ -1,27 +1,35 @@
 h1.title {
-    //@extend .header-txt-shadow;
+  @extend .header-txt-shadow;
+  line-height: 1.16;
+}
+
+h1.feature-title {
+  @extend .header-txt-shadow;
+  //font-weight: normal;
+  line-height: 1.16;
 }
 
 .subtitle {
-    font-weight: normal;
-    margin-top: 5px;
-    //text-shadow: 1px 1px 2px $text-shadow;
+  @extend .header-txt-shadow;
+  font-weight: normal;
+  margin-top: 5px;
+  //text-shadow: 1px 1px 2px $text-shadow;
 }
 
 .author {
-    width: 200px;
-    padding-top: $padding-small;
-    position: relative;
-    float: right;
-    margin-left: 50px;
-    font-size: 0.7em;
-    @media screen and (max-width: $break) {
-        width: 100%;
-        position: static;
-        float: none;
-        margin-left: 0;
-        font-size: 1em;
-    }
+  width: 200px;
+  padding-top: $padding-small;
+  position: relative;
+  float: right;
+  margin-left: 50px;
+  font-size: 0.7em;
+  @media screen and (max-width: $break) {
+    width: 100%;
+    position: static;
+    float: none;
+    margin-left: 0;
+    font-size: 1em;
+  }
 }
 
 //Shared css in _post.scss
