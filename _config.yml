@@ -48,7 +48,7 @@ theme_settings:
     telegram: true
     facebook: true
     twitter: true
-    viber: true
+    viber: false
     whatsapp: false
     google_plus: false
     email: false
