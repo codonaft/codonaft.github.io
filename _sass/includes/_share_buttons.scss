@@ -1,29 +1,35 @@
 ul.share-buttons {
-    list-style: none;
-    padding: $padding-x-small/2 0 $padding-small 0;
-    margin: 0;
-    text-align: center;
-    
-    div.meta {
-        display: inline;
+  list-style: none;
+  padding: $padding-x-small/2 0 $padding-small 0;
+  margin: 0;
+  text-align: center;
+
+  div.meta {
+    display: inline;
+  }
+
+  li {
+    display: inline;
+    padding: $padding-x-small / 2;
+
+    a:hover {
+      text-decoration: none;
     }
 
-    li {
-        display: inline;
-        padding: $padding-x-small / 2;
-        
-        a:hover {
-            text-decoration: none;
-        }
+    svg {
+      width: 2.7rem;
+      height: 2.7rem;
+      fill: currentColor;
     }
-    .sr-only {
-        position: absolute;
-        clip: rect(1px 1px 1px 1px);
-        clip: rect(1px, 1px, 1px, 1px);
-        padding: 0;
-        border: 0;
-        height: 1px;
-        width: 1px;
-        overflow: hidden;
-    }
+  }
+  .sr-only {
+    position: absolute;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
+    padding: 0;
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+  }
 }

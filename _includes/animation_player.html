@@ -1,0 +1,5 @@
+<p style="text-align: center">
+  <video playsinline loop autoplay {% if include.controls %}controls="controls" {% endif %} width="{% if include.width %}{{ include.width }}{% else %}100%{% endif %}" onclick="this.play()">
+    <source src="{{ include.uri }}" type="video/mp4">
+  </video>
+</p>

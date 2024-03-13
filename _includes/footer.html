@@ -1,13 +1,20 @@
-{% if site.theme_settings.footer_text %}
+{% if page.str.footer_text %}
 <footer class="site-footer">
-    <p class="text">{{ site.theme_settings.footer_text }}</p>
-            <div class="footer-icons">
-                <ul>
-                <!-- Social icons from Font Awesome, if enabled -->
-                {% include icons.html %}
-                </ul>
-            </div>
+
+ <p class="text"><a href="{% if page.lang != 'en' %}/{{ page.lang }}{% endif %}/about">{{ page.str.footer_text }}</a> © 2018—&infin;</p>
+ <div class="footer-icons">
+  <ul>
+   {% include icons.html %}
+  </ul>
+ </div>
+
+ <div class="language-icons">
+  <ul>
+   <li>&#127760;</li>
+   <li><a href="/">EN</a></li>
+   <li><a href="/ru">RU</a></li>
+  </ul>
+ </div>
+
 </footer>
 {% endif %}
-
-

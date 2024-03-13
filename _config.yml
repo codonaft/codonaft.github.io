@@ -2,21 +2,65 @@ baseurl: ""
 permalink: /:title/
 url: "https://codonaft.com"
 title: codonaft
-description: "Продвинутые советы для начинающих программистов"
-excerpt_separator: <!--more-->
+description: Open Source Distract-Free Software Crafting
+
+#collections:
+#  posts:
+#    output: true
+#    permalink: /:title
+#    lang: en
+
+defaults:
+  - scope:
+      path: 'legacy/*'
+    values: {}
+  - scope:
+      path: ''
+    values:
+      lang: en
+      str:
+        footer_text: Alexander Lopatin
+        share: Share with friends!
+        read_more: Read more &rightarrow;
+        share_on: Share on
+        add_to: Add to
+        email: Email
+        tweet: Tweet
+        pin_it: Pin it
+        next_post: Next post
+        previous_post: Previous post
+        next_page: Next
+        previous_page: Prev
+        javascript_required_disqus: Please enable JavaScript to view comments.
+  - scope:
+      path: 'ru/*'
+    values:
+      permalink: /ru/:title/
+      lang: ru
+      str:
+        footer_text: Александр Лопатин
+        share: Поделись находкой с друзьями!
+        read_more: Читать дальше &rightarrow;
+        share_on: Поделиться на
+        add_to: Add to
+        email: Email
+        tweet: Твитнуть
+        pin_it: Pin it
+        next_post: Следующий пост
+        previous_post: Предыдущий пост
+        next_page: Дальше
+        previous_page: Назад
+        javascript_required_disqus: Please enable JavaScript to view comments.
 
 theme_settings:
-  title: codonaft
-  avatar: assets/img/avatar.jpg
+  avatar: assets/img/avatar.webp
   gravatar:
 
-  header_text_feature_image: assets/img/pexels/computer.jpg
-  footer_text: >
-   Александр Лопатин © 2018—&infin;
+  header_text_feature_image: assets/img/pexels/motherboard.jpg
 
-  date_format: "%d.%m.%Y"
+  date_format: "%Y-%m-%d"
 
-  rss: false
+  rss:
   email_address:
   behance:
   bitbucket:
@@ -24,88 +68,68 @@ theme_settings:
   facebook: codonaft
   flickr:
   gitlab:
-  github:
-  google_plus:
+  github: alopatindev
   instagram:
-  telegram: codonaft_official
+  telegram_ru: codonaft_official
   keybase:
   linkedin:
-  patreon: checkout/alopatindev/3380240
+  patreon: alopatindev
   pinterest:
   reddit:
   soundcloud:
   stack_exchange:
   steam:
   tumblr:
-  twitter:
+  twitter: alopatindev
   vimeo:
   vk: codonaft
   wordpress:
-  youtube: "@codonaft"
+  youtube: "@codonaft_com"
+  youtube_ru: "@codonaft"
 
   share_buttons:
     vk: true
     telegram: true
     facebook: true
     twitter: true
-    viber: false
-    whatsapp: false
-    google_plus: false
-    email: false
+    viber:
+    whatsapp:
+    email:
     tumblr:
     pinterest:
     pocket:
-    reddit:
-    linkedin:
+    reddit: true
+    linkedin: true
     wordpress:
 
   google_analytics:
   disqus_shortname:
-  typed: true
+  typed: false
   katex: false
 
   special_page:
-    search: 
-      icon: "search" # Assuming page link and icon are the same
+    search:
+      icon: search # Assuming page link and icon are the same
       enabled: false
     tags:
-      icon: "tags"
+      icon: tags
       enabled: false
-  
-  # Localization strings
-  str_follow_on: "Подписаться на"
-  str_rss_follow: "RSS"
-  str_share_on: "Поделиться на"
-  str_add_to: "Add to"
-  str_email: "Email"
-  str_tweet: "Твитнуть"
-  str_pin_it: "Pin it"
-  str_next_post: "Следующий пост"
-  str_previous_post: "Предыдущий пост"
-  str_next_page: "Дальше"
-  str_previous_page: "Назад"
-  str_continue_reading: "Читать дальше &rightarrow;"
-  str_javascript_required_disqus: "Please enable JavaScript to view comments."
 
-  google_fonts: "PT Sans|Roboto:100"
+  google_fonts: "Open Sans:400|Roboto:300|Roboto:100"
 
   post_navigation: true
-  
-paginate: 50
-paginate_path: "blog/page:num"
 
-collections:
-  portfolio:
-    output: true
-    permalink: /:collection/:name
+exclude:
+  - scripts
 
+excerpt_separator: <!--more-->
 markdown: kramdown
-timezone: Europe/Moscow
+timezone: UTC
 highlighter: rouge
 sass:
   sass_dir: _sass
   style: :compressed
-plugins: [jekyll-paginate, jekyll-seo-tag]
+plugins: [jekyll-seo-tag]
 compress_html:
   clippings: all
   comments: ["<!-- ", " -->"]
@@ -114,3 +138,4 @@ compress_html:
   blanklines: true
   ignore:
     envs: []
+exclude: [vendor]
