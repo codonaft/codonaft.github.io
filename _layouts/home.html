@@ -5,16 +5,17 @@ layout: default
   <div id="main"></div>
 
   <div class="posts">
-    {% for post in site.posts %}
-    {% if post.lang != page.lang %}{% continue %}{% endif %}
+{% assign post_index = 0 %}
+{% for post in site.posts %}
+{% if post.lang != page.lang %}{% continue %}{% endif %}
     <div class="post-teaser">
-      {% if post.thumbnail %}
+{% if post.thumbnail %}
       <a href="{{ post.url | prepend: site.baseurl }}">
         <div class="post-img">
-          <img src="{{ site.baseurl }}/{{ post.thumbnail }}" alt="{{ post.thumbnail | split: '/' | last | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' }}">
+          <img src="{{ site.baseurl }}/{{ post.thumbnail }}"{% if post_index > 0 %}loading="lazy"{% endif %} alt="{{ post.thumbnail | split: '/' | last | split: '.' | first | replace: '-', ' ' | replace: '_', ' ' }}">
         </div>
       </a>
-      {% endif %}
+{% endif %}
       <span>
         <header>
           <h1>
@@ -22,21 +23,19 @@ layout: default
               {{ post.title }}
             </a>
           </h1>
-          <p class="meta">
-            {{ post.date | date: site.theme_settings.date_format }}
-          </p>
+          <p class="meta">{{ post.date | date: site.theme_settings.date_format }}</p>
         </header>
-        <div class="excerpt">
-          {{ post.excerpt }}
-          {% if post.content contains site.excerpt_separator or post.origin-url != null %}
+        <div class="excerpt">{{ post.excerpt }}
+{% if post.content contains site.excerpt_separator or post.origin-url != null %}
           <a class="button" href="{{ post.url | prepend: site.baseurl }}">
             {{ page.str.read_more }}
           </a>
-          {% endif %}
+{% endif %}
         </div>
       </span>
     </div>
-    {% endfor %}
+{% assign post_index = post_index | plus:1 %}
+{% endfor %}
   </div>
 
   {% if paginator.total_pages > 1 %}

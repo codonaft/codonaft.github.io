@@ -11,7 +11,13 @@
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="msapplication-config" content="/assets/browserconfig.xml">
 <meta name="theme-color" content="#ffffff">
+
+{% include lazy_load_css.html href="/assets/css/main.css" %}
+{% include lazy_load_css.html href="/assets/css/vendor/iosevka.min.css" %}
+
+{% if page.content contains '"ytdefer"' %}
 <script src="/assets/js/vendor/ytdefer.min.js" defer></script>
+{% endif %}
 
 {% if page.bootstrap %}
 <link rel="stylesheet" type="text/css" href="/assets/css/vendor/bootstrap-iso.min.css">
@@ -20,19 +26,21 @@
 {% endif %}
 
 {% if site.theme_settings.google_fonts %}
-<link href="https://fonts.googleapis.com/css?family={{ site.theme_settings.google_fonts }}" rel="stylesheet" type="text/css" media="print" lazyload>
+<link href="https://fonts.googleapis.com/css?family={{ site.theme_settings.google_fonts }}" rel="stylesheet" type="text/css" media="print">
 {% endif %}
 
 {% if site.theme_settings.typed %}
 <script src="/assets/js/vendor/typed.min.js" defer></script>
 {% endif %}
 
+
+{% if page.content contains '$' %}
+
 {% if site.theme_settings.katex %}
-<link rel="stylesheet" type="text/css" href="/assets/css/vendor/katex.min.css" lazyload>
+<link rel="stylesheet" type="text/css" href="/assets/css/vendor/katex.min.css">
 <script src="/assets/js/vendor/katex.min.js" defer></script>
 {% endif %}
 
-{% if page.layout == 'post' %}
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
  tex2jax: {
@@ -42,7 +50,9 @@ MathJax.Hub.Config({
 });
 </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
 {% endif %}
+
 
 {% if site.theme_settings.google_analytics %}
 <script src="https://www.googletagmanager.com/gtag/js?id={{ site.theme_settings.google_analytics }}" async></script>
