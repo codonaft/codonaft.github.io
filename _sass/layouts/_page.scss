@@ -3,7 +3,14 @@ h1.title {
   line-height: 1.16;
 }
 
+h1.alt-title {
+  @extend .header-txt-shadow;
+  //font-weight: normal;
+  line-height: 1.16;
+}
+
 .subtitle {
+  @extend .header-txt-shadow;
   font-weight: normal;
   margin-top: 5px;
   //text-shadow: 1px 1px 2px $text-shadow;
@@ -22,6 +29,67 @@ h1.title {
     float: none;
     margin-left: 0;
     font-size: 1em;
+  }
+}
+
+.donation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 4rem;
+  padding-top: 3rem;
+
+  .grid-container {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    justify-items: center;
+    align-items: center;
+  }
+
+  .grid-item {
+    text-align: center;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+
+    code {
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .donation-container {
+    .grid-container {
+      grid-template-columns: repeat(1, 1fr);
+      gap: 4rem;
+    }
+    .grid-item {
+      code {
+        font-size: 1rem;
+        line-height: 1;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .donation-container {
+    .grid-container {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4rem;
+    }
+    .grid-item {
+      code {
+        font-size: 1rem;
+        line-height: 1;
+      }
+    }
   }
 }
 

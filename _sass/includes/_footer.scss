@@ -15,6 +15,7 @@
 
   .text {
     margin-top: 3.5rem;
+    font-size: 1rem;
   }
 
   .footer-icons {
@@ -57,10 +58,17 @@
 
     .text {
       margin-top: 2rem;
+      font-size: 0.8rem;
     }
 
     .footer-icons {
       margin-top: 2rem;
+      ul {
+        li {
+          //padding: $padding-x-small;
+          padding: $padding-x-small / 1.4;
+        }
+      }
     }
 
     .language-icons {
@@ -68,7 +76,8 @@
       margin-bottom: 1.4rem;
       ul {
         li {
-          padding: $padding-x-small / 2;
+          //padding: $padding-x-small / 1.5;
+          padding: $padding-x-small / 1.1;
         }
       }
     }

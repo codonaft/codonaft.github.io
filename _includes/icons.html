@@ -1,7 +1,7 @@
 <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
 
 {% if site.theme_settings.youtube and page.lang == 'en' %}
-<li><a href="https://www.youtube.com/{{ site.theme_settings.youtube }}" title="YouTube">{% include icons/youtube.svg %}</a></li>
+<li><a href="https://www.youtube.com/{{ site.theme_settings.youtube }}" title="English YouTube channel is coming soon!">{% include icons/youtube.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.youtube_ru and page.lang == 'ru' %}
@@ -98,17 +98,6 @@
   <span class="fa-stack fa-lg">
    <i class="fas fa-circle fa-stack-2x"></i>
    <i class="fab fa-key fa-stack-1x fa-inverse"></i>
-  </span>
- </a>
-</li>
-{% endif %}
-
-{% if site.theme_settings.linkedin %}
-<li>
- <a href="{{ site.theme_settings.linkedin }}" title="LinkedIn">
-  <span class="fa-stack fa-lg">
-   <i class="fas fa-circle fa-stack-2x"></i>
-   <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
   </span>
  </a>
 </li>
@@ -213,6 +202,14 @@
    <i class="fas fa-circle fa-stack-2x"></i>
    <i class="fab fa-wordpress fa-stack-1x fa-inverse"></i>
   </span>
+ </a>
+</li>
+{% endif %}
+
+{% if site.theme_settings.linkedin and page.lang != 'ru' %}
+<li>
+ <a href="https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}" title="LinkedIn">
+   {% include icons/linkedin.svg %}
  </a>
 </li>
 {% endif %}
