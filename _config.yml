@@ -114,11 +114,11 @@ theme_settings:
   disqus_shortname:
   typed: false
   katex: false
-  zapthreads: false
+  zapthreads: true
 
   nostr:
     npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
-    community: Codonaft
+    community: codonaft
     max_comment_length: 5000
     min_read_pow: 7
     relays:
