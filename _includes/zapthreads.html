@@ -199,7 +199,9 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
   if (kind === 7 || kind === 9735) return { sanitizedContent: content };
 
   const doc = domParser.parseFromString(content, 'text/html');
+{% if page.nostr.relax_filters != true %}
   validateNoImages(doc);
+{% endif %}
 
   const links = doc.querySelectorAll('a');
   let rank = undefined;
@@ -212,10 +214,17 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
    i.setAttribute('rel', 'noopener noreferrer nofollow');
   }
   const sanitizedContent = doc.querySelector('body').innerHTML;
-  validateLang(doc, language);
 
-  //const showReportButton = rank < -5 || links.length > 0 || sanitizedContent.toLowerCase().includes('whatsapp') || sanitizedContent.length > 2000;
-  const showReportButton = true;
+{% if page.nostr.relax_filters != true %}
+  validateLang(doc, language);
+{% endif %}
+
+  const showReportButton =
+{% if page.nostr.relax_filters == true %}
+    true;
+{% else %}
+    rank < -5 || links.length > 0 || sanitizedContent.toLowerCase().includes('whatsapp') || sanitizedContent.length > 2000;
+{% endif %}
   return { sanitizedContent, rank, showReportButton };
  }
 

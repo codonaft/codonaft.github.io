@@ -8,6 +8,7 @@ date: 2024-08-11 23:20:00 +0000
 categories: nostr
 nostr:
   comments: note1rzd7zy6x5wpm7gxtekgflmh8yt7twadddcu0ldp7hxdfe9d6aycqkll2gw
+  relax_filters: true
 ---
 
 I've been playing with Nostr for a couple of months now and have made [**some improvements**](https://github.com/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/).
