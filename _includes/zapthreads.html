@@ -383,6 +383,7 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
 
 <zap-threads
   anchor="{% if page.nostr.comments %}{{ page.nostr.comments }}{% else %}{{ page.url | prepend: site.baseurl | prepend: site.url }}{% endif %}"
+  author="{{ site.theme_settings.nostr.npub }}"
   {%if site.theme_settings.nostr.community %}community="{{ site.theme_settings.nostr.community }}"{% endif %}
   disable="relayInformation,likes,zaps,singleVoteCounter"
   language="{{ page.lang }}"
