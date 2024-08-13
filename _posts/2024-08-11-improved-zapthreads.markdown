@@ -61,7 +61,7 @@ IMO better approach would be isolation of the NIP-46 bunker connection magic in 
 This would also enable possibility to extend/replace existing signer connection protocols seamlessly enough for web app devs and users.
 
 ### Single Standard Auth Popup
-It'd be nice if NIP-07 provided something like **permissionless** `async getAuthorizedMethods(): { getPublicKey: boolean, getRelays: boolean, ... }` that returns the fact that user has selected account with certain authorized methods on a given website.
+It'd be nice if NIP-07 provided [something like](https://github.com/nostr-protocol/nips/issues/1421) **permissionless** `async getAuthorizedMethods(): { getPublicKey: boolean, getRelays: boolean, ... }` that returns the fact that user has selected account with certain authorized methods on a given website.
 
 We could call `getAuthorizedMethods` on the page initialization (or poll it periodically):
 - if `getPublicKey` is `false`—we can show that no user currently logged in
