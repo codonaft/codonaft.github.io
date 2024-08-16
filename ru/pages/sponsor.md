@@ -32,7 +32,7 @@ lang-en-uri: /sponsor/
           <li>помочь конкретно мелкому проекту <a href="https://github.com/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
         </ul>
       </li>
-      <li class="padding-top-small">общими донатами на {% include span_with_tooltip.html body="всё" tooltip="Разработку свободного ПО <span class='no-wrap'>и периодического</span> <span class='no-wrap'>выпуска контента</span>" %} что я произвожу:</li>
+      <li class="padding-top-small">общими донатами на всё что я {% include span_with_tooltip.html body="произвожу" tooltip="Разработку свободного ПО <span class='no-wrap'>и периодического</span> <span class='no-wrap'>выпуска контента</span>" %}:</li>
     </ul>
   </div>
 </div>
