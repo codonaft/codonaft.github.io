@@ -125,6 +125,8 @@ theme_settings:
     - wss://nostr-pub.wellorder.net
     - wss://relay.damus.io
     - wss://relay.nostr.bg
+    read_cache_relays:
+    - wss://relay.primal.net
 
   special_page:
     search:

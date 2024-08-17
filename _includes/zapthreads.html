@@ -391,7 +391,7 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
   max-comment-length="{{ site.theme_settings.nostr.max_comment_length }}"
   min-read-pow="{% if page.nostr.min_read_pow %}{{ page.nostr.min_read_pow }}{% else %}{{ site.theme_settings.nostr.min_read_pow }}{% endif %}"
   max-write-pow="{% if page.nostr.max_write_pow %}{{ page.nostr.max_write_pow }}{% else %}{{ site.theme_settings.nostr.max_write_pow }}{% endif %}"
-  relays="{{ site.theme_settings.nostr.relays | join: ',' }}"
+  relays="{{ site.theme_settings.nostr.relays | concat: site.theme_settings.nostr.read_cache_relays | join: ',' }}"
 ></zap-threads>
 
 <noscript><div style="text-align: center">This <a href="https://github.com/codonaft/codonaft.github.io#readme" rel="noopener noreferrer" target="_blank">website</a> uses <a href="https://github.com/codonaft/zapthreads-codonaft#readme" rel="noopener noreferrer" target="_blank">zapthreads</a>—a FOSS commenting system built on Nostr. {{ page.str.javascript_required_comments }}</div></noscript>
