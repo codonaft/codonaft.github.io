@@ -93,7 +93,7 @@
 {% endif %}
 {% unless include.no_text %}
   <li><a href="{{ site.theme_settings.site_repo_url }}/edit/{{ site.theme_settings.site_repo_branch }}/{{ page.path }}" title="{{ page.str.fix_typo }}">{% include icons/pen-to-square.svg %}</a></li>
-  <li><a href="{% if page.lang != 'en' %}/{{ page.lang }}{% endif %}/sponsor" title="{{ page.str.support_other_ways }}" class="pulsate">{% include icons/heart.svg %}</a></li>
+  <li><a href="{% if page.lang != 'en' %}/{{ page.lang }}{% endif %}/sponsor" title="{{ page.str.support_other_ways }}" class="pulsate">{% include icons/lightning.svg %}</a></li>
 {% endunless %}
  </ul>
 </div>
