@@ -3,3 +3,5 @@ layout: none
 ---
 User-agent: *
 Sitemap: {{ "sitemap.xml" | absolute_url }}
+Disallow: /terms-and-privacy/
+Disallow: /privacy-policy/

@@ -1,4 +1,5 @@
 {% assign zapthreads_client = "zapthreads-codonaft" %}
+{% capture rules %}{% include rules.html %}{% endcapture %}
 
 <!-- div class="modal fade" id="nostrExtensionNotFoundModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
@@ -52,7 +53,7 @@
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="accept-rules-checkbox" checked>
           <label class="form-check-label" for="accept-rules-checkbox">
-            I'm aware of {% include span_with_tooltip.html large="true" body="rules" tooltip="<p>👍 Constructive, respectful, relevant discussions are highly recommended</p><p>🚫 Spam, flood, automatic AI-generated content, hate/violence/bullying, NSFW, language different than in blogpost are definitely disallowed</p><p>✏️ Rules may change in the future.</p>" %} and <a href="/privacy-policy/" target="_blank">privacy policy</a> ⚖️ (*)
+            I'm aware of {% include span_with_tooltip.html large="true" body="rules" tooltip=rules %} and <a href="/privacy-policy/" target="_blank">privacy policy</a> ⚖️ (*)
           </label>
         </div>
         <div class="form-check">

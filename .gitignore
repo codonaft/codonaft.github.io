@@ -6,3 +6,4 @@ Gemfile.lock
 _drafts/
 _site/
 vendor/
+assets/js/vendor/bootstrap.bundle.min.js
