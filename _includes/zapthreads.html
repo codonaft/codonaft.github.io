@@ -149,7 +149,12 @@
         </div>
 
         <div style="min-height: 2.5em">
-          <input type="text" class="form-control visually-hidden" id="reportOtherInput" placeholder="This scares my neo-authoritarian cat, etc.">
+          <input type="text" class="form-control visually-hidden" id="reportOtherInput" placeholder="What exactly?">
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="acceptTruth">
+          <label class="form-check-label" for="acceptTruth">⚖️ I'm aware that <strong>false report</strong> may lead to my account ban</label>
         </div>
 
         <div class="form-check">
@@ -259,6 +264,7 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
 
  const reportCommentModal = document.getElementById('reportCommentModal');
  const reportCommentButton = reportCommentModal.querySelector('#reportCommentButton');
+ const acceptTruth = reportCommentModal.querySelector('#acceptTruth');
  const reportOtherInput = reportCommentModal.querySelector('#reportOtherInput');
  const reportContentType = reportCommentModal.querySelector('span.report-content-type');
  reportCommentModal.addEventListener('hidden.bs.modal', _ => {
@@ -269,7 +275,17 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
  });
 
  reportOtherInput.addEventListener('input', () => {
-  reportCommentButton.disabled = reportOtherInput.value.length === 0;
+  reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
+ });
+
+ acceptTruth.addEventListener('change', () => {
+  const checkedRadio = reportCommentModal.querySelector('input[type="radio"]:checked');
+  if (!checkedRadio) return;
+  if (checkedRadio.value === 'other') {
+   reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
+  } else {
+   reportCommentButton.disabled = !acceptTruth.checked;
+  }
  });
 
  let reportType;
@@ -280,10 +296,10 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
    if (i.value === 'other') {
     reportOtherInput.classList.remove('visually-hidden');
     reportOtherInput.focus();
-    reportCommentButton.disabled = reportOtherInput.value.length === 0;
+    reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
    } else {
     reportOtherInput.classList.add('visually-hidden');
-    reportCommentButton.disabled = false;
+    reportCommentButton.disabled = !acceptTruth.checked;
    }
   });
  }
