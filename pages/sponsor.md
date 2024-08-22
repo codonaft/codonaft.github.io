@@ -42,9 +42,9 @@ Your support keeps me going! ❤️
 <div class="donation-container">
   <div class="grid-container">
     <div class="grid-item">
-      <p>{% include icons/bitcoin.svg %}</p>
-      <p><strong>Bitcoin</strong> (BTC):</p>
-      <p><code class="language-plaintext highlighter-rouge">1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe</code></p>
+      <p style="margin-bottom: 0.7em">{% include icons/bitcoin.svg %}</p>
+      <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
+      <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe</code></p>
       <p>⚡ Lightning: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
     </div>
     <div class="grid-item">
