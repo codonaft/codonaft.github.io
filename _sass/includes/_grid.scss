@@ -65,6 +65,12 @@
       font-size: 0.9rem;
       line-height: 1.7;
     }
+
+    a:hover {
+      svg {
+        filter: brightness(115%);
+      }
+    }
   }
 }
 

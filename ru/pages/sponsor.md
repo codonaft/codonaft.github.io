@@ -16,7 +16,7 @@ lang-en-uri: /sponsor/
 
 Убежден, что это самый короткий путь к более **здоровым** программным продуктам для нашего общества.
 
-Ваша поддержка позволяет мне продолжать! ❤️
+Твоя поддержка позволяет мне продолжать! ❤️
 
 <div style="display: flex; justify-content: center; padding-bottom: 2rem; margin-top: 0">
   <div class="example" style="max-width: 40rem">
@@ -40,10 +40,10 @@ lang-en-uri: /sponsor/
 <div class="donation-container">
   <div class="grid-container">
     <div class="grid-item">
-      <p style="margin-bottom: 0.7em">{% include icons/bitcoin.svg %}</p>
+      <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
       <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
-      <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe</code></p>
-      <p>⚡ Lightning: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
+      <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.btc }}</code></p>
+      <p><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=20000" target="_blank">⚡Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
     </div>
     <div class="grid-item">
       <p>{% include icons/tron.svg %}</p>
@@ -58,21 +58,21 @@ lang-en-uri: /sponsor/
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/ethereum.svg %}</p>
+      <p><a href="ethereum:{{ site.theme_settings.eth }}?value=0.004e18">{% include icons/ethereum.svg %}</a></p>
       <p><strong>Ethereum</strong> (ETH, DAI, etc.):</p>
-      <p><code class="language-plaintext highlighter-rouge">0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.eth }}</code></p>
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/zcash.svg %}</p>
+      <p><a href="zcash:{{ site.theme_settings.zec }}?amount=0.25">{% include icons/zcash.svg %}</a></p>
       <p><strong>Zcash</strong> (ZEC):</p>
-      <p><code class="language-plaintext highlighter-rouge">t1bPyVoWijTjzSZqDeh1aFfSERRKhBNjp9S</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.zec }}</code></p>
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/litecoin.svg %}</p>
+      <p><a href="litecoin:{{ site.theme_settings.ltc }}?amount=0.16">{% include icons/litecoin.svg %}</a></p>
       <p><strong>Litecoin</strong> (LTC):</p>
-      <p><code class="language-plaintext highlighter-rouge">LSBjTftxfzRPDMb3QaX8NMGTH3w1CyjDbz</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
     <div class="grid-item">
@@ -207,7 +207,7 @@ lang-en-uri: /sponsor/
         - *«У нас есть что-то еще для Вас!»*, когда пользователь собирается закрыть страницу
         - внезапная громкая реклама посередь спокойной релаксирующей медитативной музыки
     - внезапное [появление](https://en.wikipedia.org/wiki/Clickjacking#Clickjacking_categories) нежелательной кнопки в той позиции, куда пользователь намеревался нажать
-    - замена нормальной службы поддержки отмороженным чат-ботом, который умеет выдавать лишь ограниченный набор {% include span_with_tooltip.html large="true" body="бесполезных вариантов фидбэка" tooltip="В срочной ситуации клиент не сможет зарепортить реальную возникшую проблему, не сможет проконтактировать с человеком и потратит кучу времени на попытку хоть чего-то добиться от бота, блуждая по его <span class='no-wrap'>запутанным меню</span>" %}
+    - замена нормальной службы поддержки отмороженным чат-бот симулякром, который умеет выдавать лишь ограниченный набор {% include span_with_tooltip.html large="true" body="бесполезных вариантов фидбэка" tooltip="В срочной ситуации клиент не сможет зарепортить реальную возникшую проблему, не сможет проконтактировать с человеком и потратит кучу времени на попытку хоть чего-то добиться от бота, блуждая по его <span class='no-wrap'>запутанным меню</span> или даже получит мгновенное автоматическое закрытие реальной существующей проблемы со смешной отговоркой" %}
 
 2. Жесткие намеренные манипулятивные техники, подозрительно напоминающие **мошенничество**, однако существующие как нечто легальное из-за плохой регуляции:
     - включение бесполезных {% include span_with_tooltip.html body="платных услуг втихаря" tooltip="Мобильные операторы <span class='no-wrap'>обожают это</span>" %}
@@ -252,7 +252,7 @@ lang-en-uri: /sponsor/
 
 ---
 
-### Почему просто не комбинировать работу на {% include span_with_tooltip.html body="менее рисковые" tooltip="Обычно это проприетарные продукты, принадлежащие относительно зрелым компаниям" %} и личные проекты?
+### Почему бы просто не комбинировать работу на {% include span_with_tooltip.html body="менее рисковые" tooltip="Обычно это проприетарные продукты, принадлежащие относительно зрелым компаниям" %} и личные проекты?
 Уже сделал ряд честных экспериментов по балансировке времени на предоставление своих услуг реально клёвой компанию vs личных проектов.
 
 Остановился после того, как увеличил время на свои проекты до 40%, потому что этого всё еще оказалось недостаточно.
