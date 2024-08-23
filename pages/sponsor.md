@@ -42,10 +42,10 @@ Your support keeps me going! ❤️
 <div class="donation-container">
   <div class="grid-container">
     <div class="grid-item">
-      <p style="margin-bottom: 0.7em">{% include icons/bitcoin.svg %}</p>
+      <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
       <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
-      <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe</code></p>
-      <p>⚡ Lightning: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
+      <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.btc }}</code></p>
+      <p><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=20000" target="_blank">⚡Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
     </div>
     <div class="grid-item">
       <p>{% include icons/tron.svg %}</p>
@@ -55,26 +55,26 @@ Your support keeps me going! ❤️
 
     <div class="grid-item">
       <p>{% include icons/ton.svg %}</p>
-      <p><strong>TON</strong>:</p>
+      <p><strong>Toncoin</strong> (TON):</p>
       <p><code class="language-plaintext highlighter-rouge">EQA3WT7EB3QS3PsxOILbbhKHvqHTxtwkfJWcdZqvuQ8WfkyK</code></p>
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/ethereum.svg %}</p>
+      <p><a href="ethereum:{{ site.theme_settings.eth }}?value=0.004e18">{% include icons/ethereum.svg %}</a></p>
       <p><strong>Ethereum</strong> (ETH, DAI, etc.):</p>
-      <p><code class="language-plaintext highlighter-rouge">0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.eth }}</code></p>
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/zcash.svg %}</p>
+      <p><a href="zcash:{{ site.theme_settings.zec }}?amount=0.25">{% include icons/zcash.svg %}</a></p>
       <p><strong>Zcash</strong> (ZEC):</p>
-      <p><code class="language-plaintext highlighter-rouge">t1bPyVoWijTjzSZqDeh1aFfSERRKhBNjp9S</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.zec }}</code></p>
     </div>
 
     <div class="grid-item">
-      <p>{% include icons/litecoin.svg %}</p>
+      <p><a href="litecoin:{{ site.theme_settings.ltc }}?amount=0.16">{% include icons/litecoin.svg %}</a></p>
       <p><strong>Litecoin</strong> (LTC):</p>
-      <p><code class="language-plaintext highlighter-rouge">LSBjTftxfzRPDMb3QaX8NMGTH3w1CyjDbz</code></p>
+      <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
     <div class="grid-item">
@@ -204,7 +204,7 @@ I perceive the three typical career paths the following way:
         - *"We've got something else for you!"* when user is about to close a page
         - sudden loud commercials while you're listening to your silent relaxing meditative music
     - sudden [appearance](https://en.wikipedia.org/wiki/Clickjacking#Clickjacking_categories) of unwanted button in the position you were about to click
-    - replacement of normal support service with a retarded chat bot, that gives only a limited number of {% include span_with_tooltip.html body="useless feedback options" tooltip="In urgent cases, user can't report a real issue, can't contact a human, and will waste a lot of time brute-forcing the confusing menu options" %}
+    - replacement of normal support service with a retarded chatbot simulacrum, that gives only a limited number of {% include span_with_tooltip.html body="useless feedback options" tooltip="In urgent cases, user can't report a real issue, can't contact a human, and will waste a lot of time brute-forcing the confusing menu options, or will even receive an instant auto-close of the real reported issue with an amusing excuse" %}
 
 2. Hardcore intentional manipulative techniques, which suspiciously remind **scam techniques** which exist as something legal due to poor regulations:
     - unannounced enabling of {% include span_with_tooltip.html body="useless paid services" tooltip="Mobile operators love it" %}

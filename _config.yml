@@ -95,6 +95,11 @@ theme_settings:
   youtube: "@codonaftFOSS"
   youtube_ru: "@codonaft"
 
+  btc: "1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe"
+  eth: "0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc"
+  ltc: "LSBjTftxfzRPDMb3QaX8NMGTH3w1CyjDbz"
+  zec: "t1bPyVoWijTjzSZqDeh1aFfSERRKhBNjp9S"
+
   share_buttons:
     vk: true
     telegram: true
