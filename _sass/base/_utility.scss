@@ -164,6 +164,16 @@ a.button {
   margin-bottom: 1.5em;
 }
 
+.quote-dialog {
+  @extend .quote-small;
+  text-align: left;
+  padding-left: 20%;
+  font-size: 0.9em;
+  p {
+    margin-bottom: 0.6em;
+  }
+}
+
 [data-bs-toggle=tooltip] {
   border-bottom: 3px dotted;
   white-space: nowrap;
