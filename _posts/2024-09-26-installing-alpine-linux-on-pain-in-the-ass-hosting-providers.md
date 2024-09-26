@@ -5,6 +5,8 @@ feature-img: "assets/img/alpine-install-vps.svg"
 thumbnail: "assets/img/alpine-install-vps-thumbnail.svg"
 date: "2024-09-26 00:00:00 +0000"
 categories: vps alpine linux iso boot grub
+nostr:
+  comments: note1q99933ynx8kc0va0uwhev9n7puwul0wm8n8ga3rgqp3smnxy75ds50gjvh
 ---
 
 In order to maintain my sanity, I install and configure software
@@ -95,7 +97,7 @@ It works. However, I'm personally *very* uneasy about the
 of this approach and have less time to verify it.
 
 ## Booting ISO using ramdisk
-This has never worked for me, I'd gladly appreciate if anyone share a `grub2` config that *successfully* does that trick with <span class='no-wrap'>Alpine Linux.</span>
+This has [never worked](https://www.reddit.com/r/AlpineLinux/comments/1fm1r4s/comment/loxyheb/) for me, I'd gladly appreciate if anyone share a `grub2` config that *successfully* does that trick with <span class='no-wrap'>Alpine Linux.</span>
 
 ## If you are a VPS hosting provider
 Please consider adding a *custom* ISO image boot option to your control panel.
