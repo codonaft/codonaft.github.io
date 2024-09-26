@@ -1,7 +1,7 @@
 ---
 layout: page
 navbar-title: Sponsor ♡
-title: Why Free and Open Source Software?
+title: Support independent FOSS developer
 feature-img: "assets/img/keyboard-background.webp"
 feature-title: <span class='no-wrap'>FOSS</span> is the <u>reason</u> <span class='no-wrap'>why I started <u>career</u></span> <span class='no-wrap'>in Software Development</span>
 permalink: /sponsor/
@@ -9,18 +9,14 @@ lang-ru-uri: /ru/sponsor/
 ---
 {% include sponsor.html %}
 
-Since I've gained enough software development
-[experience](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }})
-working on
-{% include span_with_tooltip.html body="various" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %},
-commercial proprietary products
-I'm currently investing my time in <span class='no-wrap'>Free and Open Source Software</span>.
+I used to work on
+{% include span_with_tooltip.html body="various" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
+proprietary [products](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}) for experience,
+now I'm back to <span class='no-wrap'>Free and Open Source [development](https://github.com/alopatindev)</span> to make this world better!
 
-I believe it's the shortest way to **healthier** software products for our society.
+Your support keeps me going ❤️
 
-Your support keeps me going! ❤️
-
-<div style="display: flex; justify-content: center; padding-bottom: 2rem; margin-top: 0">
+<!-- div style="display: flex; justify-content: center; padding-bottom: 2rem; margin-top: 0">
   <div class="example" style="max-width: 40rem">
     <h3 style="text-align: center">How to support:</h3>
     <ul style="margin-bottom: 0">
@@ -37,9 +33,9 @@ Your support keeps me going! ❤️
       <li class="padding-top-small">make general donations for {% include span_with_tooltip.html body="everything" tooltip="FOSS development <span class='no-wrap'>and occasional Blogging / Vlogging</span>" %} I produce:</li>
     </ul>
   </div>
-</div>
+</div -->
 
-<div class="donation-container">
+<div class="donation-container" style="margin-top: 4rem">
   <div class="grid-container">
     <div class="grid-item">
       <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
@@ -233,8 +229,8 @@ because they are cheaper to copy, they are implemented by competitors, etc.
 - useless <a href="https://www.facebook.com/help/124895950923762" target="_blank">over-detailed</a> documentation, which quickly becomes {% include span_with_tooltip.html body="obsolete" tooltip="Rather than maintaining such &quot;documentation&quot;, it's cheaper to turn it into a single link that jumps to and highlights the exact input field" %}
 - sudden non-disableable {% include span_with_tooltip.html body="notifications" tooltip="Including &quot;GDPR cookies blabla&quot;, which is a result of regulating things the wrong way" %}/tooltips/tutorials/announcements of features
 - [useless](https://github.com/notune/captcha-solver#readme) CAPTCHAs, which bury your precious [flow state](/how-to-take-notes-like-a-programmer/#whats-the-point)
-    - there's absolutely no reason to {% include span_with_tooltip.html body="distinguish bots" tooltip="What and why are we fighting? We're at the point of history, where bots <i>might</i> even transit to normal members of society" %} from humans anymore
-    - it's ironical that companies like OpenAI/Google/etc. are wasting their time improving bot detection
+    - other than something like DDoS attacks, there's absolutely no reason to {% include span_with_tooltip.html body="distinguish bots" tooltip="What and why are we fighting? We're at the point of history, where bots <i>might</i> even transit to normal members of society" %} from humans anymore
+    - it's ironical that companies like OpenAI/Google/Cloudflare/etc. are wasting their time improving bot detection
         - they could even **monetize** bots traffic, by turning bots into a ~~[crypto mining farm](https://github.com/mCaptcha/mCaptcha#readme)~~ distributed browser-based [ML inference](https://github.com/xenova/transformers.js#readme) engine, or whatever ecological enough, both to human mentality and to the business
 - overcomplicate every single native GUI application by turning it into another web browser
     - it's a fractal of issues; one of them is that such software inevitably becomes buggy (and usually {% include span_with_tooltip.html body="laggy" tooltip="Which is observable on the fastest available hardware on the market of today and tomorrow" %})

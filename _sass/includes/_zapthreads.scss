@@ -1,6 +1,6 @@
 :root {
-  --ztr-action-color: #0288d1; // TODO: $link-color
-  --ztr-action-hover-color: #{darken(#0288d1, 15%)};
+  --ztr-action-color: #{$link-color};
+  --ztr-action-hover-color: #{darken($link-color, 15%)};
   --ztr-font-size: 1.1rem;
   @media screen and (max-width: $break) {
     --ztr-font-size: 0.8rem;

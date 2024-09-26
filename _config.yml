@@ -19,7 +19,7 @@ defaults:
     values:
       lang: en
       str:
-        share: Please Share, Follow and all this!
+        share: Please share, follow and all this!
         fix_typo: Fix typo
         support_other_ways: Support me in other ways
         share_or_support_other_ways: Like what I do?<br>Please share with friends<br>or support me in other ways!
@@ -128,8 +128,7 @@ theme_settings:
     min_read_pow: 7
     relays:
     - wss://nostr-pub.wellorder.net
-    - wss://relay.damus.io
-    - wss://relay.nostr.bg
+    - wss://relay.nostr.band
     read_cache_relays:
     - wss://relay.primal.net
 
@@ -145,8 +144,37 @@ theme_settings:
 
   post_navigation: true
 
+  p2p_player:
+    media_url: https://media.codonaft.com
+    trackers:
+    - wss://media.codonaft.com/announce
+    - wss://tracker.openwebtorrent.com
+    #- wss://tracker.webtorrent.dev
+    ice_servers:
+    - stun:stun.framasoft.org
+    - stun:stun.l.google.com:19302
+    #- stun:stun.tula.nu
+    #- stun:stun.nextcloud.com
+    #- stun:stun.imp.ch
+    #- stun:stunserver2024.stunprotocol.org
+    #- stun:stun.hot-chilli.net
+    #- stun:stun.axialys.net
+    #- stun:stun.vomessen.de
+    #- stun:stun.streamnow.ch
+    #- stun:stun.antisip.com
+    #- stun:stun.cloudflare.com:3478
+    storyboard:
+      max_size: 16383
+      interval_sec: 8
+      tile_width: 400
+
 exclude:
-  - scripts
+  - .backup
+  - .build
+  - _ohmyvps
+  - _publish-post.cr
+  - _run.cr
+  - _zapthreads
 
 excerpt_separator: <!--more-->
 markdown: kramdown

@@ -1,0 +1,173 @@
+.vds-video-layout {
+  --media-brand: #{$theme-color};
+  --font-family: #{$font-family-main};
+  --media-font-family: #{$font-family-main};
+  --media-user-font-family: #{$font-family-main};
+  --video-font-family: #{$font-family-main};
+
+  --video-load-button-bg: #{$theme-color};
+  --video-load-button-color: #{$theme-color};
+  --media-menu-font-weight: 600;
+  --media-menu-hint-font-weight: 600;
+  --text-hint-color: black;
+  --video-sm-button-size: 40px;
+}
+
+:where(.vds-video-layout .vds-button):hover {
+  //--media-controls-color: black;
+  --media-button-hover-bg: #{$theme-color};
+}
+
+.vds-menu-items {
+  transition: height 0.04s ease;
+  --color-gray-300: rgba(white, 0);
+  //--item-hover-bg: #{$theme-color};
+  //--item-hover-bg: #{lighten($theme-color, 50%)};
+  --default-inverse: #{$theme-color} !important;
+}
+
+.vds-radio[aria-checked="true"] .vds-icon {
+  margin-left: 10px;
+}
+
+/*@media (hover: hover) and (pointer: fine) {
+  .vds-menu-item[data-hocus],
+  .vds-radio[data-hocus] :where(.vds-icon, .vds-radio-label),
+  .vds-menu-item[data-hocus] :where(.vds-menu-item-hint, .vds-menu-open-icon, .vds-radio-hint, .vds-menu-item, .vds-radio),
+  {
+    color: white;
+    //fill: white;
+  }
+}*/
+
+.vds-menu-items[data-root][aria-hidden='true'] {
+  animation: var(--media-menu-exit-animation, vds-menu-exit 0.025s ease-out);
+}
+
+.vds-menu-items[data-root][aria-hidden='false'] {
+  animation: var(--media-menu-enter-animation, vds-menu-enter 0.0375s ease-out);
+  animation-fill-mode: forwards;
+}
+
+.vds-tooltip-content:not([data-visible]) {
+  animation: var(--media-tooltip-exit-animation, vds-tooltip-exit 0.05s ease-out);
+}
+
+.vds-tooltip-content[data-visible] {
+  animation: var(--media-tooltip-enter-animation, vds-tooltip-enter 0.05s ease-in);
+  animation-fill-mode: forwards;
+}
+
+.vds-tooltip-content {
+  --default-color: #f5f5f5 !important;
+  --default-bg: black !important;
+  --default-border: 1px solid rgb(255 255 255 / 0.1) !important;
+}
+
+.vds-volume-slider {
+  margin-left: 4px;
+  margin-right: 8px;
+}
+
+:where(.vds-menu-items[data-root]:not([data-placement])) {
+  margin: 0 auto;
+}
+
+.vds-video-layout.light .vds-volume-popup {
+  --default-bg: transparent;
+  --default-border: none;
+}
+
+/*where(.vds-slider[aria-orientation="vertical"]) {
+  --media-slider-height: 50px;
+}*/
+
+.vds-video-layout[data-sm] {
+//  --media-button-size: 50px;
+//  --media-button-icon-size: 65%;
+//  --media-button-padding: 0;
+//  //--media-slider-preview-offset: calc(-200% - 40px);
+
+  .vds-tooltip-content {
+    visibility: hidden;
+  }
+
+  .vds-slider .vds-slider-thumb {
+    opacity: 1;
+  }
+
+  .vds-start-duration .vds-time {
+    display: none;
+  }
+
+  .vds-volume-slider {
+    margin-left: 0;
+    margin-right: 0;
+    --media-slider-height: 65px;
+  }
+
+  .vds-volume {
+    --video-volume-gap: 8px;
+  }
+
+  .vds-time-group {
+    //margin-left: -2px;
+    .vds-time {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .vds-controls-group {
+    //padding-left: 20px;
+    //padding-right: 20px;
+    align-items: flex-end;
+  }
+
+//  .vds-controls-group:first-child {
+//    margin-top: 5px;
+//  }
+//
+//  .vds-controls-group:last-child {
+//    padding-left: 22px;
+//    padding-right: 22px;
+//    //margin-bottom: 5px;
+//  }
+//
+//  .vds-button {
+//    //margin-right: -10px;
+//    margin: 5px;
+//  }
+//
+//  .vds-google-cast-button {
+//    //margin-left: -2px;
+//  }
+
+  .vds-play-button {
+    --media-button-size: 50px;
+    //height: calc(var(--media-button-size) / (16 / 9));
+    height: var(--media-button-size);
+    --media-button-border-radius: 100px;
+    --media-button-icon-size: 85%;
+  }
+
+  .vds-play-button:hover {
+    --media-button-border: 2px solid var(--media-controls-color);
+    --video-sm-play-button-bg: #{$theme-color};
+  }
+
+  :where(.vds-controls[data-visible]) {
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      10%,
+      transparent,
+      95%,
+      rgba(0, 0, 0, 0.3)
+    );
+  }
+}
+
+.p2p-player-chapters, .used-materials {
+  display: none;
+}

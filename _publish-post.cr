@@ -5,6 +5,9 @@ require "json"
 require "uri"
 require "yaml"
 
+PROD_REPO_URI = "git@github.com:codonaft/codonaft.github.io.git"
+PROD_BRANCH   = "master"
+
 ALLOWED_TIME_DIFF = 5.minutes
 
 class PostMetadata
@@ -67,11 +70,68 @@ def nak(args, input = nil)
   end
 end
 
+def sign(unsigned_event, bunker_uri, nostr)
+  event = nak([
+    "event",
+    "--pow", nostr["min_read_pow"].to_s,
+    "--connect", bunker_uri,
+  ], unsigned_event)
+  event_json = unsigned_event.to_json
+  nak(["verify"], event_json)
+  {event, event_json}
+end
+
+def approve(nostr, pubkey, event, url, prod, relays)
+  puts("approving own post")
+  now = Time.utc
+  unsigned_approval_event = {
+    "created_at" => now.to_unix,
+    "kind"       => 4550,
+    "tags"       => [
+      ["a", "34550:#{pubkey}:codonaft"],
+      ["e", event["id"]],
+      ["p", event["pubkey"]],
+      ["k", event["kind"].to_s],
+    ],
+    "content" => event, # TODO: test
+  }.to_json
+
+  print "bunker uri: "
+  approval_bunker_uri = (gets || "").strip
+  approval_event, approval_event_json = sign(unsigned_approval_event, approval_bunker_uri, nostr)
+
+  approval_event_backup = ".backup/#{url.path}.#{now.to_unix}.nostr.approval#{prod ? "" : ".test"}.json"
+  File.write(approval_event_backup, approval_event_json)
+  puts("saved event backup to #{approval_event_backup}")
+
+  puts
+  Colorize.with.yellow.surround(STDOUT) do
+    approval_event_backup.to_pretty_json(STDOUT)
+  end
+
+  puts
+  print("#{prod ? "PROD" : "TEST"} PUBLISH APPROVAL to #{relays}? [n] ")
+
+  if (gets || "").strip == "y"
+    loop do
+      begin
+        puts("publishing approval nostr event #{event["id"]}")
+        puts(nak_raw(["event"] + relays, approval_event_json))
+        puts("SUCCESS!")
+        break
+      rescue e
+        puts(e)
+        sleep 1
+      end
+    end
+  end
+end
+
 def main
   if ARGV.size < 2
     script = Path.new(__FILE__).relative_to(Dir.current)
     puts("usage:")
-    puts("  BUNKER_URI='bunker://...' #{script} _posts/1984-11-11-actions-are-louder-than-words.md \"Hello new line\nhello world\"")
+    puts("  BUNKER_URI='bunker://...' #{script} _posts/1984-11-11-actions-are-louder-than-words.md \"So keep building\nthings.\"")
     exit 1
   end
 
@@ -79,7 +139,6 @@ def main
   Dir.cd(repo_dir)
 
   post = ARGV[0]
-  content = ARGV[1]
   bunker_uri = ENV["BUNKER_URI"]
 
   raise "Post file has changed" if `git status --porcelain #{post}`.starts_with?(" M ")
@@ -104,6 +163,8 @@ def main
   metadata = PostMetadata.from_yaml(raw_metadata)
   raise "nostr metadata is already set" if metadata.nostr
 
+  content = "#{metadata.title}\n\n#{url.to_s}\n\n#{ARGV[1]}"
+
   now = Time.utc
   dt = now - metadata.date
   raise "Unexpected delta time #{dt}" if dt.negative? || dt > ALLOWED_TIME_DIFF
@@ -123,14 +184,7 @@ def main
     ] + metadata.tags.map { |t| ["t", t] },
   }.to_json
 
-  event = nak([
-    "event",
-    "--pow", nostr["min_read_pow"].to_s,
-    "--connect", bunker_uri,
-  ], unsigned_event)
-
-  event_json = event.to_json
-  nak(["verify"], event_json)
+  event, event_json = sign(unsigned_event, bunker_uri, nostr)
 
   prod = event["pubkey"] == pubkey
   Dir.mkdir_p(".backup")
@@ -140,6 +194,12 @@ def main
 
   relays = prod ? nostr["relays"].as_a.map(&.to_s) : ["ws://localhost:8080"]
   repo_uri = prod ? `git config --get remote.origin.url`.strip : Dir.current
+  branch = `git branch --show-current`.strip
+
+  if prod
+    raise "Unexpected prod repo uri" unless repo_uri == PROD_REPO_URI
+    raise "Unexpected prod branch" unless branch == PROD_BRANCH
+  end
 
   note = nak_raw(["encode", "note", event["id"].as_s])
   new_raw_metadata = raw_metadata +
@@ -160,7 +220,6 @@ def main
   end
 
   puts
-  branch = `git branch --show-current`.strip
   print("#{prod ? "PROD" : "TEST"} PUBLISH to #{repo_uri} (#{branch}) and #{relays}? [n] ")
   if (gets || "").strip == "y"
     puts("PUBLISHING...")
@@ -175,7 +234,7 @@ def main
         status = $?
         raise "unexpected exit code #{status}" unless status.success?
 
-        puts("publishing nostr event")
+        puts("publishing nostr event #{event["id"]}")
         puts(nak_raw(["event"] + relays, event_json))
 
         puts("SUCCESS!")
@@ -185,6 +244,8 @@ def main
         sleep 1
       end
     end
+
+    approve(nostr, pubkey, event, url, prod, relays)
   else
     system("git", ["checkout", post])
     puts("exiting")

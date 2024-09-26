@@ -1,0 +1,53 @@
+{% if include.id %}
+{% assign video_id = include.id %}
+{% else %}
+{% assign video_id = page.permalink | split: '/' | last %}
+{% endif %}
+
+{% assign stream_url_prefix = site.theme_settings.p2p_player.media_url | append: '/' | append: video_id %}
+{% assign stream_url = stream_url_prefix | append: "/main.m3u8" %}
+{% assign thumbnail_url = stream_url_prefix | append: "/thumbnail.webp" %}
+
+<p style="text-align: center">
+ <div class="p2p-player-container" style="text-align: center; max-width: 100%; margin: auto">
+  <media-player
+   src="{{ stream_url }}"
+   {% if include.duration %}duration="{{ include.duration }}"{% endif %}
+   playsInline
+   preload="auto"
+   posterLoad="eager"
+   storage="storage-key">
+
+   <media-provider>
+    <media-poster
+     class="vds-poster"
+     src="{{ thumbnail_url }}"
+     {% if include.title %}alt="{{ include.title }}"{% else %}{{ page.title | strip_html }}{% endif %}
+    ></media-poster>
+
+{% if include.subtitles_en == true %}
+{% assign subtitles_en = stream_url_prefix | append: "/en.vtt" %}
+    <track src="{{ subtitles_en }}" label="English" language="en" kind="subtitles" type="vtt" default />
+{% endif %}
+
+    <!-- track src="https://files.vidstack.io/sprite-fight/chapters.vtt" label="English" language="en" kind="subtitles" type="vtt" default / -->
+    <!-- track
+     src="https://files.vidstack.io/sprite-fight/chapters.vtt"
+     language="en-US"
+     kind="chapters"
+     type="vtt"
+     default
+    / -->
+   </media-provider>
+
+   <media-video-layout></media-video-layout>
+
+  </media-player>
+ </div>
+{% if include.chapters %}
+ <div class="p2p-player-chapters" data-stream-url="{{ stream_url }}">
+{{ include.chapters | strip | newline_to_br }}
+ </div>
+{% endif %}
+ <noscript>Please enable JavaScript to play video</noscript>
+</p>

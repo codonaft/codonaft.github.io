@@ -8,7 +8,7 @@
 {% else %}
 <div class="share-buttons">
 {% unless include.no_text %}
-<p><div class="meta">{% if page.lang == 'en' %}Please Share, <a href="https://nostr.at/{{ site.theme_settings.nostr.npub }}" rel="noopener noreferrer" target="_blank"><strong>Follow</strong></a> and all this!{% else %}{{ page.str.share }}{% endif %}</div></p>
+<p><div class="meta">{{ page.str.share }}</div></p>
 {% endunless %}
  <ul class="share-buttons">
 {% if site.theme_settings.share_buttons.telegram %}

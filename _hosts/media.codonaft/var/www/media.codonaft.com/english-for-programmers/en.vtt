@@ -1,0 +1,929 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.256 --> 00:00:06.400
+How long have you been learning English?
+I want you to learn it effectively, to become a better developer.
+
+00:00:06.656 --> 00:00:12.800
+In this video I will tell you how to continue learning English and NOT getting stuck.
+And I will give you 10 tricks that helped me.
+
+00:00:13.056 --> 00:00:19.200
+I'm not going to stop at reasons to learn English.
+You already know them.
+In a few words, in our modern
+
+00:00:19.456 --> 00:00:25.600
+actively changing world
+which becomes more global,
+you can't progress too far as a programmer,
+until you, at least, will be able to read,
+
+00:00:25.856 --> 00:00:32.000
+and, even better, to listen to technical English content.
+Which I will refer in future a lot, by the way.
+
+00:00:32.256 --> 00:00:38.400
+I'm not even talking about communicating with foreign coworkers.
+This video is intended for those who can solve "Hello world" tasks like,
+
+00:00:38.656 --> 00:00:44.800
+talking about myself or about the weather outside the window.
+So if you can't — it's not a problem. Just start studying with English teacher as soon as possible,
+
+00:00:45.056 --> 00:00:51.200
+so you could handle tasks like that.
+So, maybe you're that guy,
+
+00:00:51.456 --> 00:00:57.600
+who's learning English REALLY HARD.
+Maybe you use free tools like Lingualeo or Puzzle-English or something else,
+
+00:00:57.856 --> 00:01:04.000
+or you use English teachers and spend a lot of money on that.
+Both ideas are great. But at some point
+
+00:01:04.256 --> 00:01:10.400
+you may notice that your progress slows down for some reason.
+I don't know if you noticed that,
+but you can spend YEARS learning English
+
+00:01:10.656 --> 00:01:16.800
+and still not being able to handle tasks like watching a programming video course,
+or, say, a video from conference in English.
+
+00:01:17.056 --> 00:01:23.200
+Or maybe you are able to handle that,
+but now you are afraid to talk to foreign coworker or client.
+
+00:01:23.456 --> 00:01:29.600
+That's strange. It's the whole point of it, isn't it?
+Why it's so hard to achieve it? I think, unfortunately, the answer is
+
+00:01:29.856 --> 00:01:36.000
+all these English learning tools: services, courses, teachers and so on,
+they are just a sandbox.
+
+00:01:36.256 --> 00:01:42.400
+It's sort of an intro to English. It doesn't really matter how much time you spend on it.
+Now you can argue that teachers and other stuff
+
+00:01:42.656 --> 00:01:48.800
+help to prepare for English tests, like IELTS, while they are not really simple.
+And that's right, they are specialized in that.
+
+00:01:49.056 --> 00:01:55.200
+But English teacher will NEVER be able to discuss our specific topics with us:
+functional programming
+
+00:01:55.456 --> 00:02:01.600
+or imperative programming,
+static typing or dynamic typing.
+What architecture
+
+00:02:01.856 --> 00:02:08.000
+should we choose for this distributed system?
+No, they won't be able to discuss these topics with us. They are not specialized in these areas.
+
+00:02:08.256 --> 00:02:14.400
+They are specialized exactly in the stuff they teach: English grammar, and these common limited tasks.
+
+00:02:14.656 --> 00:02:20.800
+About family, weather, hobbies or maybe something more complex, like economics.
+But these topics have almost nothing to do with us.
+
+00:02:21.056 --> 00:02:27.200
+In the best case they will be able to discuss computers from user perspective or something similar.
+I'm not saying that studying with teacher is not effective,
+
+00:02:27.456 --> 00:02:33.600
+don't get me wrong.
+It's effective, when you take into account limitations of such education.
+
+00:02:33.856 --> 00:02:40.000
+So the first thing you need to admit is,
+if you are JUST focused on learning ENGLISH,
+
+00:02:40.256 --> 00:02:46.400
+and NOT focused on learning OUR topics USING English,
+then you will stuck.
+Actually you don't even need
+
+00:02:46.656 --> 00:02:52.800
+some crazy grammar level to watch courses and read articles about programming.
+
+00:02:53.056 --> 00:02:59.200
+Or to leave comments at GitHub bug report page,
+or to EVEN talk to a foreign coworker!
+I encourage you to watch this free course,
+
+00:02:59.456 --> 00:03:05.600
+all the links will be in the description.
+You can use this course as a grammatical and lexical minimum that you need
+
+00:03:05.856 --> 00:03:12.000
+to start doing the things I mentioned.
+If your grammar progressed beyond that — then you might be wasting your time.
+
+00:03:12.256 --> 00:03:18.400
+You are NOT going to use such complex grammar in the NEAR future and will likely forget it.
+Two more things about grammar:
+
+00:03:18.656 --> 00:03:24.800
+First of all, kids actually don't learn grammar while they are just starting to learn their native language,
+
+00:03:25.056 --> 00:03:31.200
+just because there's no system to describe grammar which could be available for them, as they don't speak any language.
+But it's not a problem.
+
+00:03:31.456 --> 00:03:37.600
+They quickly learn how to describe stuff that happens in their head,
+just by combining the phrases that they were able to remember from other person.
+
+00:03:37.856 --> 00:03:44.000
+And the second point about grammar:
+if you was learning our native language long time ago, using textbooks and other stuff,
+then you likely noticed, that you
+
+00:03:44.256 --> 00:03:50.400
+don't remember some parts of the grammar!
+I'm not sure what exactly you may not remember, but for instance,
+I wouldn't be able to recall anything about
+verb conjugations in Russian language.
+
+00:03:50.656 --> 00:03:56.800
+I encourage you to think about this stuff: why it's happening and how this knowledge may help
+
+00:03:57.056 --> 00:04:03.200
+with foreign languages learning process optimization.
+The next two videos will help you with that: one of them
+
+00:04:03.456 --> 00:04:09.600
+is from EXTREMELY important course
+about learning techniques for everything, not just natural language.
+
+00:04:09.856 --> 00:04:16.000
+This course is CRITICAL for you, by the way.
+I will mention it in the future as well.
+And another video, from one GREAT English teacher!
+
+00:04:16.256 --> 00:04:22.399
+I encourage you to watch ALL his content about learning techniques, which have been proved by studies.
+
+00:04:22.655 --> 00:04:28.799
+Now I want to move on to the main part of our topic,
+to discuss tricks that helped me to progress in English the most.
+
+00:04:29.055 --> 00:04:35.199
+We will start from pretty obvious techniques and will go to less obvious ones.
+Technique #1: Don't use Russian
+
+00:04:35.455 --> 00:04:41.599
+when learning English.
+I think that learning English language using Russian language is...
+
+00:04:41.855 --> 00:04:47.999
+completely absurd!
+You may disagree with me. But if you study with a personal teacher,
+
+00:04:48.255 --> 00:04:54.399
+I really encourage you to ask them to NOT use Russian AT ALL during lessons,
+and notice what effect it will produce to you.
+
+00:04:54.655 --> 00:05:00.799
+Imagine that THEY don't know Russian and YOU don't know Russian.
+And you will both do whatever you can.
+
+00:05:01.055 --> 00:05:07.199
+Using vocabulary that you already have. Using intonation and gesticulation.
+Don't underestimate gesticulation!
+
+00:05:07.455 --> 00:05:13.599
+It's a very powerful tool to explain things.
+So, if you completely refuse using Russian at your lessons
+
+00:05:13.855 --> 00:05:19.999
+this will stimulate you to switch to Russian less often.
+Now English will become an exciting puzzle!
+
+00:05:20.255 --> 00:05:26.399
+Yes, it may create a little lag in the plan you have with the teacher.
+
+00:05:26.655 --> 00:05:32.799
+But you know, this plan is a freaking sandbox!
+It's not important.
+It's important to start USING the language! To practice it FOR REAL!
+
+00:05:33.055 --> 00:05:39.199
+To solve PROBLEMS with it!
+EXPLAIN and UNDERSTAND things that YOU really CARE about!
+It's not talking about the freaking weather outside the window!
+
+00:05:39.455 --> 00:05:45.599
+So the first thing that becomes important to you automatically
+is not weather and not even programming.
+
+00:05:45.855 --> 00:05:51.999
+It's English itself.
+At this point you may experience problems with translating words from English to Russian and vice-versa.
+
+00:05:52.255 --> 00:05:58.399
+But at the same time you will easily explain meaning of an English word using other English words!
+
+00:05:58.655 --> 00:06:04.799
+It's exactly what you need!
+It can remind you so-called compiler bootstrapping.
+As C++ compiler can be written in C++,
+
+00:06:05.055 --> 00:06:11.199
+the same way, English can be and SHOULD BE learned with English itself! As soon as possible.
+
+00:06:11.455 --> 00:06:14.527
+As I'm not going to contradict myself, I will continue this discussion in English.
+
+00:06:14.783 --> 00:06:17.343
+(hilarious Runglish-speaking gentleman)
+
+00:06:17.599 --> 00:06:20.927
+So turn on subtitles if you don't understand English speech and we will continue.
+
+00:06:21.183 --> 00:06:26.071
+#2: Start GRADUALLY replacing Russian content with English content.
+
+00:06:26.427 --> 00:06:33.471
+Do you read articles at habr.com?
+That's great! Many of them are translations from English.
+
+00:06:33.727 --> 00:06:39.871
+So every time you are going to read a translation,
+instead try to read the original article.
+
+00:06:40.127 --> 00:06:46.271
+Podcasts, audio books, video blogs at YouTube.
+The same thing.
+Try original YouTube channels
+
+00:06:46.527 --> 00:06:52.671
+instead of watching dubbed videos.
+You may have noticed that many vlogs and audio books
+
+00:06:52.927 --> 00:06:59.071
+were recorded with high quality.
+And I don't just mean microphone quality or something,
+
+00:06:59.327 --> 00:07:04.447
+I also mean the voice. People really train their voice before performing this way.
+
+00:07:04.703 --> 00:07:10.591
+Ommm... Lower! Ommm... Lower! Ommm...
+And basically you say
+
+00:07:10.847 --> 00:07:16.223
+The letter Q, then E, then Q, then A-A-h.
+
+00:07:16.479 --> 00:07:22.367
+So it's not really authentic voice that you may hear between native Americans. It's actually
+
+00:07:22.623 --> 00:07:28.767
+much simpler.
+If you normally listen to music while driving your car or using public transport
+
+00:07:29.023 --> 00:07:35.167
+— try to update this habit with English audio books or podcasts.
+
+00:07:35.423 --> 00:07:41.567
+And one thing that you SHOULD be aware of is you don't need to understand ALL the little
+
+00:07:41.823 --> 00:07:47.967
+details you hear, inclusively.
+You need to get the idea, the main parts!
+This is the point of
+
+00:07:48.223 --> 00:07:54.367
+any content you use, including Russian content.
+You may have noticed that you can't
+
+00:07:54.623 --> 00:08:00.767
+watch a video and then retell
+all the little details to somebody,
+
+00:08:01.023 --> 00:08:07.167
+word for word.
+We normally remember only MAJOR stuff, so major stuff is THE ONLY needed stuff.
+
+00:08:07.423 --> 00:08:13.567
+Don't worry about ignoring SOME PARTS of the videos.
+Sometimes when we don't understand something IMPORTANT
+
+00:08:13.823 --> 00:08:19.967
+it's likely you will understand it later from context of the same video.
+
+00:08:20.223 --> 00:08:26.367
+#3: Prefer English over Russian when taking notes.
+If you are going to make a list of food,
+
+00:08:26.623 --> 00:08:32.767
+why won't you make it in English?
+It's not that hard.
+Also so your internal tasks
+
+00:08:33.023 --> 00:08:39.167
+and reminders — you can write them in English as well.
+Video courses.
+
+00:08:39.423 --> 00:08:45.567
+Writing quality notes for video courses is very important.
+I wrote an entire article about that
+
+00:08:45.823 --> 00:08:51.967
+link in the description.
+So if you are watching some English video course
+why won't you write your notes in English as well?
+
+00:08:52.223 --> 00:08:58.367
+It could be actually EASIER to do that instead of making a translation to Russian.
+
+00:08:58.623 --> 00:09:04.767
+And you will have a better FOCUS on your course in this case.
+This is where you're using English
+
+00:09:05.023 --> 00:09:11.167
+in the problems that YOU are personally facing in your life.
+It's no some theoretical stuff
+
+00:09:11.423 --> 00:09:17.567
+you had in textbooks.
+#4: Stop using Russian LOCALIZATION on any
+
+00:09:17.823 --> 00:09:19.103
+of your devices!
+
+00:09:19.359 --> 00:09:20.895
+It's time to STOP!
+
+00:09:21.151 --> 00:09:27.039
+Start using ALL software in English!
+On your desktop, on your laptop, on your phone,
+
+00:09:27.295 --> 00:09:33.439
+your tablet or whatever else.
+And also you will benefit from using English on
+
+00:09:33.695 --> 00:09:39.839
+the devices that you don't even own.
+Self-ordering machines, for instance.
+Do you order some
+
+00:09:40.095 --> 00:09:46.239
+junk food using such device?
+That's fine. Now try to use English every time you do that.
+
+00:09:46.495 --> 00:09:52.639
+Or, for example, many ATMs will let you choose the language after inserting your
+
+00:09:52.895 --> 00:09:59.039
+payment card.
+So you could select English and then withdraw or deposit your money.
+
+00:09:59.295 --> 00:10:05.439
+Don't be afraid of this stuff
+there are not too many things you can do with ATM.
+
+00:10:05.695 --> 00:10:11.839
+#5: Find ugly parts on the language in Google.
+Every natural language has its own poorly designed
+
+00:10:12.095 --> 00:10:18.239
+things.
+For English one of them is probably prepositions.
+When you are doing
+
+00:10:18.495 --> 00:10:24.639
+any kind of writing, instead of guessing which preposition you should use,
+or instead of using some complex rules,
+
+00:10:24.895 --> 00:10:31.039
+just Google the particular combination of words and check how many results you will get.
+
+00:10:31.295 --> 00:10:37.439
+In many cases you will find discussions which will tell you what is valid and what is not.
+
+00:10:37.695 --> 00:10:43.839
+Or what particular combination of words means if several ways are possible.
+
+00:10:44.095 --> 00:10:50.239
+#6: Improve your ability to LISTEN by practicing ACCURATE PRONUNCIATION.
+
+00:10:50.495 --> 00:10:56.639
+I noticed the more I practice pronunciation the better I actually hear
+
+00:10:56.895 --> 00:11:03.039
+the native English speech.
+Notice that you will likely never be able to do that with your
+
+00:11:03.295 --> 00:11:09.439
+non-native English teacher. If you have one.
+You already pronounce things wrong and you keep
+
+00:11:09.695 --> 00:11:15.839
+replacing the wrong pronunciation. Without even noticing that.
+And as you repeating it you are
+
+00:11:16.095 --> 00:11:22.239
+REINFORCING your WRONG MEMORY about that!
+That could do the reason why you can't even HEAR
+
+00:11:22.495 --> 00:11:28.639
+the right authentic pronunciation!
+Just think about that.
+And to fix that, one thing that you can try
+
+00:11:28.895 --> 00:11:35.039
+is singing songs that YOU personally enjoy.
+This is how you can learn and practice
+
+00:11:35.295 --> 00:11:41.439
+authentic English pronunciation. In a very enjoyable fashion.
+It's very important that you
+
+00:11:41.695 --> 00:11:47.839
+choose the songs that YOU personally like.
+It doesn't matter how complex they are
+
+00:11:48.095 --> 00:11:54.239
+Maybe they use some advanced vocabulary,
+that you are not familiar with.
+and that's fine, that's still
+
+00:11:54.495 --> 00:12:00.639
+not the point of this exercise.
+Though you will probably see mistakes in lyrics.
+
+00:12:00.895 --> 00:12:07.039
+So don't ignore them.
+Correct the mistakes every time you notice them.
+And it doesn't even matter how fast it is
+
+00:12:07.295 --> 00:12:13.439
+You can slow the song down, if it's too fast for you.
+The main goal is to be as accurate as the singer
+
+00:12:13.695 --> 00:12:19.839
+and of course I mean the pronunciation,
+not your pitch accuracy or something.
+
+00:12:20.095 --> 00:12:26.239
+Record your voice, review it and work on mistakes.
+The other thing that you could try is
+
+00:12:26.495 --> 00:12:32.639
+to simulate native English teachers.
+Here's one example of the teacher who teaches
+
+00:12:32.895 --> 00:12:34.943
+the American fast speech.
+
+00:12:35.199 --> 00:12:41.087
+Alright, another question "what do you mean?"
+I never ask it like that! "hey, what do you mean?"
+
+00:12:41.343 --> 00:12:47.487
+That's just too complicated, right?
+So I say "no, [wotduu] mean?", "[wotduu] mean?"
+"how did it go?"
+But I never say
+
+00:12:47.743 --> 00:12:53.887
+"how did it go"! I say "hey, [hada] go?", "[hada] go?"
+Now, this is crazy, because I'm not even sayin' "how"
+
+00:12:54.143 --> 00:12:57.727
+I'm saying "ha"!
+
+00:12:57.983 --> 00:13:03.871
+#7: Try to THINK in English every time you are walking outside.
+
+00:13:04.127 --> 00:13:10.271
+I came up with this technique maybe 10 years ago or something,
+when I was a student.
+Every time I was
+
+00:13:10.527 --> 00:13:16.671
+going home alone, I was noticing that my inner voice is basically
+
+00:13:16.927 --> 00:13:23.071
+talking some random stuff.
+And I started to play with it.
+I was trying to switch it to English,
+
+00:13:23.327 --> 00:13:29.471
+even though I didn't know English so well at that time.
+So the challenge was to
+
+00:13:29.727 --> 00:13:35.871
+either generate some English phrases
+or just to be silent.
+When I just "invented" this technique
+
+00:13:36.127 --> 00:13:42.271
+I was doing this for maybe several minutes and then I was switching back to Russian
+
+00:13:42.527 --> 00:13:48.671
+but after some practicing something clicked in me and I basically didn't need to use
+
+00:13:48.927 --> 00:13:55.071
+Russian anymore while walking on the streets.
+So that was probably the MOST EFFECTIVE
+
+00:13:55.327 --> 00:14:01.471
+practice for SPEAKING that I have ever used.
+And I'm still surprised that many teachers
+
+00:14:01.727 --> 00:14:07.871
+probably won't ever tell you about that.
+It's RIDICULOUSLY simple and at the same time
+
+00:14:08.127 --> 00:14:14.271
+VERY powerful!
+So if you are a shy and you don't want to practice your speaking
+
+00:14:14.527 --> 00:14:20.671
+with somebody — you can actually practice it WITH YOURSELF.
+Yes, there's still a problem with
+
+00:14:20.927 --> 00:14:27.071
+verification of the stuff that talk about.
+But it's definitely more productive than
+
+00:14:27.327 --> 00:14:33.471
+going like a zombie and generating some random Russian nonsense
+
+00:14:33.727 --> 00:14:39.871
+instead of English random nonsense.
+#8: Simplify your thoughts.
+
+00:14:40.127 --> 00:14:46.271
+Our native language is a very complex thing
+And sometimes
+
+00:14:46.527 --> 00:14:52.671
+It's hard to express our Russian thoughts in other language.
+Because we don't know
+
+00:14:52.927 --> 00:14:59.071
+this language so well. Or because of the lack of some concepts in this language.
+
+00:14:59.327 --> 00:15:05.471
+So every time you experience that, notice what's actually important.
+
+00:15:05.727 --> 00:15:11.871
+what MESSAGE are you trying to deliver.
+Don't focus on little things you can't remember,
+
+00:15:12.127 --> 00:15:18.271
+or you're not sure about.
+Get rid of all the unnecessary things or generalize them.
+
+00:15:18.527 --> 00:15:24.671
+Generalizing means selecting a word with more general meaning.
+
+00:15:24.927 --> 00:15:31.071
+#9: Memorize valid phrases and use them to build build new valid phrases.
+
+00:15:31.327 --> 00:15:37.471
+You may have noticed that memorizing single words, without context, just doesn't work.
+
+00:15:37.727 --> 00:15:43.871
+It's not effective!
+It's not how our brain works.
+We need to ASSOCIATE words together!
+
+00:15:44.127 --> 00:15:50.271
+Combinations of words — this is what we memorize effectively.
+
+00:15:50.527 --> 00:15:56.671
+And I hope you already have some benefit from that.
+Just by COMBINING some parts that you have heard from somebody,
+
+00:15:56.927 --> 00:16:03.071
+you can produce grammatically correct and beautiful speech in many cases.
+
+00:16:03.327 --> 00:16:09.471
+But what if I tell you that you can memorize longer combinations? The entire sentences.
+
+00:16:09.727 --> 00:16:15.871
+And modify them during actually talking IN REAL TIME.
+Let's take a look at example
+
+00:16:16.127 --> 00:16:22.271
+Suppose you want to express some strange complex idea
+
+00:16:22.527 --> 00:16:28.671
+Using passive form of present perfect tense.
+Or something similar.
+
+00:16:28.927 --> 00:16:35.071
+And you are like "damn I didn't practice this thing so much!
+I'm not sure how to say it's right."
+
+00:16:35.327 --> 00:16:41.471
+What you can do though is to RECALL some phrase,
+which could be very similar to what you want to say.
+
+00:16:41.727 --> 00:16:47.871
+For instance, you can recall something like
+"I have been told that studying algorithms
+
+00:16:48.127 --> 00:16:54.271
+is very important".
+And you also need to remember that "told" is
+
+00:16:54.527 --> 00:17:00.671
+In the past participle form here. And the word "have" is in the relation with "I".
+
+00:17:00.927 --> 00:17:07.071
+And now, to get what you want, you just update some parts of this sentence,
+with words
+
+00:17:07.327 --> 00:17:13.471
+in the same form. And maintain the consistency of the grammar.
+"They have been told
+
+00:17:13.727 --> 00:17:19.871
+that studying algorithms is very important"
+"This code has been written
+
+00:17:20.127 --> 00:17:26.271
+by me".
+Or whatever.
+It's like a change of variables in mathematics.
+
+00:17:26.527 --> 00:17:32.671
+And I think it's the NATURAL way to use the language.
+It's different from using
+
+00:17:32.927 --> 00:17:39.071
+those walls of text.
+You can't just visualize such things in your head, while actually talking.
+
+00:17:39.327 --> 00:17:45.471
+Our temporary memory is way more limited.
+So I want YOU to find the valid phrases
+
+00:17:45.727 --> 00:17:51.871
+that you personally find hard to build.
+And just memorize them. And after
+
+00:17:52.127 --> 00:17:58.271
+memorizing them, trying to PLAY with them, while actually talking in real time.
+
+00:17:58.527 --> 00:18:04.671
+And finally, the last technique!
+#10: Listen and dub
+
+00:18:04.927 --> 00:18:11.071
+videos that you personally like.
+And try to simulate a professional
+
+00:18:11.327 --> 00:18:12.351
+translation to Russian.
+
+00:18:18.239 --> 00:18:24.383
+No, no, no! Not some shitty translation,
+but a PROFESSIONAL one!
+
+00:18:24.639 --> 00:18:30.783
+This is actually an advanced technique.
+I think it's useful for those of you who want to improve your English from
+
+00:18:31.039 --> 00:18:37.183
+upper-intermediate to advanced level.
+And this technique may sound like a contradiction to the first technique, which was
+
+00:18:37.439 --> 00:18:43.583
+Don't use Russian when learning English.
+But actually it's just a different technique,
+
+00:18:43.839 --> 00:18:49.983
+for different purposes.
+It's designed to improve your listening first of all and your vocabulary.
+
+00:18:50.239 --> 00:18:56.383
+You will learn new phrasal verbs and modern idioms.
+I personally started to play with video dubbing
+
+00:18:56.639 --> 00:19:02.783
+in 2015. And I remember I didn't even have any subtitles,
+even auto generated.
+
+00:19:03.039 --> 00:19:09.183
+So it was a bit challenging.
+Sometimes I literally listened to some parts of the videos
+
+00:19:09.439 --> 00:19:15.583
+for 20 times on different speeds,
+until I could actually get things right.
+
+00:19:15.839 --> 00:19:21.983
+Sometimes I was skipping some strange parts
+and eventually I could understand them later from context
+of the same video.
+
+00:19:22.239 --> 00:19:28.383
+So in complex cases it's like a puzzle:
+you're trying to guess the right interpretation,
+by combining
+
+00:19:28.639 --> 00:19:34.783
+the parts you have already heard
+and by understanding the context.
+After translating a relatively short video
+
+00:19:35.039 --> 00:19:41.183
+30 minutes of something, I improved my listening skills dramatically.
+Just from one video!
+
+00:19:41.439 --> 00:19:47.583
+You need to choose a video with a bit HIGHER level than you currently have.
+It's very important!
+
+00:19:47.839 --> 00:19:53.983
+So, I mean the video that contains some minor parts that you don't understand while watching it.
+When you was watching it,
+
+00:19:54.239 --> 00:20:00.383
+it was okay to not understand some minor parts.
+But now it's time to figure them out!
+Which may not be
+
+00:20:00.639 --> 00:20:06.783
+as simple as you may think.
+In some cases you will find stuff that you just couldn't see in textbooks,
+
+00:20:07.039 --> 00:20:13.183
+like new idioms or culture-related jokes,
+or just very complex terminology
+
+00:20:13.439 --> 00:20:19.583
+which you will likely want to validate with official translations of the books or articles that
+
+00:20:19.839 --> 00:20:25.983
+affect the same topic.
+And obviously you can't rely on... whatever is written here, it's all a big lie!
+Not only auto generated, but any subtitles.
+
+00:20:26.239 --> 00:20:32.383
+It's the same thing as with lyrics for songs.
+Now I want to share you the tools
+
+00:20:32.639 --> 00:20:38.783
+that I use to translate the videos.
+context.reverso.net — this tool takes a phrase as input,
+
+00:20:39.039 --> 00:20:45.183
+and shows a translation in a context of some text.
+It's probably the most common tool I use.
+
+00:20:45.439 --> 00:20:51.583
+It's very important to see the words in a context,
+to understand their true meaning.
+
+00:20:51.839 --> 00:20:57.983
+Wikipedia and Wiktionary.
+Once again they are great tools for ambiguous words.
+You just find the most accurate meaning
+
+00:20:58.239 --> 00:21:04.383
+and then open a corresponding Russian article.
+Books, if they are mentioned in the video.
+You can find the official
+
+00:21:04.639 --> 00:21:10.783
+translations of such books.
+This will help you translate some tricky terminology.
+StarDict.
+
+00:21:11.039 --> 00:21:17.184
+Especially the Oxford dictionaries
+that you can additionally install in this program.
+StarDict has a great
+
+00:21:17.440 --> 00:21:23.584
+fuzzy search implementation.
+So it's perfect for finding unknown words when you are not sure about the spelling.
+
+00:21:23.840 --> 00:21:29.984
+Merriam-Webster it's a great tool for finding new English words.
+Urban Dictionary this one
+
+00:21:30.240 --> 00:21:36.384
+is a GREAT tool for America slang!
+Although I'm not sure how reliable it is,
+but still it's very powerful in complex cases.
+
+00:21:36.640 --> 00:21:42.784
+You can also modify and develop your own tools, to optimize
+
+00:21:43.040 --> 00:21:49.184
+dubbing quality and performance.
+And I will talk about that in the future episodes.
+A challenge that you will most probably face
+
+00:21:49.440 --> 00:21:55.584
+Is that you actually don't know Russian so well to make the translations professionally.
+
+00:21:55.840 --> 00:22:01.984
+That's very underestimated thing that many non-professional dubbers and article translators have.
+
+00:22:02.240 --> 00:22:08.384
+Hopefully this exercise will encourage you to stop reading any article translations.
+As quickly as possible.
+
+00:22:08.640 --> 00:22:14.784
+You probably have no clue how inaccurate they are on average.
+
+00:22:15.040 --> 00:22:21.184
+Okay. Now in summary,
+don't use Russian when you are learning English.
+And this will mostly affect your speaking.
+
+00:22:21.440 --> 00:22:27.584
+Start gradually replacing Russian content with English content.
+And that's very good for reading and listening.
+
+00:22:27.840 --> 00:22:33.984
+Prefer English over Russian when taking notes,
+if you want to improve your writing.
+Stop using
+
+00:22:34.240 --> 00:22:40.384
+Russian localization on any of your devices,
+to improve reading.
+Find ugly parts of the language
+
+00:22:40.640 --> 00:22:46.784
+in Google to improve writing.
+Practice accurate pronunciation to improve listening,
+
+00:22:47.040 --> 00:22:53.184
+and speaking of course.
+Think in English when you are walking outside,
+to improve speaking.
+
+00:22:53.440 --> 00:22:59.584
+Simplify your thoughts to improve speaking first of all
+Memorize valid phrases and use them
+
+00:22:59.840 --> 00:23:05.984
+to build new valid phrases.
+And it's a very powerful technique for speaking as well.
+Listen and dub
+
+00:23:06.240 --> 00:23:12.384
+videos that you personally enjoy,
+to improve almost everything.
+And the last thing I'd like to say
+
+00:23:12.640 --> 00:23:18.784
+is you need to choose your techniques wisely.
+Start asking questions like what skill I'm trying to improve?
+
+00:23:19.040 --> 00:23:25.184
+Is it reading, speaking or something else?
+Did this particular technique really help me with this skill?
+
+00:23:25.440 --> 00:23:31.584
+Is there a scientific evidence that this technique actually works?
+Or the opposite thing
+
+00:23:31.840 --> 00:23:36.850
+Is there an evidence that this technique definitely doesn't work?
+There are quite a lot of researches on this topic nowadays.
+
+00:23:37.000 --> 00:23:39.000
+Nu i vse na etom...
+
+00:23:39.200 --> 00:23:45.408
+That's it!
+Press Like button if you like the video!
+Share it with friends who currently learn English!
+Subscribe to the channel!
+
+00:23:45.664 --> 00:23:51.808
+Ring the bell!
+And keep in mind, I gave you techniques that worked for me,
+you need to find techniques that will work good for YOU!
+
+00:23:52.064 --> 00:23:58.208
+And if you already know some cool tricks that WORKED for YOU — share it in the comments down below the video!
+If you are seriously intended
+
+00:23:58.464 --> 00:24:04.608
+to achieve Advanced level and higher — then visit codonaft.com
+where I left a few more advanced techniques which I use as well.
+
+00:24:04.864 --> 00:24:07.168
+This was Sasha, see you soon!
+

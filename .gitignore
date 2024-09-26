@@ -1,9 +1,11 @@
+.backup/
+.build/
 .bundle/
 .jekyll-cache/
 .jekyll-metadata
 .sass-cache/
 Gemfile.lock
 _drafts/
-_site/
+_ohmyvps/
+_zapthreads/
 vendor/
-assets/js/vendor/bootstrap.bundle.min.js

@@ -2,312 +2,311 @@
 {% capture rules %}{% include rules.html %}{% endcapture %}
 
 <!-- div class="modal fade" id="nostrExtensionNotFoundModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
-        <h3>&nbsp;Nostr Login</h3>
-      </div>
-      <div class="modal-body">
-        <form class="row justify-content-center">
-          <div class="col-8">
-            <input type="text" class="form-control" id="bunkerInput" placeholder="user@provider or bunker://...">
-          </div>
-          <div class="col-md-3">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="bunkerConnectButton">Connect</button>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer justify-content-center">
-        No account? Create one with <a href="https://github.com/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">extension</a> (e.g. <span class="extension-example">nos2x</span>) or NIP-46 compatible <a href="https://github.com/aljazceru/awesome-nostr#offline-signers" rel="noopener noreferrer" target="_blank">signer app</a> (e.g. <span class="signer-example">Amber</span>).
-      </div>
-    </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header justify-content-center">
+    <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
+    <h3>&nbsp;Nostr Login</h3>
+   </div>
+   <div class="modal-body">
+    <form class="row justify-content-center">
+     <div class="col-8">
+      <input type="text" class="form-control" id="bunkerInput" placeholder="user@provider or bunker://...">
+     </div>
+     <div class="col-md-3">
+      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="bunkerConnectButton">Connect</button>
+     </div>
+    </form>
+   </div>
+   <div class="modal-footer justify-content-center">
+    No account? Create one with <a href="https://github.com/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">extension</a> (e.g. <span class="extension-example">nos2x</span>) or NIP-46 compatible <a href="https://github.com/aljazceru/awesome-nostr#offline-signers" rel="noopener noreferrer" target="_blank">signer app</a> (e.g. <span class="signer-example">Amber</span>).
+   </div>
   </div>
+ </div>
 </div -->
 
 <div class="modal fade" id="nostrExtensionNotFoundModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
-        <h3>&nbsp;Nostr Login</h3>
-      </div>
-      <div class="modal-body">
-        Please login using <a href="https://github.com/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">NIP-07 compatible extension</a> (such as <span class="extension-example">nos2x</span>) that {% include span_with_tooltip.html large="true" body="securely enough" tooltip="This website doesn't store your private key (and don't recommend entering it on <i>any</i> website as well, otherwise it'd be easy to steal it by some malicious browser extension <span class='no-wrap'>or user script).</span>" %} isolates your private key.
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="installNostrExtension">Install nos2x</button>
-      </div>
-    </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header justify-content-center">
+    <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
+    <h3>&nbsp;Nostr Login</h3>
+   </div>
+   <div class="modal-body">
+    Please login using <a href="https://github.com/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">NIP-07 compatible extension</a> (such as <span class="extension-example">nos2x</span>) that {% include span_with_tooltip.html large="true" body="securely enough" tooltip="This website doesn't store your private key (and don't recommend entering it on <i>any</i> website as well, otherwise it'd be easy to steal it by some malicious browser extension <span class='no-wrap'>or user script).</span>" %} isolates your private key.
+   </div>
+   <div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="installNostrExtension">Install nos2x</button>
+   </div>
   </div>
+ </div>
 </div>
 
 <div class="modal fade" id="loginModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
-        <h3>&nbsp;Nostr Login</h3>
-      </div>
-      <div class="modal-body">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="accept-rules-checkbox" checked>
-          <label class="form-check-label" for="accept-rules-checkbox">
-            I'm aware of {% include span_with_tooltip.html large="true" body="rules" tooltip=rules %} and <a href="/privacy-policy/" target="_blank">privacy policy</a> ⚖️ (*)
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="remember-me-checkbox" checked>
-          <label class="form-check-label" for="remember-me-checkbox">Remember me ⛁</label>
-        </div>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="loginButton">Login</button>
-      </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header justify-content-center">
+    <div style="display: inline-grid; vertical-align: middle">{% include icons/nostr.svg %}</div>
+    <h3>&nbsp;Nostr Login</h3>
+   </div>
+   <div class="modal-body">
+    <div class="form-check">
+     <input class="form-check-input" type="checkbox" value="" id="accept-rules-checkbox" checked>
+     <label class="form-check-label" for="accept-rules-checkbox">
+      I'm aware of {% include span_with_tooltip.html large="true" body="rules" tooltip=rules %} and <a href="/privacy-policy/" target="_blank">privacy policy</a> ⚖️ (*)
+     </label>
     </div>
+    <div class="form-check">
+     <input class="form-check-input" type="checkbox" value="" id="remember-me-checkbox" checked>
+     <label class="form-check-label" for="remember-me-checkbox">Remember me ⛁</label>
+    </div>
+   </div>
+   <div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="loginButton">Login</button>
+   </div>
   </div>
+ </div>
 </div>
 
 <div class="modal fade" id="relaysNotFoundModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <h3>Relays not found</h3>
-      </div>
-      <div class="modal-body">
-        <p>No available read or write relays found in your NIP-07 compatible browser extension and in your <a href="https://metadata.nostr.com/" rel="noopener noreferrer" target="_blank">profile</a> 🤷</p>
-        <p>Please <a href="https://github.com/aljazceru/awesome-nostr#relay-lists">choose</a> and set them.</p>
-        <p>Here's the list of recommended relays:</p>
-        <p><ul>
-        {% for i in site.theme_settings.nostr.relays %}
-          <li>{{ i }}</li>
-        {% endfor %}
-        </ul></p>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-      </div>
-    </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header justify-content-center">
+    <h3>Relays not found 🤷</h3>
+   </div>
+   <div class="modal-body">
+    <p>Please <a href="https://github.com/aljazceru/awesome-nostr#relay-lists">choose</a> and set them in your NIP-07 compatible browser extension or in your <a href="https://metadata.nostr.com/" rel="noopener noreferrer" target="_blank">👤 profile</a>.</p>
+    <p>Here's the list of recommended relays:</p>
+    <p><ul>
+    {% for i in site.theme_settings.nostr.relays %}
+     <li>{{ i }}</li>
+    {% endfor %}
+    </ul></p>
+   </div>
+   <div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+   </div>
   </div>
+ </div>
 </div>
 
 <div class="modal fade" id="removeCommentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body">Delete this message?</div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="removeCommentButton">🗑️ Delete</button>
-      </div>
-    </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-body">Delete this message?</div>
+   <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="removeCommentButton">🗑️ Delete</button>
+   </div>
   </div>
+ </div>
 </div>
 
 <div class="modal fade" id="reportCommentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center">
-        <h3>Report this <span class="report-content-type">comment thread? 💬</span></h3>
-      </div>
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header justify-content-center">
+    <h3>Report this <span class="report-content-type">comment thread? 💬</span></h3>
+   </div>
 
-      <div class="modal-body">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-spam" value="spam">
-          <label class="form-check-label" for="report-spam">👾 Spam, flood, auto AI-generated content</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-malware" value="malware">
-          <label class="form-check-label" for="report-malware">🐴 Phishing, malware, spyware, adware</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-illegal" value="illegal">
-          <label class="form-check-label" for="report-illegal">⚖️ Fraud, illegal content, doxxing</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-profanity" value="profanity">
-          <label class="form-check-label" for="report-profanity">👹 Hate, violence, bullying</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-language" value="language">
-          <label class="form-check-label" for="report-language">🌍 Language different than in blogpost</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-nudity" value="nudity">
-          <label class="form-check-label" for="report-nudity">🙈 Nudity, NSFW</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-impersonation" value="impersonation">
-          <label class="form-check-label" for="report-impersonation">🥸 Someone pretending to be someone else</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-off-topic" value="off-topic">
-          <label class="form-check-label" for="report-off-topic">🥱 Off-topic</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="report-other" value="other">
-          <label class="form-check-label" for="report-other">🌚 Other</label>
-        </div>
-
-        <div style="min-height: 2.5em">
-          <input type="text" class="form-control visually-hidden" id="reportOtherInput" placeholder="What exactly?">
-        </div>
-
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="acceptTruth">
-          <label class="form-check-label" for="acceptTruth">⚖️ I'm aware that <strong>false report</strong> may lead to my account ban</label>
-        </div>
-
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="report-user">
-          <label class="form-check-label" for="report-user">👤 Report user and <strong>hide all</strong> threads started by this user</label>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="reportCommentButton" disabled>⚠️ Report and Hide</button>
-      </div>
+   <div class="modal-body">
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-spam" value="spam">
+     <label class="form-check-label" for="report-spam">👾 Spam, flood, auto AI-generated content</label>
     </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-malware" value="malware">
+     <label class="form-check-label" for="report-malware">🐴 Phishing, malware, spyware, adware</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-illegal" value="illegal">
+     <label class="form-check-label" for="report-illegal">⚖️ Fraud, illegal content, doxxing</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-profanity" value="profanity">
+     <label class="form-check-label" for="report-profanity">👹 Hate, violence, bullying</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-language" value="language">
+     <label class="form-check-label" for="report-language">🌍 Language different than in blogpost</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-nudity" value="nudity">
+     <label class="form-check-label" for="report-nudity">🙈 Nudity, NSFW</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-impersonation" value="impersonation">
+     <label class="form-check-label" for="report-impersonation">🥸 Someone pretending to be someone else</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-off-topic" value="off-topic">
+     <label class="form-check-label" for="report-off-topic">🥱 Off-topic</label>
+    </div>
+    <div class="form-check">
+     <input class="form-check-input" type="radio" id="report-other" value="other">
+     <label class="form-check-label" for="report-other">🌚 Other</label>
+    </div>
+
+    <div style="min-height: 2.5em">
+     <input type="text" class="form-control visually-hidden" id="reportOtherInput" placeholder="What exactly?">
+    </div>
+
+    <div class="form-check">
+     <input class="form-check-input" type="checkbox" id="acceptTruth">
+     <label class="form-check-label" for="acceptTruth">⚖️ I'm aware that <strong>false report</strong> may lead to my account ban</label>
+    </div>
+
+    <div class="form-check">
+     <input class="form-check-input" type="checkbox" id="report-user">
+     <label class="form-check-label" for="report-user">👤 Report user and <strong>hide all</strong> threads started by this user</label>
+    </div>
+   </div>
+
+   <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="reportCommentButton" disabled>⚠️ Report and Hide</button>
+   </div>
   </div>
+ </div>
 </div>
 
 <script type="module">
-import { francAll } from '/assets/js/vendor/franc-min.bundle.mjs';
+import { francAll } from '/assets/js/vendor/franc-min.min.js';
 import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
 
- const iso6391To3 = {en: 'eng', ru: 'rus'};
- const targetLang = iso6391To3['{{ page.lang }}'];
- const domParser = new DOMParser();
+const browser = new BrowserDetector(window.navigator.userAgent).parseUserAgent().name;
+const iso6391To3 = {en: 'eng', ru: 'rus'};
+const targetLang = iso6391To3['{{ page.lang }}'];
+const domParser = new DOMParser();
 
- function validateNoImages(doc) {
-  const orig = doc.querySelector('body').innerHTML;
-  [...doc.querySelectorAll('img')].forEach(i => i.remove());
-  const valid = doc.querySelector('body').innerHTML === orig;
-  if (!valid) throw new Error('No images please');
+function validateNoImages(doc) {
+ const orig = doc.querySelector('body').innerHTML;
+ [...doc.querySelectorAll('img')].forEach(i => i.remove());
+ const valid = doc.querySelector('body').innerHTML === orig;
+ if (!valid) throw new Error('No images please');
+}
+
+function validateLang(doc, language) {
+ let valid = false;
+ if (language === undefined || language === '{{ page.lang }}') {
+  [...doc.querySelectorAll('a, code')].forEach(i => i.remove());
+  const raw = doc.querySelector('body').innerHTML.replace(/<[^>]+>/g, '');
+
+  const all = francAll(raw, {
+   minLength: Math.min({{ site.theme_settings.nostr.max_comment_length }}, raw.length)
+  });
+  const result = all.find(([lang, _]) => lang === targetLang);
+  valid = result && result[1] > 0.2;
  }
+ if (!valid) throw new Error('Language is different than in blogpost?');
+}
 
- function validateLang(doc, language) {
-  let valid = false;
-  if (language === undefined || language === '{{ page.lang }}') {
-    [...doc.querySelectorAll('a, code')].forEach(i => i.remove());
-    const raw = doc.querySelector('body').innerHTML.replace(/<[^>]+>/g, '');
+function sanitizeEvent({ rankable, kind, content, replies, upvotes, downvotes, pow, language, client, followedByModerator }) {
+ if (kind === 7 || kind === 9735) return { sanitizedContent: content };
 
-    const all = francAll(raw, {
-      minLength: Math.min({{ site.theme_settings.nostr.max_comment_length }}, raw.length)
-    });
-    const result = all.find(([lang, _]) => lang === targetLang);
-    valid = result && result[1] > 0.2;
-  }
-  if (!valid) throw new Error('Language is different than in blogpost');
- }
-
- function sanitizeEvent({ rankable, kind, content, replies, upvotes, downvotes, pow, language, client }) {
-  if (kind === 7 || kind === 9735) return { sanitizedContent: content };
-
-  const doc = domParser.parseFromString(content, 'text/html');
+ const doc = domParser.parseFromString(content, 'text/html');
 {% if page.nostr.relax_filters != true %}
   validateNoImages(doc);
 {% endif %}
 
-  const links = doc.querySelectorAll('a');
-  let rank = undefined;
-  if (rankable) {
-    const expectedClient = client === '{{ zapthreads_client }}';
-    rank = +expectedClient + replies + upvotes - downvotes - links.length;
-  }
+ const links = doc.querySelectorAll('a');
+ let rank = undefined;
+ if (rankable) {
+   const expectedClient = client === '{{ zapthreads_client }}';
+   rank = +expectedClient + +followedByModerator + replies + upvotes - downvotes - links.length;
+ }
 
-  for (const i of links) {
-   i.setAttribute('rel', 'noopener noreferrer nofollow');
-  }
-  const sanitizedContent = doc.querySelector('body').innerHTML;
+ for (const i of links) {
+  i.setAttribute('rel', 'noopener noreferrer nofollow');
+ }
+ const sanitizedContent = doc.querySelector('body').innerHTML;
 
 {% if page.nostr.relax_filters != true %}
-  validateLang(doc, language);
+ validateLang(doc, language);
 {% endif %}
 
-  const showReportButton =
+ const showReportButton =
 {% if page.nostr.relax_filters == true %}
-    true;
+   true;
 {% else %}
-    rank < -5 || links.length > 0 || sanitizedContent.toLowerCase().includes('whatsapp') || sanitizedContent.length > 2000;
+   rank < -5 || links.length > 0 || sanitizedContent.toLowerCase().includes('whatsapp') || sanitizedContent.length > 2000;
 {% endif %}
-  return { sanitizedContent, rank, showReportButton };
- }
+ return { sanitizedContent, rank, showReportButton };
+}
 
- function recommendedExtension() {
-  const browser = new BrowserDetector(window.navigator.userAgent).parseUserAgent().name;
-  const extensions = {
-   'Google Chrome': ['nos2x', 'https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp'],
-   'Mozilla Firefox': ['nos2x-fox', 'https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/'],
-   'Safari': ['Nostore', 'https://apps.apple.com/us/app/nostore/id1666553677'],
-  };
-  return browser && extensions[browser] || extensions['Google Chrome'];
- }
+function recommendedExtension() {
+ const extensions = {
+  'Google Chrome': ['nos2x', 'https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp'],
+  'Mozilla Firefox': ['nos2x-fox', 'https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/'],
+  'Safari': ['Nostore', 'https://apps.apple.com/us/app/nostore/id1666553677'],
+ };
+ return browser && extensions[browser] || extensions['Google Chrome'];
+}
 
- const nostrExtensionNotFoundModal = document.getElementById('nostrExtensionNotFoundModal');
- const installExtensionButton = nostrExtensionNotFoundModal.querySelector('#installNostrExtension');
- const [extensionExample, extensionUrl] = recommendedExtension();
- nostrExtensionNotFoundModal.querySelector('span.extension-example').innerHTML = extensionExample; // TODO
- installExtensionButton.innerHTML = `Install ${extensionExample}`;
- installExtensionButton.addEventListener('click', () => {
-  const w = window.open(extensionUrl, '_blank', 'noopener,noreferrer'); // FIXME: normal link?
-  if (w) w.focus();
- });
+const nostrExtensionNotFoundModal = document.getElementById('nostrExtensionNotFoundModal');
+const installExtensionButton = nostrExtensionNotFoundModal.querySelector('#installNostrExtension');
+const [extensionExample, extensionUrl] = recommendedExtension();
+nostrExtensionNotFoundModal.querySelector('span.extension-example').innerHTML = extensionExample; // TODO
+installExtensionButton.innerHTML = `Install ${extensionExample}`;
+installExtensionButton.addEventListener('click', () => {
+ const w = window.open(extensionUrl, '_blank', 'noopener,noreferrer'); // FIXME: normal link?
+ if (w) w.focus();
+});
 
- const loginModal = document.getElementById('loginModal');
- const loginButton = loginModal.querySelector('#loginButton');
+const loginModal = document.getElementById('loginModal');
+const loginButton = loginModal.querySelector('#loginButton');
 
- const relaysNotFoundModal = document.getElementById('relaysNotFoundModal');
+const relaysNotFoundModal = document.getElementById('relaysNotFoundModal');
 
- const removeCommentModal = document.getElementById('removeCommentModal');
- const removeCommentButton = removeCommentModal.querySelector('#removeCommentButton');
+const removeCommentModal = document.getElementById('removeCommentModal');
+const removeCommentButton = removeCommentModal.querySelector('#removeCommentButton');
 
- const reportCommentModal = document.getElementById('reportCommentModal');
- const reportCommentButton = reportCommentModal.querySelector('#reportCommentButton');
- const acceptTruth = reportCommentModal.querySelector('#acceptTruth');
- const reportOtherInput = reportCommentModal.querySelector('#reportOtherInput');
- const reportContentType = reportCommentModal.querySelector('span.report-content-type');
- reportCommentModal.addEventListener('hidden.bs.modal', _ => {
-  reportOtherInput.classList.add('visually-hidden');
-  reportOtherInput.value = '';
-  reportCommentButton.disabled = true;
-  reportCommentModal.querySelectorAll('input[type="radio"]:checked,input[type="checkbox"]:checked').forEach(i => { i.checked = false; });
- });
+const reportCommentModal = document.getElementById('reportCommentModal');
+const reportCommentButton = reportCommentModal.querySelector('#reportCommentButton');
+const acceptTruth = reportCommentModal.querySelector('#acceptTruth');
+const reportOtherInput = reportCommentModal.querySelector('#reportOtherInput');
+const reportContentType = reportCommentModal.querySelector('span.report-content-type');
+reportCommentModal.addEventListener('hidden.bs.modal', _ => {
+ reportOtherInput.classList.add('visually-hidden');
+ reportOtherInput.value = '';
+ reportCommentButton.disabled = true;
+ reportCommentModal.querySelectorAll('input[type="radio"]:checked,input[type="checkbox"]:checked').forEach(i => { i.checked = false; });
+});
 
- reportOtherInput.addEventListener('input', () => {
+reportOtherInput.addEventListener('input', () => {
+ reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
+});
+
+acceptTruth.addEventListener('change', () => {
+ const checkedRadio = reportCommentModal.querySelector('input[type="radio"]:checked');
+ if (!checkedRadio) return;
+ if (checkedRadio.value === 'other') {
   reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
- });
+ } else {
+  reportCommentButton.disabled = !acceptTruth.checked;
+ }
+});
 
- acceptTruth.addEventListener('change', () => {
-  const checkedRadio = reportCommentModal.querySelector('input[type="radio"]:checked');
-  if (!checkedRadio) return;
-  if (checkedRadio.value === 'other') {
+let reportType;
+for (const i of reportCommentModal.querySelectorAll('input[type="radio"]')) {
+ i.addEventListener('change', () => {
+  reportCommentModal.querySelectorAll(`input[type="radio"]:checked:not([value="${i.value}"])`).forEach(j => { j.checked = false; });
+  reportType = i.value;
+  if (i.value === 'other') {
+   reportOtherInput.classList.remove('visually-hidden');
+   reportOtherInput.focus();
    reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
   } else {
+   reportOtherInput.classList.add('visually-hidden');
    reportCommentButton.disabled = !acceptTruth.checked;
   }
  });
+}
 
- let reportType;
- for (const i of reportCommentModal.querySelectorAll('input[type="radio"]')) {
-  i.addEventListener('change', () => {
-   reportCommentModal.querySelectorAll(`input[type="radio"]:checked:not([value="${i.value}"])`).forEach(j => { j.checked = false; });
-   reportType = i.value;
-   if (i.value === 'other') {
-    reportOtherInput.classList.remove('visually-hidden');
-    reportOtherInput.focus();
-    reportCommentButton.disabled = reportOtherInput.value.length === 0 || !acceptTruth.checked;
-   } else {
-    reportOtherInput.classList.add('visually-hidden');
-    reportCommentButton.disabled = !acceptTruth.checked;
-   }
-  });
- }
-
- const reportUserCheckbox = reportCommentModal.querySelector('#report-user');
- reportUserCheckbox.addEventListener('change', () => {
-  reportContentType.innerHTML = reportUserCheckbox.checked ? 'user? 👤' : 'comment thread? 💬';
- });
+const reportUserCheckbox = reportCommentModal.querySelector('#report-user');
+reportUserCheckbox.addEventListener('change', () => {
+ reportContentType.innerHTML = reportUserCheckbox.checked ? 'user? 👤' : 'comment thread? 💬';
+});
 
 // bunkerConnectButton.addEventListener('click', () => {
 //  const bunkerConnectButton = nostrExtensionNotFoundModal.querySelector('#bunkerConnectButton');
@@ -317,98 +316,103 @@ import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
 //  // TODO: if user tries to enter nsec - show warning, disable Connect button
 // });
 
- loginModal.querySelector('#accept-rules-checkbox').addEventListener('change', function() {
-   loginButton.disabled = !this.checked;
+loginModal.querySelector('#accept-rules-checkbox').addEventListener('change', function() {
+ loginButton.disabled = !this.checked;
+});
+
+loginModal.addEventListener('hidden.bs.modal', _ => {
+ loginModal.querySelectorAll('.modal-body input[type="checkbox"]').forEach(function (checkbox) {
+  checkbox.checked = true;
+ });
+});
+
+async function modalDialog(dialog, submitButton) {
+ const modal = new bootstrap.Modal(dialog);
+ modal.show();
+
+ const controller = new AbortController();
+ await new Promise(resolve => {
+  const options = {'once': true, 'signal': controller.signal};
+  if (submitButton) {
+    submitButton.addEventListener('click', resolve, options);
+  }
+  dialog.addEventListener('hidden.bs.modal', () => {
+   controller.abort();
+   resolve();
+  }, options);
  });
 
- loginModal.addEventListener('hidden.bs.modal', _ => {
-   loginModal.querySelectorAll('.modal-body input[type="checkbox"]').forEach(function (checkbox) {
-     checkbox.checked = true;
-   });
- });
+ return !controller.signal.aborted;
+}
 
- async function modalDialog(dialog, submitButton) {
-  const modal = new bootstrap.Modal(dialog);
-  modal.show();
+const style = document.createElement('style');
+style.innerHTML = 'code { font-family: "Iosevka Term SS08 Web", Monaco, Consolas, "Lucida Console", monospace }';
+document.querySelector('zap-threads').shadowRoot.appendChild(style);
 
-  const controller = new AbortController();
-  await new Promise(resolve => {
-   const options = {'once': true, 'signal': controller.signal};
-   if (submitButton) {
-     submitButton.addEventListener('click', resolve, options);
+ZapThreads
+ .onLogin(async ({ knownUser }) => {
+  if (!window.nostr) {
+   new bootstrap.Modal(nostrExtensionNotFoundModal).show();
+   return { accepted: false };
+  }
+
+  if (knownUser) return { accepted: true };
+
+  return {
+   accepted: await modalDialog(loginModal, loginButton),
+   autoLogin: loginModal.querySelector('#remember-me-checkbox').checked,
+  };
+ })
+ .onEvent(sanitizeEvent)
+ .onPublish(async ({ relays }) => {
+  if (relays.length === 0) {
+   await modalDialog(relaysNotFoundModal);
+  }
+  return { accepted: true, concurrent: browser !== 'Safari' }
+ })
+ .onRemove(async ({}) => {
+  return { accepted: await modalDialog(removeCommentModal, removeCommentButton) };
+ })
+ .onReport(async ({}) => {
+  const accepted = await modalDialog(reportCommentModal, reportCommentButton);
+  if (!accepted || reportType === undefined) return { accepted };
+
+  let reason = '';
+  let type = reportType;
+  if (reportType === 'off-topic' || reportType === 'language') {
+   type = 'other';
+   if (reportType === 'language') {
+    reason = 'Language is different than in blogpost';
+   } else if (reportType === 'off-topic') {
+    reason = 'Off-topic';
+   } else {
+    reason = reportType;
    }
-   dialog.addEventListener('hidden.bs.modal', () => {
-    controller.abort();
-    resolve();
-   }, options);
-  });
+  } else if (reportType === 'other') {
+   reason = reportOtherInput.value;
+  }
 
-  return !controller.signal.aborted;
- }
-
- ZapThreads
-  .onLogin(async ({ knownUser }) => {
-    if (!window.nostr) {
-     new bootstrap.Modal(nostrExtensionNotFoundModal).show();
-     return { accepted: false };
-    }
-
-    if (knownUser) return { accepted: true };
-
-    return {
-     accepted: await modalDialog(loginModal, loginButton),
-     autoLogin: loginModal.querySelector('#remember-me-checkbox').checked,
-    };
-  })
-  .onEvent(sanitizeEvent)
-  .onPublish(async ({ relays }) => {
-    if (relays.length === 0) {
-      await modalDialog(relaysNotFoundModal);
-    }
-    return { accepted: true }
-  })
-  .onRemove(async ({}) => {
-    return { accepted: await modalDialog(removeCommentModal, removeCommentButton) };
-  })
-  .onReport(async ({}) => {
-    const accepted = await modalDialog(reportCommentModal, reportCommentButton);
-    if (!accepted || reportType === undefined) return { accepted };
-
-    let reason = '';
-    let type = reportType;
-    if (reportType === 'off-topic' || reportType === 'language') {
-     type = 'other';
-     if (reportType === 'language') {
-      reason = 'Language is different than in blogpost';
-     } else if (reportType === 'off-topic') {
-      reason = 'Off-topic';
-     } else {
-      reason = reportType;
-     }
-    } else if (reportType === 'other') {
-     reason = reportOtherInput.value;
-    }
-
-    return {
-     accepted,
-     list: reportUserCheckbox.checked ? 'pubkeys' : 'events',
-     type,
-     reason,
-    };
-  });
+  return {
+   accepted,
+   list: reportUserCheckbox.checked ? 'pubkey' : 'event',
+   type,
+   reason,
+  };
+ })
+ .start();
 </script>
 
 <zap-threads
-  anchor="{% if page.nostr.comments %}{{ page.nostr.comments }}{% else %}{{ page.url | prepend: site.baseurl | prepend: site.url }}{% endif %}"
-  author="{{ site.theme_settings.nostr.npub }}"
-  {%if site.theme_settings.nostr.community %}community="{{ site.theme_settings.nostr.community }}"{% endif %}
-  disable="relayInformation,likes,zaps,singleVoteCounter"
-  language="{{ page.lang }}"
-  client="{{ zapthreads_client }}"
-  max-comment-length="{{ site.theme_settings.nostr.max_comment_length }}"
-  min-read-pow="{% if page.nostr.min_read_pow %}{{ page.nostr.min_read_pow }}{% else %}{{ site.theme_settings.nostr.min_read_pow }}{% endif %}"
-  max-write-pow="{% if page.nostr.max_write_pow %}{{ page.nostr.max_write_pow }}{% else %}{{ site.theme_settings.nostr.max_write_pow }}{% endif %}"
-  relays="{{ site.theme_settings.nostr.relays | concat: site.theme_settings.nostr.read_cache_relays | join: ',' }}"
-></zap-threads>
+ anchor="{% if page.nostr.comments %}{{ page.nostr.comments }}{% else %}{{ page.url | prepend: site.baseurl | prepend: site.url }}{% endif %}"
+ author="{{ site.theme_settings.nostr.npub }}"
+ {%if site.theme_settings.nostr.community %}community="{{ site.theme_settings.nostr.community }}"{% endif %}
+ disable="relayInformation,likes,zaps,singleVoteCounter"
+ language="{{ page.lang }}"
+ client="{{ zapthreads_client }}"
+ max-comment-length="{{ site.theme_settings.nostr.max_comment_length }}"
+ min-read-pow="{% if page.nostr.min_read_pow %}{{ page.nostr.min_read_pow }}{% else %}{{ site.theme_settings.nostr.min_read_pow }}{% endif %}"
+ max-write-pow="{% if page.nostr.max_write_pow %}{{ page.nostr.max_write_pow }}{% else %}{{ site.theme_settings.nostr.max_write_pow }}{% endif %}"
+ relays="{{ site.theme_settings.nostr.relays | concat: site.theme_settings.nostr.read_cache_relays | join: ',' }}">
+</zap-threads>
 
 <noscript><div style="text-align: center">This <a href="https://github.com/codonaft/codonaft.github.io#readme" rel="noopener noreferrer" target="_blank">website</a> uses <a href="https://github.com/codonaft/zapthreads-codonaft#readme" rel="noopener noreferrer" target="_blank">zapthreads</a>—a FOSS commenting system built on Nostr. {{ page.str.javascript_required_comments }}</div></noscript>

@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+[ -f /etc/init.d/aquatic_ws ] && [ -d /var/www ] && \
+  inotifywait --event close_write,moved_to,create --monitor --recursive /etc/aquatic/ /etc/init.d/ /var/www/ |
+    while read -r directory events filename ; do
+      if [[ "${filename}" == "aquatic_ws.conf" || "${filename}" == "aquatic_ws" || "${filename}" == *".m3u8" ]] ; then
+        rc-service --ifstarted aquatic_ws reload 2>>/dev/stdout | logger
+      fi
+    done &

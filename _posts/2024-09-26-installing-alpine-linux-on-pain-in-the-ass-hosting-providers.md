@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Installing <span class='no-wrap'>Alpine Linux</span> from another <span class='no-wrap'>preinstalled GNU/Linux distro</span>"
+title: "Installing <span class='no-wrap'>Alpine Linux</span> from another preinstalled <span class='no-wrap'>GNU/Linux distro</span>"
 feature-img: "assets/img/alpine-install-vps.svg"
 thumbnail: "assets/img/alpine-install-vps-thumbnail.svg"
 date: "2024-09-26 00:00:00 +0000"
@@ -121,4 +121,4 @@ Please let me know in the comments below if you are aware of any VPS hosting pro
 - competitive price
     - with no hidden additional charges (like for traffic overuse, etc.)
 
-Yes, it's still relevant, in whatever century you're reading this article. Thank you a lot! ❤️
+Yes, it's still relevant, in whatever century you're reading this article. <span class='no-wrap'>Thank you a lot! ❤️</span>

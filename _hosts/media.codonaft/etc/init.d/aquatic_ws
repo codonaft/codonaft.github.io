@@ -1,0 +1,60 @@
+#!/sbin/openrc-run
+
+CONFIG_FILE="/etc/aquatic/aquatic_ws.conf"
+
+name="aquatic_ws"
+
+command="/usr/local/bin/aquatic_ws"
+command_args="--config-file ${CONFIG_FILE}"
+command_user="nobody:nobody"
+command_background="true"
+
+pidfile="/run/aquatic_ws.pid"
+extra_started_commands="reload"
+output_logger="logger"
+error_logger="logger"
+
+rc_ulimit="-l 131072" # required by io_uring
+
+depend() {
+	need net
+	use logger
+}
+
+reload() {
+	ebegin "Refreshing ${name}'s configuration"
+	update_access_list
+	start-stop-daemon --signal SIGUSR1 --pidfile "${pidfile}"
+	eend $? "Failed to reload ${name}"
+}
+
+start_pre() {
+	update_access_list
+}
+
+update_access_list() {
+	# https://github.com/Novage/p2p-media-loader/blob/4afd08556835011af9e575d7797583348f1211d0/packages/p2p-media-loader-core/src/utils/stream.ts#L27
+	# https://github.com/Novage/p2p-media-loader/blob/fe59c09e8226687f0478836becdaf2bbb39c10ba/packages/p2p-media-loader-core/src/utils/peer.ts#L12
+	python -c "
+from glob import glob
+import base64, hashlib, os, tempfile, tomllib
+
+location = '/var/www/'
+config = tomllib.load(open('${CONFIG_FILE}', 'rb'))
+output = config['access_list']['path']
+with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode='wt') as temp:
+	for i in glob('%s/*/*/main.m3u8' % location):
+		def write_hashes(n, stream_type):
+			for index in range(n):
+				stream_swarm_id = b'v2-https://%s-%s-%d' % (i.replace(location, '').encode('utf-8'), stream_type, index)
+				item = base64.b64encode(hashlib.md5(stream_swarm_id).digest()[1:]).hex()
+				temp.write(item + '\\n')
+		parent_dir = os.path.dirname(i)
+		main_streams = glob('%s/*/video.m3u8' % parent_dir)
+		secondary_streams = glob('%s/*/audio.m3u8' % parent_dir)
+		write_hashes(len(main_streams), b'main')
+		write_hashes(len(secondary_streams), b'secondary')
+	temp.close()
+	os.chmod(temp.name, 0o644)
+	os.replace(temp.name, output)"
+}
