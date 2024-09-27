@@ -51,3 +51,9 @@ layout: default
   </div>
   {% endif %}
 </div>
+
+{% if site.theme_settings.zapthreads %}
+<div style="display: none">
+{% include zapthreads.html %}
+</div>
+{% endif %}
