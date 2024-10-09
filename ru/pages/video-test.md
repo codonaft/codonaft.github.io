@@ -1,7 +1,6 @@
 ---
 layout: test
 permalink: /ru/video-test/
-p2p_player: true
 hidden: true
 ---
 
