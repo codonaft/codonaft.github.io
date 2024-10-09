@@ -8,7 +8,7 @@ DEBUG="$1"
 shift
 
 script_dir=$(realpath $(dirname "$0"))
-cd "${script_dir}/.."
+cd "${script_dir}/../.."
 
 which css-minify >>/dev/null || exit 1
 which uglifyjs >>/dev/null || exit 1
@@ -26,7 +26,7 @@ if [[ "${DEBUG}" -eq 1 ]] ; then
 else
     echo 'RELEASE'
     compress_options="${compress_options},drop_console"
-    _scripts/prepare.sh
+    _ci/prepare.sh
 fi
 
 css-minify --dir assets/css/vendor/ --output assets/css/vendor/ &
@@ -40,7 +40,7 @@ find assets/js/partials -type f -name '*.js' -print0 | \
       --compress "${compress_options}" \
       --output assets/js/main.min.js &
 
-for i in $(find assets/js/vendor -name '*.js' -not -name '*.min.js') ; do
+for i in $(find assets/js/vendor -name '*.js' -not -name '*.min.js' | grep -v vidstack-player) ; do
     uglifyjs \
       "$i" \
       --validate \
