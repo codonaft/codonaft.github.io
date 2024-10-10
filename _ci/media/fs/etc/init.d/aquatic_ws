@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="aquatic_ws"
+
+command="/usr/local/bin/aquatic_ws"
+command_args="--config-file /etc/aquatic_ws.conf"
+command_user="nobody:nobody"
+command_background="true"
+
+pidfile="/run/aquatic_ws.pid"
+extra_started_commands="reload"
+output_logger="logger"
+error_logger="logger"
+
+rc_ulimit="-l 131072" # required by io_uring
+
+depend() {
+	need net
+	use logger
+}
+
+reload() {
+	ebegin "Refreshing ${name}'s configuration"
+	start-stop-daemon --signal SIGUSR1  --pidfile "${pidfile}"
+	eend $? "Failed to reload ${name}"
+}
