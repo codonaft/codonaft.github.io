@@ -5,7 +5,8 @@ import '/assets/js/vendor/vidstack-player/vidstack.js';
 const ICE_SERVERS_KEY = 'iceServers';
 const ICE_SERVERS_LIMIT = 2;
 //const DEFAULT_ICE_SERVERS = ['stun:stun.framasoft.org', 'stun:stun.l.google.com:19302', 'stun:stun.tula.nu', 'stun:stun.nextcloud.com', 'stun:stun.imp.ch', 'stun:stunserver2024.stunprotocol.org', 'stun:stun.hot-chilli.net', 'stun:stun.axialys.net', 'stun:stun.vomessen.de', 'stun:stun.streamnow.ch', 'stun:stun.antisip.com', 'stun:stun.cloudflare.com:3478']
-const DEFAULT_ICE_SERVERS = ['stun:stun.axialys.net', 'stun:stun.hot-chilli.net'];
+//const DEFAULT_ICE_SERVERS = ['stun:stun.axialys.net', 'stun:stun.hot-chilli.net'];
+const DEFAULT_ICE_SERVERS = ['stun:stun.framasoft.org', 'stun:stun.l.google.com:19302'];
 
 const isValidURI = url => {
  try {
@@ -122,16 +123,29 @@ const initializePlayer = player => {
      },
      onHlsJsCreated: (hls) => {
       hls.p2pEngine.addEventListener('onPeerConnect', (params) => {
-       pageLog('Peer connected:', params.peerId);
+       pageLog('Peer connected:' + params.peerId);
+      });
+      hls.p2pEngine.addEventListener('onPeerError', (params) => {
+       pageLog('Peer error:' + params.peerId);
       });
       hls.p2pEngine.addEventListener('onPeerClose', (params) => {
-       pageLog('Peer disconnected:', params.peerId);
+       pageLog('Peer disconnected:' + params.peerId);
+      });
+      hls.p2pEngine.addEventListener('onChunkDownloaded', (bytesLength, downloadSource, peerId) => {
+       if (peerId) {
+        pageLog('Peer download:' + bytesLength + ' ' + peerId + ' ' + downloadSource);
+       }
+      });
+      hls.p2pEngine.addEventListener('onChunkUploaded', (bytesLength, peerId) => {
+       pageLog('Peer UPdownload:' + bytesLength + ' ' + peerId);
       });
       hls.p2pEngine.addEventListener('onSegmentLoaded', (params) => {
-       pageLog('Segment loaded:', params);
+       if (params.peerId) {
+         pageLog('P2P Segment loaded:' + params.bytesLength);
+       }
       });
       hls.p2pEngine.addEventListener('onSegmentError', (params) => {
-       pageLog('Error loading segment:', params);
+       pageLog('ERROR loading segment:' + JSON.stringify(params));
       });
 
       hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
