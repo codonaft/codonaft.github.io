@@ -22,7 +22,7 @@ defaults:
         share: Please share, follow and all this!
         fix_typo: Fix typo
         support_other_ways: Support me in other ways
-        share_or_support_other_ways: Like what I do?<br>Please share with friends<br>or support me in other ways!
+        share_or_support_other_ways: Like what I do?<br>Your support keeps me going!
         read_more: Read more &rightarrow;
         share_on: Share on
         add_to: Add to
@@ -44,7 +44,7 @@ defaults:
         share: Поделись находкой с друзьями!
         fix_typo: Исправить опечатку
         support_other_ways: Поддержать меня другими способами
-        share_or_support_other_ways: Нравится то, что я делаю?<br>Буду рад репосту и другой поддержке!
+        share_or_support_other_ways: Нравится то, что я делаю?<br>Буду рад твоей поддержке!
         read_more: Читать дальше &rightarrow;
         share_on: Поделиться на
         add_to: Add to
@@ -148,8 +148,8 @@ theme_settings:
     media_url: https://media.codonaft.com
     trackers:
     - wss://media.codonaft.com/announce
-    - wss://tracker.openwebtorrent.com
-    #- wss://tracker.webtorrent.dev
+    - wss://tracker.webtorrent.dev
+    #- wss://tracker.openwebtorrent.com
     ice_servers:
     - stun:stun.framasoft.org
     - stun:stun.l.google.com:19302

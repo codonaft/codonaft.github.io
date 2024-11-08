@@ -4,13 +4,18 @@
 # _hosts and _ohmyvps are two-directionally synchronizable
 
 require "colorize"
+require "digest/sha256"
 require "file_utils"
 require "ini"
 require "json"
 require "uri"
 require "yaml"
 
-DEBUG = ARGV.empty? || !["prod", "health"].includes?(ARGV[0])
+DEBUG = ARGV.empty? || !["sync", "deploy", "health"].includes?(ARGV[0])
+TRACE = ENV["TRACE"]? == "1"
+
+DEBUG_HOST = "localhost"
+# DEBUG_HOST = "0.0.0.0"
 
 MEDIA_HOST  = "media.codonaft"
 MIRROR_HOST = "mirror.codonaft"
@@ -24,12 +29,17 @@ BINDGEN_VERSION          = "0.70.1"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 FRANC_VERSION            = "6.2.0"
 HLS_VERSION              = "1.5.15"
+MEDIA_CAPTIONS_VERSION   = "1.0.4"
+MEDIA_ICONS_VERSION      = "1.1.5"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
 CODEC_H264 = "avc1.64002a"
 CODEC_OPUS = "opus"
 CODEC_AAC  = "mp4a.40.2"
+
+# OPUS_BITRATE_KBPS = 510
+OPUS_BITRATE_KBPS = 256
 
 BANDWIDTH_MB_PER_SEC = 20
 IGNORE_WSS           = ["personal.tracker.com", "tracker.novage.com.ua"]
@@ -48,11 +58,17 @@ def main
   config = YAML.parse(File.read("_config.yml"))
   if !ARGV.empty? && (ARGV.includes?("-h") || ARGV.includes?("--help"))
     usage
-  elsif ARGV.size > 2 && ARGV[0] == "encode"
-    encode_media(ARGV[1], config, ARGV[2])
+  elsif ARGV.size == 1 && ARGV[0] == "sync"
+    check
+    sync
   elsif ARGV.size == 1 && ARGV[0] == "health"
+    check
     health(config)
-  elsif ARGV.empty? || ARGV[0] == "prod"
+  elsif ARGV.size > 2 && ARGV[0] == "encode"
+    check
+    encode_media(ARGV[1], config, ARGV[2])
+  elsif ARGV.empty? || ["debug", "deploy"].includes?(ARGV[0])
+    check
     deploy_and_serve(config)
   else
     usage
@@ -61,33 +77,45 @@ end
 
 def usage
   script = Path["./"].join(Path.new(__FILE__).relative_to(Dir.current))
-  puts(<<-STRING
-          usage:
-            #{script}
-              build, serve jekyll in debug mode locally
-            #{script} prod
-              build, deploy to prod, run health checks, serve jekyll in release mode locally
-            #{script} encode path/to/video-name.mkv <en|ru>
-              encode media to HLS and put it to #{MEDIA_BUILD_DIR}/video-name/
-            #{script} encode https://youtu.be/CB9bS46vl04 <en|ru>
-              download media, encode it to HLS and put it to #{MEDIA_BUILD_DIR}/CB9bS46vl04/
-            #{script} health
-              run health checks
-          STRING
+  puts(
+    <<-STRING
+       usage:
+
+       #{script} [debug]
+         build, serve jekyll in debug mode locally
+
+       #{script} deploy
+         update, build, sync and deploy to PROD
+           without pushing to the git repos
+         run health checks
+         serve jekyll in release mode locally
+
+       #{script} sync
+         sync to PROD
+           download newest non-conflicting versioned files to _ohmyvps and _hosts
+           upload newest files from _ohmyvps, _hosts and .build
+
+       #{script} health
+         run health checks
+
+       #{script} encode path/to/video-name.mkv <en|ru>
+       #{script} encode https://youtu.be/CB9bS46vl04 <en|ru>
+         encode (or download and transcode) media to HLS, put it to #{MEDIA_BUILD_DIR}/video-name/
+         supported media is 1080p60 + yuv420p + bt709
+
+       use TRACE=1 env variable for more messages
+       STRING
   )
   exit 1
 end
 
 def deploy_and_serve(config)
-  check
   update
   build
   sync
   start
   health(config)
-
-  serve("localhost")
-  # serve("0.0.0.0")
+  serve(DEBUG_HOST)
 end
 
 def build
@@ -95,7 +123,7 @@ def build
   Dir.mkdir_p(CACHE_DIR, 0o755)
   build_vidstack_player
   build_zapthreads
-  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"])
+  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"]) unless DEBUG
   build_aquatic(MEDIA_HOST)
 end
 
@@ -105,13 +133,14 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "nginx"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "nginx"])
+  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "local", "nginx"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
   step("encode")
-  header = ["#EXTM3U", "#EXT-X-VERSION:6", "#EXT-X-INDEPENDENT-SEGMENTS"]
+  Dir.mkdir_p(CACHE_DIR, 0o755)
+  header = ["#EXTM3U", "#EXT-X-VERSION:7", "#EXT-X-INDEPENDENT-SEGMENTS"]
   audio, video =
     if input.starts_with?("https://")
       url = URI.parse(input)
@@ -125,6 +154,7 @@ def encode_media(input : String, config : YAML::Any, language : String)
       ]
     else
       raw_media = Path[input]
+      raise "non-empty file #{raw_media} not found" unless nonempty_exists?(raw_media)
       duration = get_duration(raw_media).not_nil!
       name = raw_media.basename.split('.')[..1][0]
       output_dir = MEDIA_BUILD_DIR.join(name)
@@ -132,21 +162,22 @@ def encode_media(input : String, config : YAML::Any, language : String)
       [encode_audio(raw_media, duration, output_dir), encode_video(raw_media, duration, config, output_dir)]
     end
 
-  audio_items = audio.map { |item|
+  audio_items = audio.map_with_index { |item, index|
     codec, playlist, tracks = item.not_nil!
+    default = index == 0 ? "YES" : "NO"
     [
       "#EXT-X-MEDIA:TYPE=AUDIO",
       "GROUP-ID=\"#{codec}\"",
       "NAME=\"#{language}\"",
       "LANGUAGE=\"#{language}\"",
-      "AUTOSELECT=YES",
-      "DEFAULT=YES",
+      "AUTOSELECT=#{default}",
+      "DEFAULT=#{default}",
       "CHANNELS=\"2\"",
       "URI=\"#{playlist}\"",
     ].join(',')
-  }
+  }.reverse # iOS stucks when opus is the first playlist item
 
-  video_items = video.cartesian_product(audio).flat_map do |video, audio|
+  video_items = video.cartesian_product(audio).map do |video, audio|
     video_codec, video_playlist, video_tracks, video_duration = video.not_nil!
     audio_codec, _, audio_tracks, audio_duration = audio.not_nil!
     duration = [video_duration, audio_duration]
@@ -164,15 +195,21 @@ def encode_media(input : String, config : YAML::Any, language : String)
     ].join(',')
     [item, video_playlist]
   end
+    .reverse # iOS stucks when opus is the first playlist item
+    .flatten
 
   File.write(output_dir.join("main.m3u8"), (header + audio_items + video_items).join('\n'))
+  system("find #{output_dir} -type f -print0 | xargs -0 sha256sum > #{output_dir.join("sha256sum.txt")}")
 end
 
 def update
   step("update")
   system(<<-STRING
     set -eu
+    #{TRACE ? "set -x" : ""}
     #{update_fonts}
+    #{update_media_icons}
+    #{update_media_captions}
     #{update_hls}
     #{update_p2p_media_loader}
     #{update_franc}
@@ -190,7 +227,7 @@ def sync
 
   puts("running sanity checks")
   [COMMON_ROOT, HOSTS_DIR].each do |dir|
-    raise "Uncommited changes in #{dir}" if `git -C #{dir} status --porcelain .`.starts_with?(" M ")
+    raise "uncommited changes in #{dir}" if `git -C #{dir} status --porcelain .`.starts_with?(" M ")
   end
 
   unless Dir.exists?("_ohmyvps")
@@ -207,16 +244,17 @@ def sync
   puts("hosts: #{hosts}")
   check_time(hosts)
 
-  common_files = `git -C #{COMMON_ROOT} ls-files`
-    .split('\n')
-    .reject { |i| i.empty? }
-    .map { |i| Path[i] }
-    .to_set
+  common_files = git_ls(COMMON_ROOT)
+  hosts_files : Hash(String, Set(Path)) = hosts.map { |host|
+    host_dir = HOSTS_DIR.join(host)
+    files = git_ls(host_dir)
+    {host, files}
+  }.to_h
 
   hosts.map { |host|
     done = Channel(Nil).new
     spawn do
-      sync_host(host, common_files)
+      sync_host(host, hosts_files, common_files)
       done.send(nil)
     end
     done
@@ -225,19 +263,21 @@ def sync
   ok("sync finished")
 end
 
-def sync_host(host : String, common_files : Set(Path))
-  host_dir = HOSTS_DIR.join(host)
-  host_files = `git -C #{host_dir} ls-files`
-    .split('\n')
-    .reject { |i| i.empty? }
-    .map { |i| Path[i] }
+def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files : Set(Path))
+  host_files : Set(Path) = hosts_files[host]
+  all_hosts_files : Set(Path) = hosts_files
+    .flat_map { |_, files| files.to_a }
     .to_set
-  two_way_sync(host, COMMON_ROOT, common_files - host_files)
-  two_way_sync(host, host_dir, host_files)
+
+  # puts "all_hosts_files = #{all_hosts_files}\n\n\ncommon_files = #{common_files}\n\n\n"
+
+  host_dir = HOSTS_DIR.join(host)
+  filtered_sync(host, COMMON_ROOT, download: common_files - all_hosts_files, upload: common_files - host_files)
+  filtered_sync(host, host_dir, two_way: host_files)
 
   host_build_dir = BUILD_DIR.join(host)
-  host_build_files = children_recursive(host_build_dir)
-  two_way_sync(host, host_build_dir, host_build_files) # TODO: one way with --delete specifically for jekyll ?
+  host_build_files = children_recursive(host_build_dir).to_set
+  filtered_sync(host, host_build_dir, upload: host_build_files) # TODO: with --delete specifically for jekyll ?
 
   system("ssh #{host} -- sudo etckeeper commit sync 2>>/dev/null")
 end
@@ -377,7 +417,7 @@ def update_banlists
     .map { |i| i.strip }
     .reject { |i| i.empty? }
     .to_set
-  raise "banlists fetch failed" if result.empty?
+  raise "banlists fetch failure" if result.empty?
   File.write(BANLISTS, result.join('\n'))
   result
 end
@@ -391,18 +431,13 @@ def check
                                              .select { |i| i.includes?("crystal") && i.includes?(__FILE__) }
                                              .any? { |i| i.split(' ')[0].to_i != Process.pid }
 
-  if DEBUG
-    warn("DEBUG")
-  else
-    ok("PROD")
-  end
-
   puts("checking dependencies")
   system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
   raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && emerge '=app-arch/libarchive-3.7.6' '=app-arch/unzip-6.0_p27-r1' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.14.0' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-23.10' '=net-dns/bind-tools-9.16.50' '=net-libs/nodejs-22.4.1-r1' '=net-misc/rsync-3.3.0-r1' '=net-misc/wget-1.24.5' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
 
   system(<<-STRING
     set -euo pipefail
+    #{TRACE ? "set -x" : ""}
     for i in $(grep --recursive vim:nofixendofline _includes | cut -d ':' -f1) ; do
       if [[ $(wc --lines "$i" | awk '{print $1}') -ne 0 ]] ; then
         echo "unexpected newline in $i"
@@ -412,6 +447,12 @@ def check
     STRING
   )
   raise "file format failure" unless $?.success?
+
+  if DEBUG
+    warn("DEBUG")
+  else
+    ok("PROD")
+  end
 end
 
 def build_aquatic(host : String)
@@ -451,12 +492,13 @@ def build_vidstack_player
     cd _vidstack-player
     pnpm install
     pnpm build:vidstack
-    killall turbo
+    killall turbo || :
     rsync -a -v --delete packages/vidstack/dist-npm/cdn/with-layouts/ ../assets/js/vendor/vidstack-player/
     mkdir -p ../assets/css/vendor/vidstack-player
     cp -v packages/vidstack/dist-npm/player/styles/default/{theme.css,layouts/video.css} ../assets/css/vendor/vidstack-player/
   STRING
   )
+  raise "vidstack build failure" unless $?.success?
 end
 
 def build_zapthreads
@@ -468,6 +510,7 @@ def build_zapthreads
     mv dist/zapthreads.iife.js ../assets/js/vendor/
   STRING
   )
+  raise "zapthreads build failure" unless $?.success?
 end
 
 def build_jekyll(host : String, *, destination : Path)
@@ -479,6 +522,7 @@ def build_jekyll(host : String, *, destination : Path)
   # end
   Dir.mkdir_p(output_dir, 0o755)
   system("bundle exec jekyll build --future --destination #{output_dir}")
+  raise "jekyll build failure" unless $?.success?
 end
 
 def prepare_jekyll
@@ -492,6 +536,7 @@ def prepare_jekyll
       bundle install
     STRING
     )
+    raise "initial prepare_jekyll failure" unless $?.success?
   end
 
   compress_options = "pure_getters"
@@ -499,6 +544,7 @@ def prepare_jekyll
 
   system(<<-STRING
     set -euo pipefail
+    #{TRACE ? "set -x" : ""}
 
     css-minify --dir assets/css/vendor/ --output assets/css/vendor/ &
 
@@ -511,7 +557,7 @@ def prepare_jekyll
         --compress "#{compress_options}" \
         --output assets/js/main.min.js &
 
-    for i in $(find assets/js/vendor -name '*.js' -not -name '*.min.js' | grep -vE '/(vidstack-player|zapthreads|hls)') ; do
+    for i in $(find assets/js/vendor -name '*.js' -not -name '*.min.js' | grep -vE '/(vidstack-player|media-icons|media-captions|zapthreads|hls|p2p-media-loader)') ; do
       uglifyjs \
         "$i" \
         --validate \
@@ -523,6 +569,7 @@ def prepare_jekyll
     wait
   STRING
   )
+  raise "prepare_jekyll failure" unless $?.success?
 end
 
 def update_franc
@@ -558,15 +605,31 @@ def update_p2p_media_loader
   # https://www.jsdelivr.com/package/npm/p2p-media-loader-hlsjs?tab=files&path=dist
   <<-STRING
     for pack in core hlsjs ; do
-      #for i in "p2p-media-loader-${pack}.es.js"{,.map} ; do
-      for i in "p2p-media-loader-${pack}.es.js" ; do
+      for i in "p2p-media-loader-${pack}.es.min.js"{,.map} ; do
         dest="$i"
-        #if [[ "$i" == *.min.js ]]; then
-        #  dest="${i%.min.js}.js"
-        #fi
         wget -q "https://cdn.jsdelivr.net/npm/p2p-media-loader-${pack}@#{P2P_MEDIA_LOADER_VERSION}/dist/$i" -O "assets/js/vendor/${dest}" &
       done
     done
+  STRING
+end
+
+def update_media_icons
+  <<-STRING
+     for i in {lazy.min,icons/{accessibility,add-note,add-playlist,add-user,add,airplay,arrow-collapse-in,arrow-collapse,arrow-down,arrow-expand-out,arrow-expand,arrow-left,arrow-right,arrow-up,bookmark,camera,chapters,chat-collapse,chat,check,chevron-down,chevron-left,chevron-right,chevron-up,chromecast,clip,closed-captions-on,closed-captions,comment,computer,device,download,episodes,eye,fast-backward,fast-forward,flag,fullscreen-arrow-exit,fullscreen-arrow,fullscreen-exit,fullscreen,heart,info,language,link,lock-closed,lock-open,menu-horizontal,menu-vertical,microphone,mobile,moon,music-off,music,mute,next,no-eye,notification,odometer,pause,picture-in-picture-exit,picture-in-picture,play,playback-speed-circle,playlist,previous,question-mark,queue-list,radio-button-selected,radio-button,repeat-on,repeat-square-on,repeat-square,repeat,replay,rotate,search,seek-backward-10,seek-backward-15,seek-backward-30,seek-backward,seek-forward-10,seek-forward-15,seek-forward-30,seek-forward,send,settings-menu,settings-switch,settings,share-arrow,share,shuffle-on,shuffle,stop,subtitles,sun,theatre-mode-exit,theatre-mode,thumbs-down,thumbs-up,timer,transcript,tv,user,volume-high,volume-low,x-mark}}.js ; do
+       wget -q "https://cdn.jsdelivr.net/npm/media-icons@#{MEDIA_ICONS_VERSION}/dist/$i" -O "assets/js/vendor/media-icons/$i" &
+     done
+  STRING
+end
+
+def update_media_captions
+  <<-STRING
+     for i in {prod,prod/{errors,index,srt-parser,ssa-parser}.min}.js ; do
+       dest="$i"
+       if [[ "$i" == *.min.js ]]; then
+         dest="${i%.min.js}.js"
+       fi
+       wget -q "https://cdn.jsdelivr.net/npm/media-captions@#{MEDIA_CAPTIONS_VERSION}/dist/$i" -O "assets/js/vendor/media-captions/${dest}" &
+     done
   STRING
 end
 
@@ -591,25 +654,65 @@ def update_fonts
   STRING
 end
 
-def rsync(source_dir : Path, files : Array(Path), args : Array(String))
-  files_from = CACHE_DIR.join("sync-#{source_dir.to_s.gsub('/', '_')}.txt")
+def filtered_sync(host : String, local_dir : Path, *,
+                  two_way : Set(Path) = Set(Path).new,
+                  download : Set(Path) = Set(Path).new,
+                  upload : Set(Path) = Set(Path).new)
+  download_files = (two_way + download).select { |i| synchronizable(i) }
+  upload_files = (two_way + upload).select { |i| synchronizable(i) }
+  return if (download_files.empty? && upload_files.empty?) || !Dir.exists?(local_dir)
+
+  trace(<<-STRING
+          filtered_sync host=#{host} local_dir=#{local_dir}
+            download:
+              #{download_files.join("\n    ")}
+            upload:
+              #{upload_files.join("\n    ")}\n\n
+          STRING
+  )
+
+  rsync(local_dir, download_files, ["#{host}:/", "./"])
+  rsync(local_dir, upload_files, ["./", "#{host}:/"])
+end
+
+def synchronizable(path : Path)
+  dir = path.parts[0]
+  dir != "home" && path != Path["etc/conf.d/nginx"]
+end
+
+def rsync(source_dir : Path, files : Enumerable(Path), args : Enumerable(String))
+  hashsum = Digest::SHA256.new.update((files + args).join.to_slice).hexfinal
+  files_from = CACHE_DIR.join("sync-#{source_dir.to_s.gsub('/', '_')}.#{hashsum}.txt")
   File.write(files_from, files.join('\n'))
-  system("cd #{source_dir} && rsync --rsync-path='sudo /usr/bin/rsync' --bwlimit=#{BANDWIDTH_MB_PER_SEC}m --archive --no-perms --no-group --no-owner --chmod=go-w --itemize-changes --update --checksum --compress --sparse --files-from=#{File.expand_path(files_from)} #{Process.quote(args)}")
+  system(
+    <<-STRING
+       set -euo pipefail
+       #{TRACE ? "set -x" : ""}
+       cd #{source_dir}
+       rsync \
+         --rsync-path='sudo /usr/bin/rsync' \
+         --bwlimit=#{BANDWIDTH_MB_PER_SEC}m \
+         --archive \
+         --no-perms \
+         --no-group \
+         --no-owner \
+         --chmod=go-w \
+         --itemize-changes \
+         --update \
+         --checksum \
+         --compress \
+         --sparse \
+         --files-from=#{File.expand_path(files_from)} #{Process.quote(args)}
+       STRING
+  )
+  status = $?
+  File.delete(files_from)
+
+  some_attrs_not_transferred = 5888
+  raise "unexpected rsync exit status=#{status.exit_status} source_dir=#{source_dir} args=#{args}" unless status.success? || status.exit_status == some_attrs_not_transferred
 end
 
-def two_way_sync(host : String, local_dir : Path, files : Enumerable(Path))
-  return if files.empty? || !Dir.exists?(local_dir)
-
-  filtered_files = files.reject { |i|
-    dir = i.parts[0]
-    dir == "home" || i == Path["etc/conf.d/nginx"]
-  }
-
-  rsync(local_dir, filtered_files, ["#{host}:/", "./"])
-  rsync(local_dir, filtered_files, ["./", "#{host}:/"])
-end
-
-def check_time(hosts : Array(String))
+def check_time(hosts : Enumerable(String))
   hosts_out_of_sync = hosts
     .map { |host|
       out_of_sync = Channel(Bool).new
@@ -658,11 +761,7 @@ def find_hosts(host : String?) : Array(String)
   (result + [host].to_set).to_a
 end
 
-def maybe_transcode_hls(input : Path | Nil, duration : Float, codec, stream_type, output_dir : Path)
-  return nil unless input
-
-  segment_type = [CODEC_H264, CODEC_AAC].includes?(codec) ? "mpegts" : "fmp4"
-
+def maybe_transcode_hls(input : Path, duration : Float, codec, stream_type, output_dir : Path)
   stream_output_dir = output_dir.join(codec)
   Dir.mkdir_p(stream_output_dir, 0o755)
 
@@ -671,29 +770,24 @@ def maybe_transcode_hls(input : Path | Nil, duration : Float, codec, stream_type
   template = stream_output_dir.join("%08d.ts")
   playlist = stream_output_dir.join(playlist_m3u8)
 
-  system(
+  ffmpeg_encode(
+    input,
+    playlist,
     <<-STRING
-      ffmpeg \
-        -loglevel error \
-        -y \
-        -fflags '+genpts+igndts' \
-        -i '#{input}' \
-        -c copy \
-        -movflags faststart \
-        -pix_fmt yuv420p \
-        -f hls \
-        -g 48 \
-        -keyint_min 48 \
-        -sc_threshold 0 \
-        -hls_time 4 \
-        -hls_playlist_type vod \
-        -hls_segment_type #{segment_type} \
-        -master_pl_name #{temp_playlist_m3u8} \
-        -hls_segment_filename #{template} #{playlist}
-    STRING
+      -c copy \
+      -pix_fmt yuv420p \
+      -f hls \
+      -g 48 \
+      -keyint_min 48 \
+      -sc_threshold 0 \
+      -hls_time 4 \
+      -hls_list_size 0 \
+      -hls_playlist_type vod \
+      -hls_segment_type fmp4 \
+      -master_pl_name #{temp_playlist_m3u8} \
+      -hls_segment_filename #{template}
+      STRING
   )
-
-  raise "failed to transcode #{playlist}" unless $?.success?
 
   codecs_pattern = "CODECS=\""
   temp_playlist = stream_output_dir.join(temp_playlist_m3u8)
@@ -739,24 +833,24 @@ end
 
 def encode_video(input : Path, duration : Float, config : YAML::Any, output_dir : Path)
   storyboard(input, duration, config, output_dir)
-  # [encode_av1(input, duration, output_dir), encode_h264(input, duration, output_dir)] # FIXME: av1 is out of sync
-  [encode_h264(input, duration, output_dir)]
+  [encode_av1(input, duration, output_dir), encode_h264(input, duration, output_dir)]
 end
 
 def encode_av1(input : Path, duration : Float, output_dir : Path)
   temp = CACHE_DIR.join("#{input.basename}_av1.mp4")
-  system("ffmpeg -loglevel error -y -threads #{System.cpu_count} -fflags '+genpts+igndts' -i #{input} -an -vcodec libsvtav1 -b:v 0 -preset 8 -profile main -level 4.1 -g 300 -pix_fmt yuv420p -strict -2 #{temp}")
-  raise "encoding av1 failed" unless $?.success?
+  # profiles 8 and 11 are okay
+  # https://gitlab.com/AOMediaCodec/SVT-AV1/-/blob/63c95718d14d03ef800b70ba35b875a5df9d4ac5/Docs/CommonQuestions.md#what-presets-do
+  ffmpeg_encode(input, temp, "-an -vsync cfr -vcodec libsvtav1 -g 600 -preset 11 -profile main -level 4.1 -pix_fmt yuv420p")
   result = maybe_transcode_hls(temp, duration, CODEC_AV1, "video", output_dir)
   File.delete(temp)
   result
 end
 
 def encode_h264(input : Path, duration : Float, output_dir : Path)
+  # bitrate 1-2M is okay
   codec = CODEC_H264
   temp = CACHE_DIR.join("#{input.basename}_#{codec}.mp4")
-  system("ffmpeg -loglevel error -y -threads #{System.cpu_count} -fflags '+genpts+igndts' -i #{input} -an -vcodec h264_nvenc -profile:v high -level:v 4.2 -b:v 5M -pix_fmt yuv420p -movflags faststart -strict -2 #{temp}")
-  raise "encoding h264 failed" unless $?.success?
+  ffmpeg_encode(input, temp, "-an -vsync cfr -vcodec h264_nvenc -g 600 -b:v 1M -profile:v high -level:v 4.2 -pix_fmt yuv420p")
   result = maybe_transcode_hls(temp, duration, codec, "video", output_dir)
   File.delete(temp)
   result
@@ -766,27 +860,22 @@ def encode_opus(input : Path, duration : Float, output_dir : Path)
   codec = CODEC_OPUS
   temp_opus = CACHE_DIR.join("#{input.basename}.#{codec}")
   temp_flac = Path["#{temp_opus}.flac"]
-  temp_webm = Path["#{temp_opus}.webm"]
-  system(
-    <<-STRING
-       set -euo pipefail
-       ffmpeg -loglevel error -y -fflags '+genpts+igndts' -i #{input} -vn -movflags faststart -strict -2 #{temp_flac}
-       opusenc --quiet --bitrate 510 #{temp_flac} #{temp_opus}
-       ffmpeg -loglevel error -y -fflags '+genpts+igndts' -i #{temp_opus} -c copy -movflags faststart -strict -2 #{temp_webm}
-       STRING
-  )
-  raise "encoding opus failed" unless $?.success?
-  result = maybe_transcode_hls(temp_webm, duration, codec, "audio", output_dir)
-  [temp_opus, temp_flac, temp_webm].each { |i| File.delete(i) }
+  temp_mp4 = Path["#{temp_opus}.mp4"]
+
+  ffmpeg_encode(input, temp_flac, "-vn -acodec flac")
+  system("opusenc --quiet --bitrate #{OPUS_BITRATE_KBPS} #{temp_flac} #{temp_opus}")
+  raise "encoding opus failure" unless $?.success?
+  ffmpeg_encode(temp_opus, temp_mp4, "-vn -c copy")
+
+  result = maybe_transcode_hls(temp_mp4, duration, codec, "audio", output_dir)
+  [temp_opus, temp_flac, temp_mp4].each { |i| File.delete(i) }
   result
 end
 
 def encode_aac(input : Path, duration : Float, output_dir : Path)
   codec = CODEC_AAC
-  temp = CACHE_DIR.join("#{input.basename}_#{codec}.m4a")
-  # system("ffmpeg -loglevel error -y -threads #{System.cpu_count} -fflags '+genpts+igndts' -i #{input} -vn -acodec aac -profile:a lc -b:a 128k -movflags faststart -strict -2 #{temp}")
-  system("ffmpeg -loglevel error -y -threads #{System.cpu_count} -fflags '+genpts+igndts' -i #{input} -vn -acodec libfdk_aac -profile:a aac_low -b:a 128k -movflags faststart -strict -2 #{temp}")
-  raise "encoding aac failed" unless $?.success?
+  temp = CACHE_DIR.join("#{input.basename}_#{codec}.mp4")
+  ffmpeg_encode(input, temp, "-vn -acodec libfdk_aac -profile:a aac_low -b:a 128k")
   result = maybe_transcode_hls(temp, duration, codec, "audio", output_dir)
   File.delete(temp)
   result
@@ -813,19 +902,20 @@ def storyboard(video : Path, duration : Float, config : YAML::Any, output_dir : 
   frame_area = tile_width * tile_height
   max_frames = ((max_size ** 2) / frame_area).to_i
 
-  frames = [(duration / interval_sec).ceil.to_i, max_frames].min
+  frames = [(duration / interval_sec).to_i, max_frames].min
   size = Math.sqrt(frames * frame_area)
   tiles_horizontal = [(size / tile_width).ceil.to_i, max_tiles_horizontal].min
   tiles_vertical = [(frames / tiles_horizontal).ceil.to_i, max_tiles_vertical].min
 
   system(<<-STRING
     set -euo pipefail
-    ffmpeg -loglevel error -y -skip_frame nokey -i #{video} -vf 'fps=1/#{interval_sec},scale=#{tile_width}:#{tile_height}' -an -vsync passthrough #{temp_frame}
+    #{TRACE ? "set -x" : ""}
+    ffmpeg -loglevel error -y -skip_frame nokey -an -i #{video} -vf 'fps=1/#{interval_sec},scale=#{tile_width}:#{tile_height}' -vsync passthrough #{temp_frame}
     ffmpeg -loglevel error -y -framerate 1 -i #{temp_frame} -filter_complex '[0]tile=#{tiles_horizontal}x#{tiles_vertical}' #{temp_result}
     cwebp -quiet -q 60 #{temp_result} -o #{result}
   STRING
   )
-  raise "generating storyboard failed" unless $?.success?
+  raise "generating storyboard failure" unless $?.success?
   FileUtils.mv(result, output_dir.join(result.basename))
   FileUtils.rm_r(temp_dir)
 end
@@ -869,7 +959,15 @@ def transcode_youtube(url : URI, config : YAML::Any, output_dir : Path, stream_t
 
   medias
     .map { |raw_media, formats, codec|
-      maybe_transcode_hls(raw_media, duration, codec, stream_type, output_dir)
+      if raw_media.nil?
+        nil
+      else
+        temp = Path["#{raw_media}.mp4"]
+        ffmpeg_encode(raw_media, temp, "-c copy")
+        result = maybe_transcode_hls(temp, duration, codec, stream_type, output_dir)
+        File.delete(temp)
+        result
+      end
     }
     .reject { |i| i.nil? }
     .map { |i| i.not_nil! }
@@ -894,6 +992,7 @@ def download_youtube_thumbnail(url : URI, output_dir : Path)
   system(
     <<-STRING
     set -euo pipefail
+    #{TRACE ? "set -x" : ""}
     wget -qO #{output} #{webp_url} && exit
     wget -qO #{temp} #{jpeg_url}
     cwebp -quiet -q 90 #{temp} -o #{output}
@@ -902,8 +1001,42 @@ def download_youtube_thumbnail(url : URI, output_dir : Path)
   raise "thumbnail failure" unless $?.success?
 end
 
+def ffmpeg_encode(input : Path, output : Path, args : String)
+  command =
+    <<-STRING
+       ffmpeg \
+         -loglevel error \
+         -y \
+         -threads #{System.cpu_count} \
+         -fflags '+genpts+igndts' \
+         -i #{input} #{args} \
+         -map_metadata -1 \
+         -max_muxing_queue_size 1024 \
+         -shortest \
+         -movflags faststart \
+         -strict -2 #{output}
+       STRING
+  system(command)
+  raise "#{command} failure" unless $?.success?
+end
+
+def git_ls(dir : Path)
+  `git -C #{dir} ls-files`
+    .split('\n')
+    .reject { |i| i.empty? }
+    .map { |i| Path[i] }
+    .to_set
+end
+
 def nonempty_exists?(path : Path)
   File.file?(path) && !File.empty?(path)
+end
+
+def trace(text)
+  return unless TRACE
+  Colorize.with.dark_gray.surround(STDOUT) do
+    puts(text)
+  end
 end
 
 def error(text)

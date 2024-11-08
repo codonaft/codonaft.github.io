@@ -168,6 +168,49 @@
   }
 }
 
-.p2p-player-chapters, .used-materials {
-  display: none;
+.p2p-player-description, .p2p-player-chapters {
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+}
+
+.p2p-player-chapters {
+  color: $text-color;
+  padding-top: 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  column-count: 2;
+  column-gap: 0;
+  @media screen and (max-width: $break) {
+    column-count: 1;
+  }
+  .time {
+    padding-right: 0.5em;
+  }
+  .text {
+    width: 100%;
+  }
+  a {
+    color: $text-color;
+    cursor: pointer;
+    display: flex;
+  }
+}
+
+.p2p-player-description {
+  color: $date-color;
+  padding-top: 0.7rem;
+  font-size: 0.7rem;
+  line-height: 0.9;
+  column-count: 3;
+  column-gap: 1em;
+  li {
+    display: flex;
+  }
+  a {
+    color: $date-color;
+    width: 100%;
+  }
+  @media screen and (max-width: $break) {
+    column-count: 2;
+  }
 }

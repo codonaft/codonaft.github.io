@@ -1,6 +1,6 @@
 <script>
 {
- let url = new URL(window.location.href);
+ const url = new URL(window.location.href);
  if (url.hostname.endsWith('codonaft.com') && url.protocol === 'http:') {
   window.stop();
   document.documentElement.style.display = 'none';

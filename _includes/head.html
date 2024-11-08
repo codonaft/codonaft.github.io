@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const intervalSec = {{ site.theme_settings.p2p_player.storyboard.interval_sec }};
   const tileWidth = {{ site.theme_settings.p2p_player.storyboard.tile_width }};
   const tileHeight = Math.floor(tileWidth * (9 / 16));
-  const tiles = [];
 
   const maxTilesHorizontal = Math.floor(maxSize / tileWidth);
   const maxTilesVertical = Math.floor(maxSize / tileHeight);
@@ -108,23 +107,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const frameArea = tileWidth * tileHeight;
   const maxFrames = Math.floor(Math.pow(maxSize, 2) / frameArea);
 
-  const frames = Math.min(Math.ceil(duration / intervalSec), maxFrames);
+  const frames = Math.min(Math.floor(duration / intervalSec), maxFrames);
   const size = Math.sqrt(frames * frameArea);
   const tilesHorizontal = Math.min(Math.ceil(size / tileWidth), maxTilesHorizontal);
   const tilesVertical = Math.min(Math.ceil(frames / tilesHorizontal), maxTilesVertical);
 
-  let frame = 1;
-  let startTime = 0;
+  const tiles = [];
+  let frame = 0;
   for (let y = 0; y < tilesVertical; y++) {
-   for (let x = 0; x < tilesHorizontal; x++) {
+   for (let x = 0; x < tilesHorizontal && frame < frames; x++) {
+    const startTime = frame * intervalSec;
     tiles.push({ startTime, x: x * tileWidth, y: y * tileHeight });
-    startTime += intervalSec;
     frame++;
-    if (frame >= frames) break; // last frame might be invalid, ignoring it
    }
   }
 
-  const url = URL.parse(player.getAttribute('src') + '/../storyboard.webp').href;
+  const url = new URL(player.getAttribute('src') + '/../storyboard.webp').href;
   videoLayout.thumbnails = { url, tileWidth, tileHeight, tiles };
  };
 
@@ -143,7 +141,13 @@ document.addEventListener("DOMContentLoaded", () => {
   return hours * 60*60 + minutes * 60 + seconds;
  };
 
- const loadChapters = player => {
+ const playerQueryParameters = (playerIndex, startTime) => {
+  const time = parseFloat(startTime.toFixed(3));
+  const ts = [...new Array(playerIndex).fill('t='), `t=${time}`];
+  return '?' + ts.join('&');
+ };
+
+ const loadChapters = (player, playerIndex) => {
   const duration = player.duration;
   const element = document.querySelector(`.p2p-player-chapters[data-stream-url="${player.getAttribute('src')}"]`);
   if (!element) return;
@@ -153,8 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
    .split('\n')
    .map(i => i.trim())
    .filter(i => i.length > 0);
-  const cues = [];
+  element.innerHTML = '';
 
+  const cues = [];
   for (const [index, line] of lines.entries()) {
    try {
     const timeRegex = /^(\d{2})(?::(\d{2})):?(\d{2})?/;
@@ -174,6 +179,26 @@ document.addEventListener("DOMContentLoaded", () => {
      }
     }
     cues.push({ startTime, endTime, text });
+
+    const timeSpan = document.createElement('span')
+    timeSpan.setAttribute('class', 'time')
+    timeSpan.innerText = time[0];
+
+    const textSpan = document.createElement('span')
+    textSpan.innerText = text;
+    textSpan.setAttribute('class', 'text');
+
+    const link = document.createElement('a');
+    link.appendChild(timeSpan);
+    link.appendChild(textSpan);
+    link.setAttribute('href', playerQueryParameters(playerIndex, startTime));
+    link.addEventListener('click', event => {
+     player.currentTime = startTime;
+     if (!player.playing) player.play();
+     player.scrollIntoView({ block: 'center', behavior: 'smooth' });
+     event.preventDefault();
+    });
+    element.appendChild(link);
    } catch (err) {
     console.error(err);
    }
@@ -188,30 +213,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
  };
 
- const loadMetadata = (player, videoLayout) => {
+ const loadMetadata = (player, playerIndex, videoLayout) => {
    loadStoryboard(player, videoLayout);
-   loadChapters(player);
+   loadChapters(player, playerIndex);
  };
 
- const initializePlayer = player => {
+ const initializePlayer = (player, playerIndex, currentTime, autoPlay) => {
+  pageLog(`initializePlayer ${playerIndex}`);
   const videoLayout = player.querySelector('media-video-layout');
   const poster = player.querySelector("media-poster");
 
-  //videoLayout.smallWhen = ({ width, height }) => width < 611.93 || height < 344; // FIXME
   videoLayout.playbackRates = { min: 0.5, max: 2.5, step: 0.05 };
-  //videoLayout.hideQualityBitrate = true;
 
   if (player.duration > 0) {
-   loadMetadata(player, videoLayout);
+   loadMetadata(player, playerIndex, videoLayout);
   } else {
-   player.addEventListener('loaded-metadata', event => loadMetadata(player, videoLayout));
+   player.addEventListener('loaded-metadata', event => loadMetadata(player, playerIndex, videoLayout));
   }
 
   player.addEventListener('play-fail', event => {
    if (event.isOriginTrusted) {
+    pageLog('play failed, retrying');
     player.play();
    }
   });
+
+  const controller = new AbortController();
+  let initEvents = 0;
+  let startedAutoPlay = false;
+  for (const i of ['loaded-metadata', 'seeked']) {
+   player.addEventListener(i, event => {
+    if (controller.signal.aborted) return;
+    if (currentTime !== undefined && Math.abs(player.currentTime - currentTime) > 0.01) {
+     player.currentTime = currentTime;
+     if (autoPlay && !startedAutoPlay && !player.playing) {
+      player.play();
+      player.scrollIntoView({ block: 'center' });
+      startedAutoPlay = true;
+     }
+     setTimeout(_ => controller.abort(), 500);
+    }
+    initEvents++;
+    if (initEvents >= 2) controller.abort();
+   }, { signal: controller.signal });
+  }
 
   for (const i of ['provider-change', 'seeking']) {
    player.addEventListener(i, event => poster.setAttribute('data-visible', true));
@@ -243,10 +288,14 @@ document.addEventListener("DOMContentLoaded", () => {
    }
   });
 
-  // 'time-change'
-  /*player.addEventListener('time-update', event => {
-   console.log('time', event.detail);
-  });*/
+  for (const i of ['time-update', 'loaded-metadata', 'seeked']) {
+   player.addEventListener(i, event => {
+    if (ZapThreads === undefined) return;
+
+    const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, player.currentTime);
+    ZapThreads.setAdditionalTags([['r', timeReference]]);
+   });
+  }
 
   player.addEventListener('stalled', event => {
    pageLog('stalled');
@@ -254,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   player.addEventListener("provider-change", event => {
    const provider = event.detail;
-   console.log('provider-change', provider);
    if (provider?.type === 'hls') {
     provider.library = HlsWithP2P;
     provider.config = {
@@ -321,11 +369,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
  };
 
+ const currentLocation = new URL(window.location.href);
+ const currentTime = [...currentLocation.searchParams]
+  .filter(([key, _]) => key === 't')
+  .map(([_, value]) => parseFloat(value));
+ currentLocation.searchParams.delete('t');
+ history.replaceState(undefined, '', currentLocation.pathname + currentLocation.search);
  if (Hls?.isSupported()) {
-  pageLog('hls is supported');
-  document.querySelectorAll('media-player').forEach(initializePlayer);
+  console.log('hls is supported');
+  let maybeAutoPlay = true;
+  document
+   .querySelectorAll('media-player')
+   .forEach((player, playerIndex) => {
+    const time = currentTime[playerIndex];
+    const undefinedTime = [undefined, NaN].includes(time);
+    const autoPlay = !undefinedTime && maybeAutoPlay;
+    initializePlayer(player, playerIndex, undefinedTime ? undefined : time, autoPlay);
+    if (autoPlay) maybeAutoPlay = false;
+   });
  } else {
-  pageLog('hls is unsupported!');
+  console.error('hls is unsupported');
  }
 });
 </script>

@@ -1,0 +1,8 @@
+/**
+ * Minified by jsDelivr using Terser v5.19.2.
+ * Original file: /npm/media-captions@1.0.4/dist/prod/errors.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+import{P as ParseError,c as ParseErrorCode}from"./index.js";const ParseErrorBuilder={r:()=>new ParseError({code:ParseErrorCode.BadSignature,reason:"missing WEBVTT file header",line:1}),s:(e,r)=>new ParseError({code:ParseErrorCode.BadTimestamp,reason:`cue start timestamp \`${e}\` is invalid on line ${r}`,line:r}),t:(e,r)=>new ParseError({code:ParseErrorCode.BadTimestamp,reason:`cue end timestamp \`${e}\` is invalid on line ${r}`,line:r}),u:(e,r,n)=>new ParseError({code:ParseErrorCode.BadTimestamp,reason:`cue end timestamp \`${r}\` is greater than start \`${e}\` on line ${n}`,line:n}),y:(e,r,n)=>new ParseError({code:ParseErrorCode.BadSettingValue,reason:`invalid value for cue setting \`${e}\` on line ${n} (value: ${r})`,line:n}),x:(e,r,n)=>new ParseError({code:ParseErrorCode.UnknownSetting,reason:`unknown cue setting \`${e}\` on line ${n} (value: ${r})`,line:n}),w:(e,r,n)=>new ParseError({code:ParseErrorCode.BadSettingValue,reason:`invalid value for region setting \`${e}\` on line ${n} (value: ${r})`,line:n}),v:(e,r,n)=>new ParseError({code:ParseErrorCode.UnknownSetting,reason:`unknown region setting \`${e}\` on line ${n} (value: ${r})`,line:n}),T:(e,r)=>new ParseError({code:ParseErrorCode.BadFormat,reason:`format missing for \`${e}\` block on line ${r}`,line:r})};export{ParseErrorBuilder};
+//# sourceMappingURL=/sm/4059ec55fa4266b5c4717089a63be045cb8ca227ecd44d85028cc7237e33d3d7.map
