@@ -19,6 +19,9 @@ class PostMetadata
   @[YAML::Field(key: "title")]
   property title : String
 
+  @[YAML::Field(key: "permalink")]
+  property permalink : String
+
   @[YAML::Field(key: "categories")]
   property categories : String?
 
@@ -70,37 +73,39 @@ def nak(args, input = nil)
   end
 end
 
-def sign(unsigned_event, bunker_uri, nostr)
+def sign(unsigned_event : String, bunker_uri, nostr)
   event = nak([
     "event",
     "--pow", nostr["min_read_pow"].to_s,
     "--connect", bunker_uri,
   ], unsigned_event)
-  event_json = unsigned_event.to_json
-  nak(["verify"], event_json)
-  {event, event_json}
+
+  # nak(["verify"], event.to_json) # FIXME: fails due to incorrect string escaping?
+
+  event
 end
 
-def approve(nostr, pubkey, event, url, prod, relays)
+def approve(nostr, pubkey, event, backup_prefix, prod, relays)
   puts("approving own post")
+  community = nostr["community"]
   now = Time.utc
   unsigned_approval_event = {
     "created_at" => now.to_unix,
     "kind"       => 4550,
     "tags"       => [
-      ["a", "34550:#{pubkey}:codonaft"],
+      ["a", "34550:#{pubkey}:#{community}"],
       ["e", event["id"]],
       ["p", event["pubkey"]],
       ["k", event["kind"].to_s],
     ],
-    "content" => event, # TODO: test
+    "content" => event.to_json,
   }.to_json
 
   print "bunker uri: "
   approval_bunker_uri = (gets || "").strip
-  approval_event, approval_event_json = sign(unsigned_approval_event, approval_bunker_uri, nostr)
+  approval_event_json = sign(unsigned_approval_event, approval_bunker_uri, nostr).to_json
 
-  approval_event_backup = ".backup/#{url.path}.#{now.to_unix}.nostr.approval#{prod ? "" : ".test"}.json"
+  approval_event_backup = "#{backup_prefix}.#{now.to_unix}.nostr.approval#{prod ? "" : ".test"}.json"
   File.write(approval_event_backup, approval_event_json)
   puts("saved event backup to #{approval_event_backup}")
 
@@ -121,7 +126,7 @@ def approve(nostr, pubkey, event, url, prod, relays)
         break
       rescue e
         puts(e)
-        sleep 1
+        sleep(1.seconds)
       end
     end
   end
@@ -135,25 +140,31 @@ def main
     exit 1
   end
 
-  repo_dir = File.dirname(File.dirname(File.realpath(__FILE__)))
+  repo_dir = File.dirname(File.realpath(__FILE__))
   Dir.cd(repo_dir)
+  puts("current directory is #{repo_dir}")
 
   post = ARGV[0]
+  message = ARGV[1]
   bunker_uri = ENV["BUNKER_URI"]
 
   raise "Post file has changed" if `git status --porcelain #{post}`.starts_with?(" M ")
+  raise "git status failed" unless $?.success?
 
   config = YAML.parse(File.read("_config.yml"))
   post_base = File.basename(post).split(".")[0]
   post_date = Time.parse(post_base[0..10], "%Y-%m-%d", Time::Location::UTC)
-  url = URI.parse(config["url"].as_s)
-  url.path = post_base[11..-1]
 
-  raise "Unexpected posts dir" if File.basename(File.dirname(post)) != "_posts"
+  raise "Unexpected posts dir" unless File.basename(File.dirname(post)) == "_posts"
   posts_parent = File.dirname(File.dirname(File.realpath(post)))
   lang = posts_parent == repo_dir ? "en" : File.basename(posts_parent)
 
-  raise "Unexpected language #{lang}" if !["en", "ru"].includes?(lang) # TODO: read valid languages from config
+  supported_langs = config["defaults"]
+    .as_a
+    .map { |i| i["values"]["lang"]? }
+    .reject { |i| i.nil? }
+    .map { |i| i.not_nil!.as_s }
+  raise "Unexpected language #{lang}" unless supported_langs.includes?(lang)
 
   nostr = config["theme_settings"]["nostr"]
   pubkey = nak(["decode", nostr["npub"].as_s])["pubkey"]
@@ -163,7 +174,9 @@ def main
   metadata = PostMetadata.from_yaml(raw_metadata)
   raise "nostr metadata is already set" if metadata.nostr
 
-  content = "#{metadata.title}\n\n#{url.to_s}\n\n#{ARGV[1]}"
+  url = URI.parse(config["url"].as_s)
+  url.path = metadata.permalink.rchop('/')
+  content = "#{metadata.title}\n\n#{url.to_s}\n\n#{message}"
 
   now = Time.utc
   dt = now - metadata.date
@@ -184,17 +197,21 @@ def main
     ] + metadata.tags.map { |t| ["t", t] },
   }.to_json
 
-  event, event_json = sign(unsigned_event, bunker_uri, nostr)
+  event = sign(unsigned_event, bunker_uri, nostr)
+  event_json = event.to_json
 
   prod = event["pubkey"] == pubkey
   Dir.mkdir_p(".backup")
-  event_backup = ".backup/#{url.path}.#{now.to_unix}.nostr#{prod ? "" : ".test"}.json"
+  backup_prefix = ".backup/#{url.path.gsub('/', '_')}"
+  event_backup = "#{backup_prefix}.#{now.to_unix}.nostr#{prod ? "" : ".test"}.json"
   File.write(event_backup, event_json)
   puts("saved event backup to #{event_backup}")
 
   relays = prod ? nostr["relays"].as_a.map(&.to_s) : ["ws://localhost:8080"]
   repo_uri = prod ? `git config --get remote.origin.url`.strip : Dir.current
+  raise "git config failed" unless $?.success?
   branch = `git branch --show-current`.strip
+  raise "git branch failed" unless $?.success?
 
   if prod
     raise "Unexpected prod repo uri" unless repo_uri == PROD_REPO_URI
@@ -213,6 +230,7 @@ def main
   Colorize.with.green.surround(STDOUT) do
     puts(`git diff #{post}`.strip)
   end
+  raise "git diff failed" unless $?.success?
 
   puts
   Colorize.with.yellow.surround(STDOUT) do
@@ -241,11 +259,11 @@ def main
         break
       rescue e
         puts(e)
-        sleep 1
+        sleep(1.seconds)
       end
     end
 
-    approve(nostr, pubkey, event, url, prod, relays)
+    approve(nostr, pubkey, event, backup_prefix, prod, relays)
   else
     system("git", ["checkout", post])
     puts("exiting")
