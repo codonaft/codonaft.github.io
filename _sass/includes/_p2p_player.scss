@@ -179,7 +179,7 @@
   font-size: 0.85rem;
   line-height: 1.4;
   column-count: 2;
-  column-gap: 0;
+  column-gap: 1em;
   @media screen and (max-width: $break) {
     column-count: 1;
   }
@@ -203,9 +203,6 @@
   line-height: 0.9;
   column-count: 3;
   column-gap: 1em;
-  li {
-    display: flex;
-  }
   a {
     color: $date-color;
     width: 100%;

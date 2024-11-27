@@ -80,12 +80,15 @@ import { HlsJsP2PEngine } from 'p2p-media-loader-hlsjs';
 import '/assets/js/vendor/vidstack-player/vidstack.js';
 
 const pageLog = text => {
- if (window.location.pathname !== '/ru/video-test/') return;
- const p = document.createElement('p');
- p.textContent = text;
- p.style.color = 'green'
- p.style.fontWeight = '800';
- document.body.appendChild(p);
+ if (window.location.pathname === '/ru/video-test/') {
+  const p = document.createElement('p');
+  p.textContent = text;
+  p.style.color = 'green'
+  p.style.fontWeight = '800';
+  document.body.appendChild(p);
+ } else {
+  console.log(text);
+ }
 };
 
 const codecSupported = codec =>
@@ -149,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
  const loadChapters = (player, playerIndex) => {
   const duration = player.duration;
-  const element = document.querySelector(`.p2p-player-chapters[data-stream-url="${player.getAttribute('src')}"]`);
+  const element = player.parentElement.parentElement.querySelector('.p2p-player-chapters');
   if (!element) return;
 
   const lines = element
@@ -218,8 +221,36 @@ document.addEventListener("DOMContentLoaded", () => {
    loadChapters(player, playerIndex);
  };
 
+ let lastFailureTime = 0;
+ let mediaSourceSelectionAttempt = 0;
+ let aborted = false;
+ const fallback = player => {
+  if (player.state.playing) {
+   player.setAttribute('autoplay', true);
+  }
+
+  const now = Date.now();
+  if (now - lastFailureTime < 5000 || (!player.state.waiting && !aborted)) {
+   return;
+  }
+  lastFailureTime = now;
+
+  setTimeout(() => fallback(player), 6000);
+
+  const source = new URL(player.getAttribute('src'));
+  const mediaUrls = {{ site.theme_settings.p2p_player.media_urls | jsonify }};
+
+  mediaSourceSelectionAttempt++;
+  source.hostname = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]).hostname;
+
+  player.setAttribute('src', source.toString());
+  pageLog('new source ' + player.getAttribute('src') + ' attempt=' + mediaSourceSelectionAttempt);
+ };
+
  const initializePlayer = (player, playerIndex, currentTime, autoPlay) => {
   pageLog(`initializePlayer ${playerIndex}`);
+  const swarmId = new URL(player.getAttribute('src'));
+
   const videoLayout = player.querySelector('media-video-layout');
   const poster = player.querySelector("media-poster");
 
@@ -297,18 +328,46 @@ document.addEventListener("DOMContentLoaded", () => {
    });
   }
 
-  player.addEventListener('stalled', event => {
-   pageLog('stalled');
+  for (const i of ['abort', 'audio-gain-change', 'audio-track-change', 'audio-tracks-change', 'auto-play', 'auto-play-change', 'auto-play-fail', 'can-load', 'can-load-poster', 'can-play', 'can-play-through', 'controls-change', 'destroy', 'duration-change', 'emptied', 'end', 'ended', 'error', 'fullscreen-change', 'fullscreen-error', 'live-change', 'live-edge-change', 'load-start', 'loaded-data', 'loaded-metadata', 'loop-change', 'media-airplay-request', 'media-audio-gain-change-request', 'media-audio-track-change-request', 'media-clip-end-change-request', 'media-clip-start-change-request', 'media-duration-change-request', 'media-enter-fullscreen-request', 'media-enter-pip-request', 'media-exit-fullscreen-request', 'media-exit-pip-request', 'media-google-cast-request', 'media-live-edge-request', 'media-mute-request', 'media-orientation-lock-request', 'media-orientation-unlock-request', 'media-pause-controls-request', 'media-pause-request', 'media-play-request', 'media-player-connect', 'media-poster-start-loading', 'media-quality-change-request', 'media-rate-change-request', 'media-resume-controls-request', 'media-seek-request', 'media-seeking-request', 'media-start-loading', 'media-text-track-change-request', 'media-type-change', 'media-unmute-request', 'media-user-loop-change-request', 'media-volume-change-request', 'orientation-change', 'pause', 'picture-in-picture-change', 'picture-in-picture-error', 'play', 'play-fail', 'playing', 'plays-inline-change', 'poster-change', 'progress', 'provider-change', 'provider-loader-change', 'provider-setup', 'qualities-change', 'quality-change', 'rate-change', 'remote-playback-change', 'replay', 'seeked', 'seeking', 'stalled', 'started', 'stream-type-change', 'suspend', 'text-track-change', 'text-tracks-change', 'title-change', 'vds-log', 'video-presentation-change', 'view-type-change', 'volume-change']) {
+   player.addEventListener(i, event => {
+    pageLog(i);
+   });
+  }
+
+  player.addEventListener('abort', event => {
+   aborted = true;
+   fallback(player)
+  });
+
+  player.addEventListener('can-play', event => {
+   aborted = false;
+  });
+
+  player.addEventListener('source-change', event => {
+   pageLog('source-change' + JSON.stringify(event.detail));
+  });
+
+  player.addEventListener('sources-change', event => {
+   pageLog('sources-change' + JSON.stringify(event.detail));
+  });
+
+  player.addEventListener('error', event => {
+   pageLog('error ' + JSON.stringify(event.detail));
+   if (event.detail['code'] === 1) {
+    fallback(player);
+   }
   });
 
   player.addEventListener("provider-change", event => {
    const provider = event.detail;
    if (provider?.type === 'hls') {
+    pageLog('swarmId ' + swarmId);
+
     provider.library = HlsWithP2P;
     provider.config = {
      p2p: {
       core: {
-       // swarmId: player.getAttribute('src'),
+       // swarmId: swarmId.toString(),
        // isP2PDisabled: false,
        // simultaneousHttpDownloads: 2,
        // simultaneousP2PDownloads: 3,
@@ -324,15 +383,21 @@ document.addEventListener("DOMContentLoaded", () => {
        p2pErrorRetries: Infinity,
        announceTrackers: {{ site.theme_settings.p2p_player.trackers | jsonify }},
        rtcConfig: { iceServers: {{ site.theme_settings.p2p_player.ice_servers | jsonify }}.map(urls => { return { urls }; }) },
+       mainStream: {
+        swarmId: swarmId.toString(),
+       },
+       secondaryStream: {
+        swarmId: swarmId.toString(),
+       },
       },
       onHlsJsCreated: (hls) => {
-       hls.p2pEngine.addEventListener('onPeerConnect', (params) => {
+       hls.p2pEngine.addEventListener('onPeerConnect', params => {
         pageLog('Peer connected:' + params.peerId);
        });
-       hls.p2pEngine.addEventListener('onPeerError', (params) => {
+       hls.p2pEngine.addEventListener('onPeerError', params => {
         pageLog('Peer error:' + params.peerId);
        });
-       hls.p2pEngine.addEventListener('onPeerClose', (params) => {
+       hls.p2pEngine.addEventListener('onPeerClose', params => {
         pageLog('Peer disconnected:' + params.peerId);
        });
        hls.p2pEngine.addEventListener('onChunkDownloaded', (bytesLength, downloadSource, peerId) => {
@@ -343,20 +408,24 @@ document.addEventListener("DOMContentLoaded", () => {
        hls.p2pEngine.addEventListener('onChunkUploaded', (bytesLength, peerId) => {
         pageLog('Peer UPdownload:' + bytesLength + ' ' + peerId);
        });
-       hls.p2pEngine.addEventListener('onSegmentLoaded', (params) => {
+       hls.p2pEngine.addEventListener('onSegmentLoaded', params => {
         if (params.peerId) {
           pageLog('P2P Segment loaded:' + params.bytesLength);
         }
        });
-       hls.p2pEngine.addEventListener('onSegmentError', (params) => {
+       hls.p2pEngine.addEventListener('onSegmentError', params => {
         pageLog('ERROR loading segment:' + JSON.stringify(params));
+        if (params && params['downloadSource'] === 'http' && params['error'] !== undefined && params['error']['type'] === 'bytes-receiving-timeout') {
+         pageLog('http timeout failure');
+         fallback(player);
+        }
        });
 
-       hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+       hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
         console.log(data);
         pageLog('manifest loaded, found ' + data.levels.length + ' quality level');
        });
-       hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
+       hls.on(Hls.Events.BUFFER_CREATED, (event, data) => {
         pageLog('codec: ' + data.tracks.audiovideo.codec);
        });
        // TODO: connectedPeerCount
@@ -376,7 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
  currentLocation.searchParams.delete('t');
  history.replaceState(undefined, '', currentLocation.pathname + currentLocation.search);
  if (Hls?.isSupported()) {
-  console.log('hls is supported');
+  pageLog('hls is supported');
   let maybeAutoPlay = true;
   document
    .querySelectorAll('media-player')

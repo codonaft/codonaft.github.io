@@ -1,6 +1,5 @@
 .share-buttons .meta {
   text-align: center;
-  margin: 0;
   padding-top: $padding-x-small/2;
 }
 
@@ -11,7 +10,8 @@ ul.share-buttons {
   padding: 0;
   padding-top: $padding-x-small/2;
   padding-bottom: $padding-x-small/2;
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0;
   text-align: center;
 
   li {

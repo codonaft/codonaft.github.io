@@ -37,23 +37,29 @@ update_access_list() {
 	# https://github.com/Novage/p2p-media-loader/blob/fe59c09e8226687f0478836becdaf2bbb39c10ba/packages/p2p-media-loader-core/src/utils/peer.ts#L12
 	python -c "
 from glob import glob
+from syslog import syslog
 import base64, hashlib, os, tempfile, tomllib
 
 location = '/var/www/'
 config = tomllib.load(open('${CONFIG_FILE}', 'rb'))
 output = config['access_list']['path']
+
+syslog('aquatic_ws: generating info hashes')
 with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode='wt') as temp:
 	for i in glob('%s/*/*/main.m3u8' % location):
 		def write_hashes(n, stream_type):
 			for index in range(n):
 				stream_swarm_id = b'v2-https://%s-%s-%d' % (i.replace(location, '').encode('utf-8'), stream_type, index)
-				item = base64.b64encode(hashlib.md5(stream_swarm_id).digest()[1:]).hex()
+				raw_item = base64.b64encode(hashlib.md5(stream_swarm_id).digest()[1:])
+				item = raw_item.hex()
+				syslog('aquatic_ws: %s %s %s' % (stream_swarm_id, raw_item, item))
 				temp.write(item + '\\n')
-		parent_dir = os.path.dirname(i)
-		main_streams = glob('%s/*/video.m3u8' % parent_dir)
-		secondary_streams = glob('%s/*/audio.m3u8' % parent_dir)
-		write_hashes(len(main_streams), b'main')
-		write_hashes(len(secondary_streams), b'secondary')
+		with open(i) as p:
+			playlist = p.readlines()
+			main_streams = sum(1 for i in playlist if i.startswith('#EXT-X-STREAM-INF'))
+			secondary_streams = sum(1 for i in playlist if i.startswith('#EXT-X-MEDIA:TYPE=AUDIO'))
+			write_hashes(main_streams, b'main')
+			write_hashes(secondary_streams, b'secondary')
 	temp.close()
 	os.chmod(temp.name, 0o644)
 	os.replace(temp.name, output)"

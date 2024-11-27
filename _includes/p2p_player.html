@@ -7,7 +7,7 @@
  {% assign video_id = page.permalink | split: '/' | last %}
  {% endif %}
 
- {% assign stream_url_prefix = site.theme_settings.p2p_player.media_url | append: '/' | append: video_id %}
+ {% assign stream_url_prefix = site.theme_settings.p2p_player.media_urls[0] | append: '/' | append: video_id %}
  {% assign stream_url = stream_url_prefix | append: "/main.m3u8" %}
  {% assign thumbnail_url = stream_url_prefix | append: "/thumbnail.webp" %}
 {% endif %}
@@ -38,12 +38,12 @@
   </media-player>
  </div>
 {% if include.chapters %}
- <div class="p2p-player-chapters" data-stream-url="{{ stream_url }}">
+ <div class="p2p-player-chapters">
 {{ include.chapters | strip | newline_to_br }}
  </div>
 {% endif %}
 {% if include.description %}
- <div class="p2p-player-description" data-stream-url="{{ stream_url }}">
+ <div class="p2p-player-description">
 {{ include.description | strip | markdownify }}
  </div>
 {% endif %}

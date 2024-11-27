@@ -10,9 +10,9 @@
 <li><a href="https://t.me/{{ site.theme_settings.telegram_ru }}" title="Telegram" target="_blank">{% include icons/telegram.svg %}</a></li>
 {% endif %}
 
-{% if site.theme_settings.vk and page.lang == 'ru' %}
+<!-- {% if site.theme_settings.vk and page.lang == 'ru' %}
 <li><a href="https://vk.com/{{ site.theme_settings.vk }}" title="VK" target="_blank">{% include icons/vk.svg %}</a></li>
-{% endif %}
+{% endif %} -->
 
 {% if site.theme_settings.email_address %}
 <li>
@@ -58,9 +58,9 @@
 </li>
 {% endif %}
 
-{% if site.theme_settings.facebook and page.lang == 'ru' %}
+<!-- {% if site.theme_settings.facebook and page.lang == 'ru' %}
 <li><a href="https://www.facebook.com/{{ site.theme_settings.facebook }}" title="FB" target="_blank">{% include icons/facebook.svg %}</a></li>
-{% endif %}
+{% endif %} -->
 
 {% if site.theme_settings.flickr %}
 <li>
@@ -73,14 +73,14 @@
 </li>
 {% endif %}
 
-{% if site.theme_settings.github %}
+{% if site.theme_settings.github and page.lang != 'ru' %}
 <li>
  <a href="https://github.com/{{ site.theme_settings.github }}" title="GitHub" target="_blank">{% include icons/github.svg %}</a>
 </li>
 {% endif %}
 
-{% if site.theme_settings.nostr and page.lang != 'ru' %}
-<li><a href="https://nostr.at/{{ site.theme_settings.nostr.npub }}" title="Nostr" target="_blank">{% include icons/nostr.svg %}</a></li>
+{% if site.theme_settings.nostr %}
+<li><a href="https://primal.net/p/{{ site.theme_settings.nostr.npub }}" title="Nostr" target="_blank">{% include icons/nostr.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.instagram %}
