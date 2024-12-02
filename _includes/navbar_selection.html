@@ -1,0 +1,14 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+ const pathname = window.location.pathname;
+ for (const i of document.querySelectorAll('.site-header .clear a')) {
+  let pattern = ['', ''];
+  if (pathname.endsWith('/sponsor/')) {
+   pattern = ['💜', '❤️'];
+  } else if (pathname.endsWith('/partners/')) {
+   pattern = ['🤝', '👋'];
+  }
+  i.innerHTML = i.innerHTML.replace(pattern[0], pattern[1]);
+ }
+});
+</script>

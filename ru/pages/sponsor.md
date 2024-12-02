@@ -1,12 +1,13 @@
 ---
 layout: page
-navbar-title: Поддержать ♡
+navbar-title: 💜 Поддержать
 title: Поддержать независимого разработчика СПО
 feature-img: "assets/img/keyboard-background.webp"
 feature-title: <span class='no-wrap'>Свободное ПО</span> — это <span class='no-wrap'><u>причина</u> того,</span> <span class='no-wrap'>почему я выбрал <u>карьеру</u></span> разработчика <span class='no-wrap'>программного обеспечения</span>
 permalink: /ru/sponsor/
 lang-en-uri: /sponsor/
 ---
+{% include navbar_selection.html %}
 {% include sponsor.html %}
 
 Работал над

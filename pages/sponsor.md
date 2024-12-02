@@ -1,12 +1,13 @@
 ---
 layout: page
-navbar-title: Sponsor ♡
+navbar-title: Sponsor 💜
 title: Support independent FOSS developer
 feature-img: "assets/img/keyboard-background.webp"
 feature-title: <span class='no-wrap'>FOSS</span> is the <u>reason</u> <span class='no-wrap'>why I started <u>career</u></span> <span class='no-wrap'>in Software Development</span>
 permalink: /sponsor/
 lang-ru-uri: /ru/sponsor/
 ---
+{% include navbar_selection.html %}
 {% include sponsor.html %}
 
 I used to work on
