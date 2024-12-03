@@ -168,7 +168,7 @@
   }
 }
 
-.p2p-player-description, .p2p-player-chapters {
+.p2p-player-description {
   padding-left: 0.2rem;
   padding-right: 0.2rem;
 }
@@ -176,10 +176,11 @@
 .p2p-player-chapters {
   color: $text-color;
   padding-top: 0.4rem;
+  margin-right: -0.2rem;
   font-size: 0.85rem;
   line-height: 1.4;
   column-count: 2;
-  column-gap: 1em;
+  column-gap: 0;
   @media screen and (max-width: $break) {
     column-count: 1;
   }
@@ -193,12 +194,23 @@
     color: $text-color;
     cursor: pointer;
     display: flex;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    border-radius: 0.25rem;
+    margin-right: 0.2rem;
+  }
+  a.current {
+    color: rgb(36, 41, 46);
+    background-color: transparentize($base00, 0.85);
   }
 }
 
 .p2p-player-description {
   color: $date-color;
-  padding-top: 0.7rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.7rem;
   font-size: 0.7rem;
   line-height: 0.9;
   column-count: 3;

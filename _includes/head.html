@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const swarmId = new URL(player.getAttribute('src'));
 
   const videoLayout = player.querySelector('media-video-layout');
-  const poster = player.querySelector("media-poster");
+  const poster = player.querySelector('media-poster');
 
   videoLayout.playbackRates = { min: 0.5, max: 2.5, step: 0.05 };
 
@@ -319,12 +319,18 @@ document.addEventListener("DOMContentLoaded", () => {
    }
   });
 
-  for (const i of ['time-update', 'loaded-metadata', 'seeked']) {
+  for (const i of ['time-update', 'loaded-metadata', 'seeking', 'seeked']) {
    player.addEventListener(i, event => {
-    if (ZapThreads === undefined) return;
+    const currentTime = player.currentTime;
+    if (ZapThreads === undefined || currentTime === undefined) return;
 
-    const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, player.currentTime);
+    const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, currentTime);
     ZapThreads.setAdditionalTags([['r', timeReference]]);
+
+    const links = [...document.querySelectorAll('.p2p-player-chapters a')].reverse();
+    links.forEach(i => i.classList.remove('current'));
+    const currentLink = links.find(i => currentTime >= parseInt(i.href.split('/?t=')[1]));
+    currentLink?.classList.add('current');
    });
   }
 
