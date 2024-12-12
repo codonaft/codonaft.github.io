@@ -80,13 +80,13 @@ import { HlsJsP2PEngine } from 'p2p-media-loader-hlsjs';
 import '/assets/js/vendor/vidstack-player/vidstack.js';
 
 const pageLog = text => {
- if (window.location.pathname === '/ru/video-test/') {
+ /*if (window.location.pathname === '/ru/video-test/') {
   const p = document.createElement('p');
   p.textContent = text;
   p.style.color = 'green'
   p.style.fontWeight = '800';
   document.body.appendChild(p);
- } else {
+ } else*/ {
   console.log(text);
  }
 };
@@ -229,10 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
    player.setAttribute('autoplay', true);
   }
 
+  console.log('waiting=' + player.state.waiting + ' aborted=' + aborted + ' started=' + player.state.started + ' error=' + JSON.stringify(player.state.error) + ' paused=' + player.state.paused + ' played=' + JSON.stringify(player.state.played) + ' seeking=' + player.state.seeking);
   const now = Date.now();
   if (now - lastFailureTime < 5000 || (!player.state.waiting && !aborted)) {
    return;
   }
+  console.log('fallback', player);
   lastFailureTime = now;
 
   setTimeout(() => fallback(player), 6000);
@@ -243,12 +245,14 @@ document.addEventListener("DOMContentLoaded", () => {
   mediaSourceSelectionAttempt++;
   source.hostname = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]).hostname;
 
+  pageLog('new source?');
   player.setAttribute('src', source.toString());
   pageLog('new source ' + player.getAttribute('src') + ' attempt=' + mediaSourceSelectionAttempt);
  };
 
  const initializePlayer = (player, playerIndex, currentTime, autoPlay) => {
   pageLog(`initializePlayer ${playerIndex}`);
+  player.state.logLevel = 'debug';
   const swarmId = new URL(player.getAttribute('src'));
 
   const videoLayout = player.querySelector('media-video-layout');
@@ -289,9 +293,13 @@ document.addEventListener("DOMContentLoaded", () => {
    }, { signal: controller.signal });
   }
 
-  for (const i of ['provider-change', 'seeking']) {
-   player.addEventListener(i, event => poster.setAttribute('data-visible', true));
+  /*for (const i of ['provider-change', 'seeking', 'load-start']) {
+   player.addEventListener(i, event => { console.log('poster?'); poster.setAttribute('data-visible', true); player.querySelector('video').style.visibility = 'hidden'; });
   }
+
+  for (const i of ['can-play', 'playing', 'progress']) {
+   player.addEventListener(i, event => { console.log('no poster?'); poster.setAttribute('data-visible', false); player.querySelector('video').style.visibility = 'visible'; });
+  }*/
 
   const hidePosterAndPlayButton = () => {
    const style = document.createElement('style');
@@ -340,6 +348,10 @@ document.addEventListener("DOMContentLoaded", () => {
    });
   }
 
+  player.addEventListener('vds-log', event => {
+   pageLog('vds-log: ' + JSON.stringify(event.detail));
+  });
+
   player.addEventListener('abort', event => {
    aborted = true;
    fallback(player)
@@ -371,6 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     provider.library = HlsWithP2P;
     provider.config = {
+     debug: true,
      p2p: {
       core: {
        // swarmId: swarmId.toString(),
@@ -432,8 +445,29 @@ document.addEventListener("DOMContentLoaded", () => {
         pageLog('manifest loaded, found ' + data.levels.length + ' quality level');
        });
        hls.on(Hls.Events.BUFFER_CREATED, (event, data) => {
-        pageLog('codec: ' + data.tracks.audiovideo.codec);
+        pageLog('codec: ' + data?.tracks?.audiovideo?.codec);
        });
+       /*hls.on(Hls.Events.ERROR, (event, data) => {
+        pageLog('hls error: event=' + JSON.stringify(event) + ' data=' + JSON.stringify(data));
+
+        if (data.fatal) {
+          console.log('hls fatal');
+          switch (data.type) {
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('fatal media error encountered, try to recover');
+              hls.recoverMediaError();
+              break;
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.error('fatal network error encountered', data);
+              //break; // FIXME
+            default:
+              console.log('cannot recover');
+              fallback(player);
+              // hls.destroy();
+              break;
+          }
+        }
+       });*/
        // TODO: connectedPeerCount
 
        pageLog(codecSupported(`video/mp4;codecs="avc1.64002a,mp4a.40.2"`) + ' ' + codecSupported(`video/webm;codecs="av01.0.09M.08.0.110.01.01.01.0,opus"`));
