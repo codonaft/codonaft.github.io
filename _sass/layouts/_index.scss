@@ -170,11 +170,16 @@
       li {
         padding-bottom: 0.5em;
         margin-right: 1.1em;
+        width: 100%;
         svg {
           width: 1.1em;
           height: 1.1em;
           fill: currentColor;
           margin-bottom: -0.15em;
+        }
+        a {
+          display: block;
+          width: 100%;
         }
         a:hover {
           text-decoration: none;
