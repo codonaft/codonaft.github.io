@@ -95,9 +95,10 @@ const codecSupported = codec =>
  ("ManagedMediaSource" in window && ManagedMediaSource.isTypeSupported(codec)) || ("MediaSource" in window && MediaSource.isTypeSupported(codec));
 
 document.addEventListener("DOMContentLoaded", () => {
+ const mediaUrls = {{ site.theme_settings.p2p_player.media_urls | jsonify }};
  const HlsWithP2P = HlsJsP2PEngine.injectMixin(window.Hls);
 
- const loadStoryboard = (player, videoLayout) => {
+ const loadStoryboard = player => {
   const duration = player.duration;
   const maxSize = {{ site.theme_settings.p2p_player.storyboard.max_size }};
   const intervalSec = {{ site.theme_settings.p2p_player.storyboard.interval_sec }};
@@ -126,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const url = new URL(player.getAttribute('src') + '/../storyboard.webp').href;
+  const videoLayout = player.querySelector('media-video-layout');
   videoLayout.thumbnails = { url, tileWidth, tileHeight, tiles };
  };
 
@@ -188,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timeSpan.innerText = time[0];
 
     const textSpan = document.createElement('span')
-    textSpan.innerText = text;
+    textSpan.innerText = text; // TODO: innerHTML?
     textSpan.setAttribute('class', 'text');
 
     const link = document.createElement('a');
@@ -219,42 +221,61 @@ document.addEventListener("DOMContentLoaded", () => {
   });
  };
 
- const loadMetadata = (player, playerIndex, videoLayout) => {
-   loadStoryboard(player, videoLayout);
+ const loadMetadata = (player, playerIndex) => {
+   loadStoryboard(player);
    loadChapters(player, playerIndex);
  };
 
  let lastFailureTime = 0;
- let mediaSourceSelectionAttempt = 0;
+ let mediaSourceSelectionAttempt = (Number(localStorage.mediaSourceSelectionAttempt || (-1)) + 1) % mediaUrls.length;
  let failed = false;
  let shouldPlay = false;
- const fallback = player => {
-  if (shouldPlay) {
-   player.setAttribute('autoplay', true);
-  }
 
-  console.log('waiting=' + player.state.waiting + ' failed=' + failed + ' started=' + player.state.started + ' error=' + JSON.stringify(player.state.error) + ' paused=' + player.state.paused + ' played=' + JSON.stringify(player.state.played) + ' seeking=' + player.state.seeking + ' shouldPlay=' + shouldPlay);
-  const now = Date.now();
-  if (now - lastFailureTime < 6000 || !failed || (!player.state.waiting && !player.state.error)) {
+ const updateMediaSource = (player, hls) => {
+  console.log('attempt=' + mediaSourceSelectionAttempt);
+  const source = new URL(player.getAttribute('src'));
+  const sameOrigin = (mediaSourceSelectionAttempt % mediaUrls.length) === mediaUrls.indexOf(source.origin);
+
+  if (sameOrigin) {
+   console.log('same origin');
    return;
   }
-  console.log('fallback', player);
-  lastFailureTime = now;
 
-  const source = new URL(player.getAttribute('src'));
-  const mediaUrls = {{ site.theme_settings.p2p_player.media_urls | jsonify }};
+  if (hls !== undefined) {
+   console.log('manually stopping load');
+   hls.stopLoad();
+  }
 
-  mediaSourceSelectionAttempt++;
   source.hostname = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]).hostname;
-
   player.setAttribute('src', source.toString());
-  pageLog('new source ' + player.getAttribute('src') + ' attempt=' + mediaSourceSelectionAttempt);
+
+  if (shouldPlay && !player.playing) {
+   player.setAttribute('autoplay', true);
+   player.play();
+  }
+
+  pageLog('new source ' + player.getAttribute('src'));
+  loadStoryboard(player);
+ };
+
+ const fallback = (player, hls) => {
+  const now = Date.now();
+  console.log('mediaSourceSelectionAttempt=' + mediaSourceSelectionAttempt + ' waiting=' + player.state.waiting + ' failed=' + failed + ' started=' + player.state.started + ' error=' + JSON.stringify(player.state.error) + ' paused=' + player.state.paused + ' played=' + JSON.stringify(player.state.played) + ' seeking=' + player.state.seeking + ' shouldPlay=' + shouldPlay);
+
+  if (now - lastFailureTime < 6000 || !failed || (!player.state.waiting && !player.state.error)) return;
+
+  console.log('fallback', player);
+  mediaSourceSelectionAttempt++;
+  localStorage.mediaSourceSelectionAttempt = mediaSourceSelectionAttempt;
+  updateMediaSource(player, hls);
  };
 
  const initializePlayer = (player, playerIndex, currentTime, autoPlay) => {
   pageLog(`initializePlayer ${playerIndex}`);
   player.state.logLevel = 'debug';
   const swarmId = new URL(player.getAttribute('src'));
+  localStorage.mediaSourceSelectionAttempt = mediaSourceSelectionAttempt;
+  //updateMediaSource(player, undefined);
 
   const videoLayout = player.querySelector('media-video-layout');
   const poster = player.querySelector('media-poster');
@@ -262,12 +283,10 @@ document.addEventListener("DOMContentLoaded", () => {
   videoLayout.playbackRates = { min: 0.5, max: 2.5, step: 0.05 };
 
   if (player.duration > 0) {
-   loadMetadata(player, playerIndex, videoLayout);
+   loadMetadata(player, playerIndex);
   } else {
-   player.addEventListener('loaded-metadata', _ => loadMetadata(player, playerIndex, videoLayout));
+   player.addEventListener('loaded-metadata', _ => loadMetadata(player, playerIndex));
   }
-
-  setInterval(_ => fallback(player), 10000);
 
   player.addEventListener('play-fail', event => {
    if (event.isOriginTrusted) {
@@ -306,6 +325,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }*/
 
   const hidePosterAndPlayButton = () => {
+   if (!poster) {
+    console.error('no poster? perhaps we need a page refresh');
+    return;
+   }
+
    const style = document.createElement('style');
    style.textContent = `
     .vds-video-layout[data-sm, thumbnails="${videoLayout.getAttribute('thumbnails')}"] {
@@ -369,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   player.addEventListener('abort', _ => {
    failed = shouldPlay;
-   fallback(player);
+   fallback(player, undefined);
   });
 
   player.addEventListener('can-play', _ => {
@@ -388,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
    pageLog('error ' + JSON.stringify(event.detail));
    if (event.detail.code === 1) {
     failed = shouldPlay;
-    fallback(player);
+    fallback(player, undefined);
    }
   });
 
@@ -400,6 +424,22 @@ document.addEventListener("DOMContentLoaded", () => {
     provider.library = HlsWithP2P;
     provider.config = {
      debug: true,
+     // fragLoadPolicy: {
+     //   default: {
+     //     maxTimeToFirstByteMs: 10000,
+     //     maxLoadTimeMs: 120000,
+     //     timeoutRetry: {
+     //       maxNumRetry: 4,
+     //       retryDelayMs: 0,
+     //       maxRetryDelayMs: 0,
+     //     },
+     //     errorRetry: {
+     //       maxNumRetry: 6,
+     //       retryDelayMs: 1000,
+     //       maxRetryDelayMs: 8000,
+     //     },
+     //   },
+     // },
      p2p: {
       core: {
        // swarmId: swarmId.toString(),
@@ -454,10 +494,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (params?.downloadSource === 'http' && params.error?.type === 'bytes-receiving-timeout') {
          pageLog('http timeout failure');
          failed = shouldPlay;
-         fallback(player);
+         fallback(player, hls);
         }
        });
 
+       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+        updateMediaSource(player, hls);
+        console.log('media attached, running fallback loop');
+        setInterval(_ => fallback(player, hls), 10000);
+       });
        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
         console.log(data);
         pageLog('manifest loaded, found ' + data.levels?.length + ' quality level');
@@ -473,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
          if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
           hls.recoverMediaError();
          } else {
-          fallback(player);
+          fallback(player, hls);
          }
         }
        });

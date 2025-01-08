@@ -173,10 +173,6 @@ theme_settings:
 exclude:
   - .backup
   - .build
-  - _ohmyvps
-  - _publish-post.cr
-  - _run.cr
-  - _zapthreads
 
 excerpt_separator: <!--more-->
 markdown: kramdown

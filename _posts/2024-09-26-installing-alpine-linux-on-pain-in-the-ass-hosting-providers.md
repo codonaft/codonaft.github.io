@@ -4,7 +4,7 @@ title: "Installing <span class='no-wrap'>Alpine Linux</span> from another preins
 feature-img: "assets/img/alpine-install-vps.svg"
 thumbnail: "assets/img/alpine-install-vps-thumbnail.svg"
 date: "2024-09-26 00:00:00 +0000"
-categories: vps alpine linux iso boot grub
+tags: [vps, alpine, linux, iso, boot, grub]
 nostr:
   comments: note1q99933ynx8kc0va0uwhev9n7puwul0wm8n8ga3rgqp3smnxy75ds50gjvh
 ---

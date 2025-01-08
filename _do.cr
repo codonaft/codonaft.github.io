@@ -6,6 +6,7 @@
 require "colorize"
 require "digest/sha256"
 require "file_utils"
+require "http/client"
 require "ini"
 require "json"
 require "uri"
@@ -329,7 +330,10 @@ def health(config)
     .split('\n')
     .map { |i| i.gsub(/.*https:\/\//, "") }
 
-  general_hosts = (site_hosts + stuns + cdns)
+  bancheck = "_bancheck.txt"
+  custom_hosts = File::Info.readable?(bancheck) ? File.read_lines(bancheck) : [] of String
+
+  general_hosts = (site_hosts + stuns + cdns + custom_hosts)
     .map { |i| i.strip }
     .reject { |i| i.empty? }
     .to_set
@@ -413,7 +417,17 @@ def update_banlists
     .flat_map { |i| i.split('|') }
   File.delete(zi_zip)
 
-  result = (sbc + zi)
+  rb_prefix = "https://reestr.rublacklist.net/api/v3"
+  rb_dpi = JSON.parse(HTTP::Client.get("#{rb_prefix}/dpi/").body).as_a.flat_map { |i| i["domains"].as_a }
+  rb_domains_and_ips = ["ct-domains", "domains", "ips"]
+    .flat_map { |request|
+      JSON
+        .parse(HTTP::Client.get("#{rb_prefix}/#{request}/").body)
+        .as_a
+    }
+  rb = (rb_dpi + rb_domains_and_ips).map { |i| i.as_s }
+
+  result = (sbc + zi + rb)
     .map { |i| i.strip }
     .reject { |i| i.empty? }
     .to_set
