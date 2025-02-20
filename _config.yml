@@ -150,8 +150,8 @@ theme_settings:
     - https://media-cached.codonaft.com
     trackers:
     - wss://media.codonaft.com/announce
-    - wss://tracker.webtorrent.dev
-    #- wss://tracker.openwebtorrent.com
+    - wss://tracker.openwebtorrent.com
+    #- wss://tracker.webtorrent.dev
     ice_servers:
     - stun:stun.framasoft.org
     - stun:stun.l.google.com:19302
@@ -173,10 +173,6 @@ theme_settings:
 exclude:
   - .backup
   - .build
-  - _ohmyvps
-  - _publish-post.cr
-  - _run.cr
-  - _zapthreads
 
 excerpt_separator: <!--more-->
 markdown: kramdown

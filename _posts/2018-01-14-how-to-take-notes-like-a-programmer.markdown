@@ -4,7 +4,7 @@ title: "How to Take Notes <span class='no-wrap'>Like a Programmer</span>"
 feature-img: "assets/img/brain-graph.webp"
 thumbnail: "assets/img/reflect-ideas.svg"
 date: 2018-01-14 23:00:00 +0300
-categories: learning productivity workbook synopsis summary abstract conspectus epitome
+tags: [learning, productivity, workbook, synopsis, summary, abstract, conspectus, epitome, second brain, knowledge base]
 lang-ru-uri: "/ru/how-to-take-notes-like-a-programmer/"
 ---
 

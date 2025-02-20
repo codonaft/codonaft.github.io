@@ -4,7 +4,7 @@ title: "How To Learn Algorithms"
 feature-img: "assets/img/algorithms-word-cloud.webp"
 thumbnail: "assets/img/algorithms-word-cloud.webp"
 date: 2017-05-25 08:00:00 +0300
-categories: algorithms learning computer science
+tags: [algorithms, learning, courses, computer science, software engineering, interview]
 lang-ru-uri: "/ru/how-to-learn-algorithms/"
 ---
 

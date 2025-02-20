@@ -17,8 +17,9 @@ article {
   a:hover {
     @extend .body-link;
   }
-  .footnotes {
+  .note {
     font-size: 0.9em;
+    color: $note-text-color;
   }
 }
 
@@ -47,7 +48,7 @@ header {
 }
 
 .meta {
-  color: $date-color;
+  color: $note-text-color;
   //text-transform: uppercase;
   margin-bottom: 0;
 }

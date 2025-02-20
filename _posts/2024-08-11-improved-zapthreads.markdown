@@ -5,7 +5,7 @@ title: What I've learned about Nostr by improving ZapThreads and how do we <span
 feature-img: "assets/img/improved-zapthreads-feature.webp"
 thumbnail: "assets/img/improved-zapthreads-thumbnail.webp"
 date: 2024-08-11 23:20:00 +0000
-categories: nostr
+tags: [nostr]
 nostr:
   comments: note1rzd7zy6x5wpm7gxtekgflmh8yt7twadddcu0ldp7hxdfe9d6aycqkll2gw
   relax_filters: true

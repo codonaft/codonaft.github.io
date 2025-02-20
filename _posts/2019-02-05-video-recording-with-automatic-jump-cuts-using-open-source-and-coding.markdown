@@ -5,7 +5,7 @@ title: "<span class='no-wrap'>Video Recording</span> with Automatic Jump Cuts us
 feature-img: "assets/img/bicycle.webp"
 thumbnail: "assets/img/bicycle-thumbnail.webp"
 date: 2019-02-05 03:10:00 +0300
-categories: pitivi ruby video sound DIY gnu linux
+tags: [pitivi, ruby, video, sound, DIY, GNU, linux]
 lang-ru-uri: "/ru/video-recording-with-automatic-jump-cuts-using-open-source-and-coding/"
 ---
 

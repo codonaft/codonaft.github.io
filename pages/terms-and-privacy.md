@@ -17,7 +17,7 @@ hide: true
 3. You are fully responsible for the {% include span_with_tooltip.html body="legal status" tooltip="Your data should comply with regulations of all relevant jurisdictions." %} of your data. This website may apply {% include span_with_tooltip.html large="true" body="moderation" tooltip="This website may stop showing some or all of your data." %} towards users that fail to comply with the [Terms of Use](#terms-of-use) or with this policy.
 
 4. If you've found that any content users published on this website is not compatible with your local regulations
-- you are free to send complaints directly to the third-party server owners that currently store the illegal data
+- you are free to send complaints directly to the third-party server owners that currently store the illegal content
 - you are free to block servers that contain illegal content or the entire website in your parental control system or ISP/governmental firewall without notice.
 
 5. For any questions considering this website that are not related to the data stored by third-party services—please <a rel="nofollow" href="mailto:feedback&#64;codonaft&#46;com">use email</a>.
