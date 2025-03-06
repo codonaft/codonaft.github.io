@@ -24,7 +24,7 @@ class PostMetadata
   property permalink : String
 
   @[YAML::Field(key: "tags")]
-  property post_tags : String?
+  property post_tags : Array(String)? # TODO: doesn't parse in all formats?
 
   @[YAML::Field(key: "nostr")]
   property nostr : YAML::Any?
@@ -39,7 +39,7 @@ class PostMetadata
 
   def tags
     if @post_tags
-      @post_tags.not_nil!.split(' ')
+      @post_tags.not_nil!
     else
       [] of String
     end
