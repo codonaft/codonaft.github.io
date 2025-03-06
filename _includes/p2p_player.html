@@ -27,7 +27,7 @@
     <media-poster
      class="vds-poster"
      src="{{ thumbnail_url }}"
-     {% if include.title %}alt="{{ include.title }}"{% else %}{{ page.title | strip_html }}{% endif %}
+     alt="{% if include.title %}{{ include.title | strip_html }}{% else %}{{ page.title | strip_html }}{% endif %}"
     ></media-poster>
 {% assign subtitles = include.subtitles | split: "," %}
 {% for i in subtitles %}
