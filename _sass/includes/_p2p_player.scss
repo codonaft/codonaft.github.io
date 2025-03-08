@@ -202,8 +202,8 @@
     margin-right: 0.2rem;
   }
   a.current {
-    color: rgb(36, 41, 46);
-    background-color: transparentize($base00, 0.85);
+    color: $selected-chapter-color;
+    background-color: $selected-chapter-background-color;
   }
 }
 
@@ -222,4 +222,10 @@
   @media screen and (max-width: $break) {
     column-count: 2;
   }
+}
+
+.p2p-player-container {
+  text-align: center;
+  max-width: 100%;
+  margin: auto;
 }

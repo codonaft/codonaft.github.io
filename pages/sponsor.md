@@ -152,7 +152,7 @@ Your support keeps me going ❤️
 ## FAQ
 
 ### Why sponsoring independent FOSS developers? What's wrong with traditional businesses?
-Not necessarily "wrong", just mostly not aligned with my values.
+Not necessarily "wrong", just mostly unaligned with my values.
 
 One of the core values I'm pursuing is just {% include span_with_tooltip.html body="**distraction minimization**" tooltip="Which, for instance, can be implemented by applying design principles that are somewhat similar to what Suckless.org is about (<span class='no-wrap'>but less strict version,</span> adapted for mainstream users)." %}: I don't want to trap users' attention in my products; they deserve [healthier](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) life!
 
@@ -185,7 +185,7 @@ I perceive the three typical career paths the following way:
 - Pros:
     - 👍 some decisions control
         - restricted to democratic decisions across (co-)founders
-        - but some of the co-founders might *often* turn out to be overgrown psychopathic infants 💀
+        - but some of the co-founders might *often* turn out to be overgrown psychopathic [infants](https://youtu.be/7LqaotiGWjQ?t=3426s) 💀
             - what kind of decisions such company will be making in this case?
 - Cons:
     - 🤦‍♂️ too much management, hard to perform actual SE as founder
@@ -199,7 +199,7 @@ I perceive the three typical career paths the following way:
 1. Intentional (usually survival) **manipulative techniques**:
     - intrusive advertising and notifications
         - *"We've got something else for you!"* when user is about to close a page
-        - sudden loud commercials while you're listening to your silent relaxing meditative music
+        - sudden loud commercials while you're listening to your silent relaxing meditative music (or even [worse](https://www.snopes.com/fact-check/sony-patent-mcdonalds))
     - sudden [appearance](https://en.wikipedia.org/wiki/Clickjacking#Clickjacking_categories) of unwanted button in the position you were about to click
     - replacement of normal support service with a retarded chatbot simulacrum, that gives only a limited number of {% include span_with_tooltip.html body="useless feedback options" tooltip="In urgent cases, user can't report a real issue, can't contact a human, and will waste a lot of time brute-forcing the confusing menu options, or will even receive an instant auto-close of the real reported issue with an amusing excuse" %}
 

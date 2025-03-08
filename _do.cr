@@ -333,6 +333,7 @@ def health(config)
   bancheck = "_bancheck.txt"
   custom_hosts = File::Info.readable?(bancheck) ? File.read_lines(bancheck) : [] of String
 
+  # TODO: validate all parsed URIs
   general_hosts = (site_hosts + stuns + cdns + custom_hosts)
     .map { |i| i.strip }
     .reject { |i| i.empty? }
@@ -360,6 +361,8 @@ def health(config)
     check_ban(i.hostname, banlists)
     check_ws(i)
   }
+
+  # TODO: check certificates validity periods
 end
 
 def check_icmp(host)

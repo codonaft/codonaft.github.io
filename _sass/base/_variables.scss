@@ -41,6 +41,9 @@ $link-color: $theme-color;
 $selection-color: lighten($theme-color, 10%); // visible when highlighting text
 $blockquote-color: #EEF7FA; // $background-color;
 
+$selected-chapter-color: rgb(36, 41, 46);
+$selected-chapter-background-color: #D9D9D9;
+
 //Search color
 $link-shadow: transparentize($link-color, .6); //rgba(26, 188, 156, 0.6);
 $text-shadow: #000;
