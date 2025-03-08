@@ -200,6 +200,7 @@ def main
 end
 
 def nak_raw(args, input = nil)
+  # TODO: exit after timeout
   output = Channel(Tuple(String, Process::Status)).new
   spawn do
     value = Process.run(command: "nak", args: args) do |p|
@@ -284,6 +285,7 @@ def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bun
     end
   end
 
+  # FIXME: hangs forever
   failed_relays = relays.reject do |relay|
     begin
       found_event(event, relay) && found_event(approval_event, relay)

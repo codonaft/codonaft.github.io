@@ -64,7 +64,7 @@ When something is unclear you can always:
 This is how I do this:
 1. Watch a video or read an article that shows you **a particular input example** and **what algorithm does** with this input.
 2. Now try to do exactly **the same thing using pen and paper**. Try original input, try weird input, try empty input. **Make sure you do it the right way**.
-3. Since you've tried several different inputs and processed them the right way—your brain already got the algorithm. Now you need to **express it with code**.
+3. Since you've tried several different inputs and processed them the right way—you've already learned the algorithm. Now you need to **express it with code**.
 
 Three steps, it's that simple.
 
