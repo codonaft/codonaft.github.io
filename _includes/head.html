@@ -79,6 +79,8 @@ import '/assets/js/vendor/hls.min.js';
 import { HlsJsP2PEngine } from 'p2p-media-loader-hlsjs';
 import '/assets/js/vendor/vidstack-player/vidstack.js';
 
+const playerRatio = 9 / 16;
+
 const pageLog = text => {
  /*if (window.location.pathname === '/ru/video-test/') {
   const p = document.createElement('p');
@@ -98,12 +100,14 @@ document.addEventListener("DOMContentLoaded", () => {
  const mediaUrls = {{ site.theme_settings.p2p_player.media_urls | jsonify }};
  const HlsWithP2P = HlsJsP2PEngine.injectMixin(window.Hls);
 
+ const getSource = player => new URL(player.getAttribute('src'));
+
  const loadStoryboard = player => {
   const duration = player.duration;
   const maxSize = {{ site.theme_settings.p2p_player.storyboard.max_size }};
   const intervalSec = {{ site.theme_settings.p2p_player.storyboard.interval_sec }};
   const tileWidth = {{ site.theme_settings.p2p_player.storyboard.tile_width }};
-  const tileHeight = Math.floor(tileWidth * (9 / 16));
+  const tileHeight = Math.floor(tileWidth * playerRatio);
 
   const maxTilesHorizontal = Math.floor(maxSize / tileWidth);
   const maxTilesVertical = Math.floor(maxSize / tileHeight);
@@ -126,9 +130,33 @@ document.addEventListener("DOMContentLoaded", () => {
    }
   }
 
-  const url = new URL(player.getAttribute('src') + '/../storyboard.webp').href;
+  const url = new URL(getSource(player).href + '/../storyboard.webp').href;
   const videoLayout = player.querySelector('media-video-layout');
   videoLayout.thumbnails = { url, tileWidth, tileHeight, tiles };
+ };
+
+ const loadCurrentTime = player => {
+  const swarmId = getSource(player);
+  const t = Object
+   .entries(localStorage)
+   .find(([k, _]) => k.startsWith(swarmId.pathname));
+  const time = t && t[1] && parseInt(t[1]);
+  const currentTime = time === undefined ? player.currentTime : time;
+  return currentTime === undefined ? 0 : currentTime;
+ };
+
+ const updateCurrentTime = (player, playerIndex) => {
+  const currentTime = loadCurrentTime(player);
+
+  if (ZapThreads !== undefined) {
+   const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, currentTime);
+   ZapThreads.setAdditionalTags([['r', timeReference]]);
+  }
+
+  const links = [...document.querySelectorAll('.p2p-player-chapters a')].reverse();
+  links.forEach(i => i.classList.remove('current'));
+  const currentLink = links.find(i => currentTime >= parseInt(i.href.split('/?t=')[1]));
+  currentLink?.classList.add('current');
  };
 
  const parseTime = time => {
@@ -219,6 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
    content: { cues },
    default: true,
   });
+
+  updateCurrentTime(player, playerIndex);
  };
 
  const loadMetadata = (player, playerIndex) => {
@@ -233,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
  const updateMediaSource = (player, hls) => {
   console.log('attempt=' + mediaSourceSelectionAttempt);
-  const source = new URL(player.getAttribute('src'));
+  const source = getSource(player);
   const sameOrigin = (mediaSourceSelectionAttempt % mediaUrls.length) === mediaUrls.indexOf(source.origin);
 
   if (sameOrigin) {
@@ -273,7 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
  const initializePlayer = (player, playerIndex, currentTime, autoPlay) => {
   pageLog(`initializePlayer ${playerIndex}`);
   player.state.logLevel = 'debug';
-  const swarmId = new URL(player.getAttribute('src'));
+
+  const swarmId = getSource(player);
+  updateCurrentTime(player, playerIndex);
+
   localStorage.mediaSourceSelectionAttempt = mediaSourceSelectionAttempt;
   //updateMediaSource(player, undefined);
 
@@ -366,19 +399,8 @@ document.addEventListener("DOMContentLoaded", () => {
    }
   });
 
-  for (const i of ['time-update', 'loaded-metadata', 'seeking', 'seeked']) {
-   player.addEventListener(i, _ => {
-    const currentTime = player.currentTime;
-    if (ZapThreads === undefined || currentTime === undefined) return;
-
-    const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, currentTime);
-    ZapThreads.setAdditionalTags([['r', timeReference]]);
-
-    const links = [...document.querySelectorAll('.p2p-player-chapters a')].reverse();
-    links.forEach(i => i.classList.remove('current'));
-    const currentLink = links.find(i => currentTime >= parseInt(i.href.split('/?t=')[1]));
-    currentLink?.classList.add('current');
-   });
+  for (const i of ['loaded-metadata', 'progress', 'seeking', 'seeked', 'time-update']) {
+   player.addEventListener(i, _ => updateCurrentTime(player, playerIndex));
   }
 
   for (const i of ['abort', 'audio-gain-change', 'audio-track-change', 'audio-tracks-change', 'auto-play', 'auto-play-change', 'auto-play-fail', 'can-load', 'can-load-poster', 'can-play', 'can-play-through', 'controls-change', 'destroy', 'duration-change', 'emptied', 'end', 'ended', 'error', 'fullscreen-change', 'fullscreen-error', 'live-change', 'live-edge-change', 'load-start', 'loaded-data', 'loaded-metadata', 'loop-change', 'media-airplay-request', 'media-audio-gain-change-request', 'media-audio-track-change-request', 'media-clip-end-change-request', 'media-clip-start-change-request', 'media-duration-change-request', 'media-enter-fullscreen-request', 'media-enter-pip-request', 'media-exit-fullscreen-request', 'media-exit-pip-request', 'media-google-cast-request', 'media-live-edge-request', 'media-mute-request', 'media-orientation-lock-request', 'media-orientation-unlock-request', 'media-pause-controls-request', 'media-pause-request', 'media-play-request', 'media-player-connect', 'media-poster-start-loading', 'media-quality-change-request', 'media-rate-change-request', 'media-resume-controls-request', 'media-seek-request', 'media-seeking-request', 'media-start-loading', 'media-text-track-change-request', 'media-type-change', 'media-unmute-request', 'media-user-loop-change-request', 'media-volume-change-request', 'orientation-change', 'pause', 'picture-in-picture-change', 'picture-in-picture-error', 'play', 'play-fail', 'playing', 'plays-inline-change', 'poster-change', 'progress', 'provider-change', 'provider-loader-change', 'provider-setup', 'qualities-change', 'quality-change', 'rate-change', 'remote-playback-change', 'replay', 'seeked', 'seeking', 'stalled', 'started', 'stream-type-change', 'suspend', 'text-track-change', 'text-tracks-change', 'title-change', 'vds-log', 'video-presentation-change', 'view-type-change', 'volume-change']) {

@@ -98,6 +98,7 @@ def main
   raise "Unexpected delta time #{dt}" if dt.negative? || dt > ALLOWED_TIME_DIFF
   raise "Inconsistent post filename/metadata date" unless post_date == metadata.time.date
 
+  # TODO: thumbnail media attachment https://github.com/nostr-protocol/nips/blob/master/92.md
   lang_label = "ISO-639-1"
   unsigned_event = {
     "content"    => content,
@@ -169,6 +170,7 @@ def main
 
         await_successful_deployment(url)
 
+        # TODO: make sure we never stuck here, retry transmission in case of network failure
         puts("publishing nostr event #{event["id"]}")
         puts(nak_raw(["event"] + relays, event_json))
 
@@ -200,6 +202,7 @@ def main
 end
 
 def nak_raw(args, input = nil)
+  # TODO: exit after timeout
   output = Channel(Tuple(String, Process::Status)).new
   spawn do
     value = Process.run(command: "nak", args: args) do |p|
@@ -284,6 +287,7 @@ def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bun
     end
   end
 
+  # FIXME: hangs forever
   failed_relays = relays.reject do |relay|
     begin
       found_event(event, relay) && found_event(approval_event, relay)

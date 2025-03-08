@@ -152,7 +152,7 @@ Your support keeps me going ❤️
 ## FAQ
 
 ### Why sponsoring independent FOSS developers? What's wrong with traditional businesses?
-Not necessarily "wrong", just mostly not aligned with my values.
+Not necessarily "wrong", just mostly unaligned with my values.
 
 One of the core values I'm pursuing is just {% include span_with_tooltip.html body="**distraction minimization**" tooltip="Which, for instance, can be implemented by applying design principles that are somewhat similar to what Suckless.org is about (<span class='no-wrap'>but less strict version,</span> adapted for mainstream users)." %}: I don't want to trap users' attention in my products; they deserve [healthier](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) life!
 
@@ -185,7 +185,7 @@ I perceive the three typical career paths the following way:
 - Pros:
     - 👍 some decisions control
         - restricted to democratic decisions across (co-)founders
-        - but some of the co-founders might *often* turn out to be overgrown psychopathic infants 💀
+        - but some of the co-founders might *often* turn out to be overgrown psychopathic [infants](https://youtu.be/7LqaotiGWjQ?t=3426s) 💀
             - what kind of decisions such company will be making in this case?
 - Cons:
     - 🤦‍♂️ too much management, hard to perform actual SE as founder
