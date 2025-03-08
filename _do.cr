@@ -360,6 +360,8 @@ def health(config)
     check_ban(i.hostname, banlists)
     check_ws(i)
   }
+
+  # TODO: check certificates validity periods
 end
 
 def check_icmp(host)

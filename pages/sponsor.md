@@ -185,7 +185,7 @@ I perceive the three typical career paths the following way:
 - Pros:
     - 👍 some decisions control
         - restricted to democratic decisions across (co-)founders
-        - but some of the co-founders might *often* turn out to be overgrown psychopathic infants 💀
+        - but some of the co-founders might *often* turn out to be overgrown psychopathic [infants](https://youtu.be/7LqaotiGWjQ?t=3426s) 💀
             - what kind of decisions such company will be making in this case?
 - Cons:
     - 🤦‍♂️ too much management, hard to perform actual SE as founder
