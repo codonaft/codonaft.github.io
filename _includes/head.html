@@ -552,6 +552,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
    }
   });
+
+  if (autoPlay && currentTime !== undefined) {
+   player.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
  };
 
  const currentLocation = new URL(window.location.href);
