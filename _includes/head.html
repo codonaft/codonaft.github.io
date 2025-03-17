@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
   .filter(([key, _]) => key === 't')
   .map(([_, value]) => parseFloat(value));
  currentLocation.searchParams.delete('t');
- history.replaceState(undefined, '', currentLocation.pathname + currentLocation.search);
+ history.replaceState(undefined, '', currentLocation.href);
  if (Hls?.isSupported()) {
   pageLog('hls is supported');
   let maybeAutoPlay = true;
