@@ -25,6 +25,7 @@ PUBLIC_MEDIA_HOST = "#{MEDIA_HOST}.com"
 
 TARGET_CPU = "nocona" # ssh media.codonaft -- rustc --print target-cpus | grep native | sed 's!.* (currently !!;s!)\\.!!'
 
+ALPINE_VERSION           = "3.21"
 AQUATIC_VERSION          = "0.9.0"
 BINDGEN_VERSION          = "0.70.1"
 BROWSER_DETECTOR_VERSION = "4.1.0"
@@ -43,7 +44,7 @@ CODEC_AAC  = "mp4a.40.2"
 OPUS_BITRATE_KBPS = 256
 
 BANDWIDTH_MB_PER_SEC = 20
-IGNORE_WSS           = ["personal.tracker.com", "tracker.novage.com.ua"]
+IGNORE_HOSTS         = ["personal.tracker.com", "tracker.novage.com.ua", "www.googletagmanager.com"]
 
 HOSTS_DIR       = Path["_hosts"]
 BUILD_DIR       = Path[".build"]
@@ -200,7 +201,8 @@ def encode_media(input : String, config : YAML::Any, language : String)
     .flatten
 
   File.write(output_dir.join("main.m3u8"), (header + audio_items + video_items).join('\n'))
-  system("find #{output_dir} -type f -print0 | xargs -0 sha256sum > #{output_dir.join("sha256sum.txt")}")
+  output = "sha256sum.txt"
+  system("find #{output_dir} -type f -print0 | xargs -0 sha256sum | grep -v #{output} > #{output_dir.join(output)}")
 end
 
 def update
@@ -324,59 +326,119 @@ def health(config)
 
   stuns = p2p_player_config["ice_servers"]
     .as_a
-    .map { |i| i.as_s.gsub("stun:", "").gsub(/:.*/, "") }
+    .map { |i| i.as_s.gsub("stun:", "").gsub(/:.*/, "").strip }
+    .reject { |i| i.empty? }
 
   cdns = `git grep --only-matching --extended-regexp "(<script.*src=|import[(]*)['\\"]*https://[a-zA-Z0-9._-]*"`
     .split('\n')
-    .map { |i| i.gsub(/.*https:\/\//, "") }
+    .map { |i| i.gsub(/.*https:\/\//, "").strip }
+    .reject { |i| i.empty? }
 
   bancheck = "_bancheck.txt"
-  custom_hosts = File::Info.readable?(bancheck) ? File.read_lines(bancheck) : [] of String
+  custom_hosts =
+    if File::Info.readable?(bancheck)
+      File
+        .read_lines(bancheck)
+        .map { |i| i.strip }
+        .reject { |i| i.empty? }
+    else
+      [] of String
+    end
 
   # TODO: validate all parsed URIs
-  general_hosts = (site_hosts + stuns + cdns + custom_hosts)
-    .map { |i| i.strip }
-    .reject { |i| i.empty? }
+  https_hosts = (site_hosts + cdns + custom_hosts)
+    .reject { |i| IGNORE_HOSTS.includes?(i) }
     .to_set
+  general_hosts = stuns.to_set + https_hosts
 
   trackers = p2p_player_config["trackers"].as_a.map { |i| URI.parse(i.as_s) }
   wss_uris = (`git grep --only-matching 'wss://[a-zA-Z0-9/._-]*'`
     .split('\n')
     .map { |i| i.strip.gsub(/.*wss:\/\//, "") }
-    .reject { |i| i.empty? || IGNORE_WSS.any? { |ignored| i.includes?(ignored) } }
+    .reject { |i| i.empty? || IGNORE_HOSTS.any? { |ignored| i.includes?(ignored) } }
     .map { |i| URI.parse("wss://#{i}") } + trackers)
+    .reject { |i| i.hostname.nil? }
     .to_set
 
-  Dir.children(HOSTS_DIR).each { |i|
-    print("#{i}  ")
-    check_icmp(i)
-  }
-  general_hosts.each { |i|
-    print("#{i}  ")
-    check_icmp(i)
-    check_ban(i, banlists)
-  }
-  wss_uris.each { |i|
-    print("#{i}  ")
-    check_ban(i.hostname, banlists)
-    check_ws(i)
-  }
+  with_socks_proxy("ru", ->(proxy : URI) {
+    Dir.children(HOSTS_DIR).each { |i|
+      print("#{i} ")
+      check_icmp(i)
+    }
+    general_hosts.each { |i|
+      print("#{i} ")
+      check_icmp(i)
+      check_ban(i, banlists)
+    }
+    wss_uris.each { |i|
+      print("#{i} ")
+      check_ban(i.hostname.not_nil!, banlists)
+      check_ws(i, proxy)
+    }
+    https_hosts.each { |i| check_certificate(i, proxy) }
+  })
+end
 
-  # TODO: check certificates validity periods
+def with_socks_proxy(country, f : URI ->)
+  used_tcp_ports = Set.new(`ss --tcp --listening | grep --only-matching --extended-regexp ':[0-9]{1,}'`
+    .strip
+    .split('\n')
+    .map { |i| UInt16.new(i.gsub(':', "")) })
+
+  name = "tor-#{country}"
+  port = 9050
+  exposed_port_from_container = `podman port #{name} | grep --only-matching --extended-regexp ':[0-9]{1,}$'`.strip.gsub(':', "")
+  is_stopped = exposed_port_from_container.empty?
+
+  exposed_port =
+    if is_stopped
+      (1024_u16..UInt16::MAX).find { |i| !used_tcp_ports.includes?(i) }.not_nil!
+    else
+      UInt16.new(exposed_port_from_container)
+    end
+
+  # needs_restart = is_stopped || `podman logs #{name}`.includes?("All routers are down")
+  if is_stopped
+    system(<<-STRING
+      podman run --replace --detach --name '#{name}' -p #{exposed_port}:#{port} -it "alpine:#{ALPINE_VERSION}" /bin/sh -c "
+      set -xeuo pipefail
+
+      apk add --update --no-cache tor
+
+      tor --SocksPort #{port} \
+        --ExitNodes '{#{country}}' \
+        --ExitRelay 0 \
+        --StrictNodes 1 \
+        --NumEntryGuards 1 \
+        --NumDirectoryGuards 1 \
+        --MaxCircuitDirtiness 10 \
+        --HiddenServiceStatistics 0"
+      STRING
+    )
+  end
+
+  puts("initializing tor")
+  loop do
+    break if `podman logs #{name}`.includes?("Bootstrapped 100%")
+    sleep(1.seconds)
+  end
+
+  proxy = URI.parse("socks5://127.0.0.1:#{exposed_port}")
+  f.call(proxy)
 end
 
 def check_icmp(host)
-  output = `ping -c1 #{host} 2>>/dev/stdout | grep --extended-regexp '(^ping:|time=[0-9\\.]*)' | sed 's!.*time=!!'`.strip
-  if output.starts_with?("ping:")
+  output = `ping -c1 #{host} 2>&1 | grep --extended-regexp '(^ping:|100%|time=[0-9\\.]*)' | sed 's!.*time=!!;s!.*transmitted, !!'`.strip
+  if output.starts_with?("ping:") || output.includes?("100%")
     error(output)
   else
     ok(output)
   end
 end
 
-def check_ws(host)
+def check_ws(host : URI, proxy : URI)
   now = Time.utc
-  output = `echo -n | websocat -v #{host} 2>>/dev/stdout`
+  output = `echo -n | websocat --socks5 #{proxy.host}:#{proxy.port} -v #{host} 2>&1`
   if output.includes?("Both directions finished")
     latency = (Time.utc - now).milliseconds
     ok("#{latency} ms")
@@ -386,8 +448,29 @@ def check_ws(host)
   end
 end
 
-def check_ban(host : String?, banlists : Set(String))
-  return unless host
+def check_certificate(host : String, proxy : URI)
+  print("#{host} expires on ")
+  begin
+    raw = `curl --proxy #{proxy} --verbose --insecure https://#{host} 2>&1 | grep '\\*  expire date'`
+      .strip
+      .split(": ")[1]
+    time = Time.parse!(raw, "%b %e %H:%M:%S %Y %Z")
+    now = Time.utc
+    if now < time
+      if now + 3.days >= time
+        warn(time)
+      else
+        ok(time)
+      end
+    else
+      error(time)
+    end
+  rescue e
+    error(e)
+  end
+end
+
+def check_ban(host : String, banlists : Set(String))
   pattern = [host] + `nslookup #{host}`
     .split('\n')
     .skip(3)
@@ -485,6 +568,8 @@ def build_aquatic(host : String)
   Dir.mkdir_p(bin_dir, 0o755)
 
   alpine_version = `ssh #{host} -- cat /etc/alpine-release`.strip
+  alpine_version = ALPINE_VERSION if alpine_version.empty?
+
   system(<<-STRING
     podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{alpine_version}" /bin/sh -c "
     set -xeuo pipefail
