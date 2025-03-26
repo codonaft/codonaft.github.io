@@ -263,7 +263,7 @@ def sync
     done
   }.each { |i| i.receive }
 
-  ok("sync finished")
+  ok("sync finished\n")
 end
 
 def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files : Set(Path))
@@ -303,7 +303,7 @@ end
 def serve(host : String, *, destination = Path["/_site"])
   step("serve")
   output_dir = BUILD_DIR.join(host, destination)
-  system("bundle exec jekyll serve --future --host #{host} --destination #{output_dir} --livereload")
+  system("bundle exec jekyll serve --future --host #{host} --destination #{output_dir}")
 end
 
 def health(config)
@@ -364,18 +364,25 @@ def health(config)
     Dir.children(HOSTS_DIR).each { |i|
       print("#{i} ")
       check_icmp(i)
+      puts
     }
     general_hosts.each { |i|
       print("#{i} ")
       check_icmp(i)
       check_ban(i, banlists)
+      puts
     }
     wss_uris.each { |i|
       print("#{i} ")
       check_ban(i.hostname.not_nil!, banlists)
       check_ws(i, proxy)
+      puts
     }
-    https_hosts.each { |i| check_certificate(i, proxy) }
+    https_hosts.each { |i|
+      check_certificate(i, proxy)
+      check_ech(i)
+      puts
+    }
   })
 end
 
@@ -434,6 +441,18 @@ def check_icmp(host)
   else
     ok(output)
   end
+end
+
+def check_ech(host : String)
+  body = JSON.parse(HTTP::Client.get("https://dns.google/resolve?name=#{host}&type=HTTPS").body)
+  answer = body["Answer"]?
+  return if answer.nil? || answer.as_a?.nil?
+  has_ech = answer.as_a.any? { |i|
+    data = i["data"]?
+    return false if data.nil? || data.as_s?.nil?
+    data.as_s.includes?("ech=")
+  }
+  error(" ECH is enabled") if has_ech
 end
 
 def check_ws(host : URI, proxy : URI)
@@ -549,9 +568,9 @@ def check
   raise "file format failure" unless $?.success?
 
   if DEBUG
-    warn("DEBUG")
+    warn("DEBUG\n")
   else
-    ok("PROD")
+    ok("PROD\n")
   end
 end
 
@@ -811,7 +830,7 @@ def rsync(source_dir : Path, files : Enumerable(Path), args : Enumerable(String)
   File.delete(files_from)
 
   some_attrs_not_transferred = 5888
-  raise "unexpected rsync exit status=#{status.exit_status} source_dir=#{source_dir} args=#{args}" unless status.success? || status.exit_status == some_attrs_not_transferred
+  raise "unexpected rsync exit status=#{status.system_exit_status} source_dir=#{source_dir} args=#{args}" unless status.success? || status.system_exit_status == some_attrs_not_transferred
 end
 
 def check_time(hosts : Enumerable(String))
@@ -1143,13 +1162,13 @@ end
 
 def error(text)
   Colorize.with.red.surround(STDOUT) do
-    puts(text)
+    print(text)
   end
 end
 
 def warn(text)
   Colorize.with.yellow.surround(STDOUT) do
-    puts(text)
+    print(text)
   end
 end
 
@@ -1161,7 +1180,7 @@ end
 
 def ok(text)
   Colorize.with.green.surround(STDOUT) do
-    puts(text)
+    print(text)
   end
 end
 
