@@ -11,8 +11,7 @@ nostr:
   relax_filters: true
 ---
 
-I've been playing with Nostr for a couple of months now and have made [**some improvements**](https://github.com/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/).
-I'm happy to finally integrate it here!
+I've been playing with Nostr for a couple of months now and have made [**some improvements**](https://github.com/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/). I'm happy to finally integrate it here!
 
 Feel free to try it in the comments section. It's still experimental, however you can integrate it on your website as well.
 

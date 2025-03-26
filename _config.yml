@@ -68,7 +68,6 @@ theme_settings:
 
   date_format: "%Y-%m-%d"
 
-  rss:
   email_address:
   behance:
   bitbucket:

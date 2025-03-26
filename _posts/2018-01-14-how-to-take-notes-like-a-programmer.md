@@ -8,16 +8,11 @@ tags: [learning, productivity, workbook, synopsis, summary, abstract, conspectus
 lang-ru-uri: "/ru/how-to-take-notes-like-a-programmer/"
 ---
 
-When I was a kid I used to make pretty awful notes:
-dirty hand-written copybooks with poor structure.
-Almost unusable.
+When I was a kid I used to make pretty awful notes: dirty hand-written copybooks with poor structure. Almost unusable.
 
-Later, when I discovered [MOOC](https://en.wikipedia.org/wiki/Massive_open_online_course) video courses,
-I kept using the same antipatterns I used in classrooms but in a clearer way,
-with [VimWiki](https://vimwiki.github.io) and later with [**Jupyter**](https://jupyter.org).
+Later, when I discovered [MOOC](https://en.wikipedia.org/wiki/Massive_open_online_course) video courses, I kept using the same antipatterns I used in classrooms but in a clearer way, with [VimWiki](https://vimwiki.github.io) and later with [**Jupyter**](https://jupyter.org).
 
-The notes were still poorly structured.
-Take a look at this—I'm **not even motivated** to open and figure out what's in it:
+The notes were still poorly structured. Take a look at this—I'm **not even motivated** to open and figure out what's in it:
 
 ![minipic](/assets/img/weeks.webp)
 

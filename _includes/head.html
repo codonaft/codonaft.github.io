@@ -614,7 +614,7 @@ gtag('config', '{{ site.theme_settings.google_analytics }}');
 {% endif %}
 
 {% if page.lang != 'en' and page.layout == 'home' %}
-<title>{{ site.title }} | {{ page.str.description | xml_escape }}</title>
+<title>{{ site.title | xml_escape }} | {{ page.str.description | xml_escape }}</title>
 {% seo title=false %}
 {% else %}
 {% seo %}

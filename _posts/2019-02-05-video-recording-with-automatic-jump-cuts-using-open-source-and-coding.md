@@ -9,13 +9,9 @@ tags: [pitivi, ruby, video, sound, DIY, GNU, linux]
 lang-ru-uri: "/ru/video-recording-with-automatic-jump-cuts-using-open-source-and-coding/"
 ---
 
-Software developers always have something to share: some unique experiences and opinions.
-But only few of us make vlogs for that, because video recording is very challenging.
+Software developers always have something to share: some unique experiences and opinions. But only few of us make vlogs for that, because video recording is very challenging.
 
-Today I want to talk about my challenge of video recording and editing
-using {% include span_with_tooltip.html body="FOSS" tooltip="Free and Open Source Software" %},
-scripting with Ruby
-and some {% include span_with_tooltip.html body="DIY" tooltip="Do It Yourself" %}.
+Today I want to talk about my challenge of video recording and editing using {% include span_with_tooltip.html body="FOSS" tooltip="Free and Open Source Software" %}, scripting with Ruby and some {% include span_with_tooltip.html body="DIY" tooltip="Do It Yourself" %}.
 <!--more-->
 
 ## Theory

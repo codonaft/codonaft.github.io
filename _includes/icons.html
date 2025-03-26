@@ -73,7 +73,7 @@
 </li>
 {% endif %}
 
-{% if site.theme_settings.github and page.lang != 'ru' %}
+{% if site.theme_settings.github %}
 <li>
  <a href="https://github.com/{{ site.theme_settings.github }}" title="GitHub" target="_blank">{% include icons/github.svg %}</a>
 </li>
@@ -213,13 +213,4 @@
 <li><a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" title="Patreon" target="_blank">{% include icons/patreon.svg %}</a></li>
 {% endif %} -->
 
-{% if site.theme_settings.rss %}
-<li>
- <a href="{{ site.url }}{{ site.baseurl }}/feed.xml" title="RSS" target="_blank">
-  <span class="fa-stack fa-lg">
-   <i class="fas fa-circle fa-stack-2x"></i>
-   <i class="fab fa-rss fa-stack-1x fa-inverse"></i>
-  </span>
- </a>
-</li>
-{% endif %}
+<li><a href="{% if page.lang != 'en' %}/{{ page.lang }}{% endif %}/feed.xml" title="RSS" target="_blank">{% include icons/feed.svg %}</a></li>

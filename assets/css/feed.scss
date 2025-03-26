@@ -1,0 +1,89 @@
+---
+---
+
+// Variables
+@import 'base/variables';
+
+// External
+@import 'external/reset';
+@import 'external/syntax';
+
+// Base
+@import 'base/global';
+@import 'base/utility';
+
+// Posts
+@import 'layouts/posts';
+
+body {
+  background: $border-color;
+  padding: $padding-x-small;
+}
+.container {
+  background: $background-color;
+  max-width: $break;
+  margin: 0 auto;
+  border-radius: $border-radius;
+  padding-left: $padding-medium;
+  padding-right: $padding-medium;
+  padding-top: $padding-small;
+  padding-bottom: 0;
+  h2 {
+    a:hover {
+      @extend .post-link;
+    }
+  }
+  a:hover {
+    @extend .body-link;
+  }
+}
+.podcast-image {
+  float: right;
+  width: 10rem;
+  margin-bottom: 4rem;
+  margin-left: 4rem;
+}
+.podcast-image img {
+  width: 10rem;
+  height: auto;
+  border-radius: $border-radius;
+}
+.podcast-header {
+  margin-bottom: 4rem;
+}
+.item {
+  clear: both;
+  border-top: $border-size solid $border-color;
+  overflow-wrap: break-word;
+  padding: $padding-medium 0;
+}
+audio {
+  width: 100%;
+  border-radius: $border-radius;
+}
+audio:focus {
+  outline: none;
+}
+.episode-image img {
+  width: 20rem;
+  height: auto;
+  margin: 0 5rem 3rem 0;
+  border-radius: $border-radius;
+}
+.meta {
+  margin-bottom: 1em;
+}
+
+@media screen and (max-width:$break) {
+  body {
+    padding: 0;
+  }
+  .podcast-image {
+    float: none;
+    margin-left: 0;
+    width: 100%;
+  }
+  .podcast-image img {
+    width: 100%;
+  }
+}
