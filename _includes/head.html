@@ -465,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
      p2p: {
       core: {
        // swarmId: swarmId.toString(),
-       // isP2PDisabled: false,
+       isP2PDisabled: window.location.hostname.endsWith('i2p'),
        // simultaneousHttpDownloads: 2,
        // simultaneousP2PDownloads: 3,
        // highDemandTimeWindow: 15,

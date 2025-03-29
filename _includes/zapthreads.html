@@ -1,3 +1,7 @@
+{% if site.theme_settings.upstream_url %}
+💬 {{ page.str.leave_comment_on_upstream }} <a href="{{ page.url | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>
+{% else %}
+
 {% assign zapthreads_client = "zapthreads-codonaft" %}
 {% capture rules %}{% include rules.html %}{% endcapture %}
 
@@ -416,3 +420,5 @@ ZapThreads
 </zap-threads>
 
 <noscript><div style="text-align: center">This <a href="https://github.com/codonaft/codonaft.github.io#readme" rel="noopener noreferrer" target="_blank">website</a> uses <a href="https://github.com/codonaft/zapthreads-codonaft#readme" rel="noopener noreferrer" target="_blank">zapthreads</a>—a FOSS commenting system built on Nostr. {{ page.str.javascript_required_comments }}</div></noscript>
+
+{% endif %}

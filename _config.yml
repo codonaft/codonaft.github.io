@@ -34,6 +34,8 @@ defaults:
         next_page: Next
         previous_page: Prev
         javascript_required_comments: Please enable JavaScript to view comments.
+        p2p_player_warning: Too slow? Try
+        leave_comment_on_upstream: Leave comment at
   - scope:
       path: 'ru/*'
     values:
@@ -56,6 +58,8 @@ defaults:
         next_page: Дальше
         previous_page: Назад
         javascript_required_comments: Please enable JavaScript to view comments.
+        p2p_player_warning: Медленно грузится? Попробуй
+        leave_comment_on_upstream: Оставить коммент на
 
 theme_settings:
   site_repo_url: https://github.com/codonaft/codonaft.github.io
