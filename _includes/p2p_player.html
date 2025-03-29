@@ -38,6 +38,9 @@
    <media-video-layout></media-video-layout>
   </media-player>
  </div>
+{% if site.theme_settings.upstream_url %}
+ <div class="p2p-player-warning">⚠️ {{ page.str.p2p_player_warning }} <a href="{{ page.url | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>
+{% endif %}
 {% if include.chapters %}
  <div class="p2p-player-chapters">
 {{ include.chapters | strip | newline_to_br }}

@@ -34,6 +34,8 @@ defaults:
         next_page: Next
         previous_page: Prev
         javascript_required_comments: Please enable JavaScript to view comments.
+        p2p_player_warning: Too slow? Try
+        leave_comment_on_upstream: Leave comment using
   - scope:
       path: 'ru/*'
     values:
@@ -56,6 +58,8 @@ defaults:
         next_page: Дальше
         previous_page: Назад
         javascript_required_comments: Please enable JavaScript to view comments.
+        p2p_player_warning: Медленно грузится? Попробуй
+        leave_comment_on_upstream: Оставить коммент через
 
 theme_settings:
   site_repo_url: https://github.com/codonaft/codonaft.github.io
@@ -144,9 +148,11 @@ theme_settings:
   post_navigation: true
 
   p2p_player:
+    swarmPrefix: https://media.codonaft.com
     media_urls:
     - https://media.codonaft.com
     - https://media-cached.codonaft.com
+    upstream_media_urls: []
     trackers:
     - wss://media.codonaft.com/announce
     - wss://tracker.webtorrent.dev

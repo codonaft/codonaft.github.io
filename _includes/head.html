@@ -97,10 +97,22 @@ const codecSupported = codec =>
  ("ManagedMediaSource" in window && ManagedMediaSource.isTypeSupported(codec)) || ("MediaSource" in window && MediaSource.isTypeSupported(codec));
 
 document.addEventListener("DOMContentLoaded", () => {
- const mediaUrls = {{ site.theme_settings.p2p_player.media_urls | jsonify }};
+ const i2p = window.location.hostname.endsWith('.i2p');
+
+ if (i2p) document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.visibility = 'visible');
+
+ const mediaUrls = [...{{ site.theme_settings.p2p_player.media_urls | jsonify }}, ...{{ site.theme_settings.p2p_player.upstream_media_urls | jsonify }}].filter(i => {
+  const i2pMedia = i.endsWith('.i2p');
+  return i2p ? i2pMedia : !i2pMedia;
+ });
+
  const HlsWithP2P = HlsJsP2PEngine.injectMixin(window.Hls);
 
  const getSource = player => new URL(player.getAttribute('src'));
+ const getSwarmId = player => {
+  const source = getSource(player);
+  return '{{ site.theme_settings.p2p_player.swarmPrefix }}' + source.pathname;
+ };
 
  const loadStoryboard = player => {
   const duration = player.duration;
@@ -136,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
  };
 
  const loadCurrentTime = player => {
-  const swarmId = getSource(player);
+  const swarmId = new URL(getSwarmId(player));
   const t = Object
    .entries(localStorage)
    .find(([k, _]) => k.startsWith(swarmId.pathname));
@@ -252,8 +264,8 @@ document.addEventListener("DOMContentLoaded", () => {
  };
 
  const loadMetadata = (player, playerIndex) => {
-   loadStoryboard(player);
-   loadChapters(player, playerIndex);
+  loadStoryboard(player);
+  loadChapters(player, playerIndex);
  };
 
  let lastFailureTime = 0;
@@ -264,7 +276,10 @@ document.addEventListener("DOMContentLoaded", () => {
  const updateMediaSource = (player, hls) => {
   console.log('attempt=' + mediaSourceSelectionAttempt);
   const source = getSource(player);
-  const sameOrigin = (mediaSourceSelectionAttempt % mediaUrls.length) === mediaUrls.indexOf(source.origin);
+
+  //const sameOrigin = (mediaSourceSelectionAttempt % mediaUrls.length) === mediaUrls.indexOf(source.origin);
+  const mediaUrl = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]);
+  const sameOrigin = mediaUrl.origin === new URL(source).origin;
 
   if (sameOrigin) {
    console.log('same origin');
@@ -276,7 +291,8 @@ document.addEventListener("DOMContentLoaded", () => {
    hls.stopLoad();
   }
 
-  source.hostname = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]).hostname;
+  source.protocol = mediaUrl.protocol;
+  source.hostname = mediaUrl.hostname;
   player.setAttribute('src', source.toString());
 
   if (shouldPlay && !player.playing) {
@@ -304,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pageLog(`initializePlayer ${playerIndex}`);
   player.state.logLevel = 'debug';
 
-  const swarmId = getSource(player);
+  const swarmId = getSwarmId(player);
   updateCurrentTime(player, playerIndex);
 
   localStorage.mediaSourceSelectionAttempt = mediaSourceSelectionAttempt;
@@ -464,8 +480,8 @@ document.addEventListener("DOMContentLoaded", () => {
      // },
      p2p: {
       core: {
-       // swarmId: swarmId.toString(),
-       // isP2PDisabled: false,
+       // swarmId: swarmId,
+       isP2PDisabled: i2p,
        // simultaneousHttpDownloads: 2,
        // simultaneousP2PDownloads: 3,
        // highDemandTimeWindow: 15,
@@ -481,12 +497,8 @@ document.addEventListener("DOMContentLoaded", () => {
        p2pErrorRetries: Infinity,
        announceTrackers: {{ site.theme_settings.p2p_player.trackers | jsonify }},
        rtcConfig: { iceServers: {{ site.theme_settings.p2p_player.ice_servers | jsonify }}.map(urls => { return { urls }; }) },
-       mainStream: {
-        swarmId: swarmId.toString(),
-       },
-       secondaryStream: {
-        swarmId: swarmId.toString(),
-       },
+       mainStream: { swarmId },
+       secondaryStream: { swarmId },
       },
       onHlsJsCreated: (hls) => {
        hls.p2pEngine.addEventListener('onPeerConnect', params => {

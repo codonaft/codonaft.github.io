@@ -125,7 +125,7 @@ def build
   Dir.mkdir_p(CACHE_DIR, 0o755)
   build_vidstack_player
   build_zapthreads
-  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"]) unless DEBUG
+  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"], configs: [Path["_config.yml"], Path["_config.mirror.yml"]]) unless DEBUG
   build_aquatic(MEDIA_HOST)
 end
 
@@ -136,7 +136,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "local", "nginx"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "i2pd", "local", "nginx"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -634,7 +634,7 @@ def build_zapthreads
   raise "zapthreads build failure" unless $?.success?
 end
 
-def build_jekyll(host : String, *, destination : Path)
+def build_jekyll(host : String, *, destination : Path, configs : Array(Path) = [] of Path)
   prepare_jekyll
   output_dir = BUILD_DIR.join(host, destination)
   # if File.directory?(output_dir) && File.directory?("vendor")
@@ -642,7 +642,8 @@ def build_jekyll(host : String, *, destination : Path)
   #   return
   # end
   Dir.mkdir_p(output_dir, 0o755)
-  system("bundle exec jekyll build --future --destination #{output_dir}")
+  configs_arg = configs.empty? ? "" : "--config #{configs.join(',')}"
+  system("bundle exec jekyll build --future --destination #{output_dir} #{configs_arg}")
   raise "jekyll build failure" unless $?.success?
 end
 

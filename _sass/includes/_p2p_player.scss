@@ -168,9 +168,10 @@
   }
 }
 
-.p2p-player-description {
-  padding-left: 0.2rem;
-  padding-right: 0.2rem;
+.p2p-player-warning {
+  color: $date-color;
+  font-size: 0.7rem;
+  visibility: hidden;
 }
 
 .p2p-player-chapters {
