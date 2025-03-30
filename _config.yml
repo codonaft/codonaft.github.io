@@ -152,7 +152,7 @@ theme_settings:
     media_urls:
     - https://media.codonaft.com
     - https://media-cached.codonaft.com
-    upstream_media_urls: []
+    media_urls_overwrite: []
     trackers:
     - wss://media.codonaft.com/announce
     - wss://tracker.webtorrent.dev

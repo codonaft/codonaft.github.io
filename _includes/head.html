@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
  if (i2p) document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.visibility = 'visible');
 
- const mediaUrls = [...{{ site.theme_settings.p2p_player.media_urls | jsonify }}, ...{{ site.theme_settings.p2p_player.upstream_media_urls | jsonify }}].filter(i => {
+ const mediaUrls = [...{{ site.theme_settings.p2p_player.media_urls_overwrite | jsonify }}, ...{{ site.theme_settings.p2p_player.media_urls | jsonify }}].filter(i => {
   const i2pMedia = i.endsWith('.i2p');
   return i2p ? i2pMedia : !i2pMedia;
  });
@@ -277,7 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log('attempt=' + mediaSourceSelectionAttempt);
   const source = getSource(player);
 
-  //const sameOrigin = (mediaSourceSelectionAttempt % mediaUrls.length) === mediaUrls.indexOf(source.origin);
   const mediaUrl = new URL(mediaUrls[mediaSourceSelectionAttempt % mediaUrls.length]);
   const sameOrigin = mediaUrl.origin === new URL(source).origin;
 
@@ -294,13 +293,29 @@ document.addEventListener("DOMContentLoaded", () => {
   source.protocol = mediaUrl.protocol;
   source.hostname = mediaUrl.hostname;
   player.setAttribute('src', source.toString());
+  pageLog('new source ' + player.getAttribute('src'));
+
+  const mediaProvider = player.querySelector('media-provider');
+  const poster = mediaProvider.querySelector('media-poster');
+  if (poster) {
+   const thumbnailUrl = new URL(poster.getAttribute('src'));
+   thumbnailUrl.protocol = mediaUrl.protocol;
+   thumbnailUrl.hostname = mediaUrl.hostname;
+   poster.setAttribute('src', thumbnailUrl.toString());
+  }
+
+  mediaProvider.querySelectorAll('track').forEach(i => {
+   const trackUrl = new URL(i.getAttribute('src'));
+   trackUrl.protocol = mediaUrl.protocol;
+   trackUrl.hostname = mediaUrl.hostname;
+   i.setAttribute('src', trackUrl.toString())
+  });
 
   if (shouldPlay && !player.playing) {
    player.setAttribute('autoplay', true);
    player.play();
   }
 
-  pageLog('new source ' + player.getAttribute('src'));
   loadStoryboard(player);
  };
 

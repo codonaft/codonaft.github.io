@@ -243,9 +243,8 @@ def sync
     system("git clone git@github.com:codonaft/zapthreads-codonaft.git _zapthreads")
   end
 
-  hosts = Dir.children(HOSTS_DIR)
+  hosts = all_hosts()
   puts("hosts: #{hosts}")
-  check_time(hosts)
 
   common_files = git_ls(COMMON_ROOT)
   hosts_files : Hash(String, Set(Path)) = hosts.map { |host|
@@ -282,7 +281,7 @@ def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files
   host_build_files = children_recursive(host_build_dir).to_set
   filtered_sync(host, host_build_dir, upload: host_build_files) # TODO: with --delete specifically for jekyll ?
 
-  system("ssh #{host} -- sudo etckeeper commit sync 2>>/dev/null")
+  ssh(host, ["sudo etckeeper commit sync 2>>/dev/null"])
 end
 
 def start_openrc(host : String, *, services : Array(String))
@@ -292,12 +291,20 @@ def start_openrc(host : String, *, services : Array(String))
       "sudo rc-update add #{i} default",
       "sudo rc-service --ifstopped #{i} start",
       "sudo rc-service --ifcrashed #{i} restart",
-    ] })
+    ] },
+    tty: true
+  )
 end
 
-def ssh(host : String, stdin : Array(String))
-  input = (stdin + ["exit"]).join(';')
-  system("echo '#{input}' | ssh -tt #{host} /bin/sh")
+def ssh(host : String, commands : Array(String), *, tty : Bool = false)
+  if tty
+    input = (commands + ["exit"]).join(';')
+    system("ssh -tt #{host} /bin/sh <<< '#{input}'")
+    "" # FIXME
+  else
+    input = commands.join(';')
+    `ssh #{host} -- '#{input}'`.strip
+  end
 end
 
 def serve(host : String, *, destination = Path["/_site"])
@@ -312,6 +319,7 @@ def health(config)
     return
   end
   step("health")
+
   banlists =
     if nonempty_exists?(BANLISTS) && File.info(BANLISTS).modification_time + 1.days > Time.utc
       File.read_lines(BANLISTS).to_set
@@ -567,6 +575,9 @@ def check
   )
   raise "file format failure" unless $?.success?
 
+  check_time(all_hosts())
+  [MEDIA_HOST, MIRROR_HOST].each { |i| check_i2p_host(i) }
+
   if DEBUG
     warn("DEBUG\n")
   else
@@ -586,7 +597,7 @@ def build_aquatic(host : String)
   end
   Dir.mkdir_p(bin_dir, 0o755)
 
-  alpine_version = `ssh #{host} -- cat /etc/alpine-release`.strip
+  alpine_version = ssh(host, ["cat /etc/alpine-release"])
   alpine_version = ALPINE_VERSION if alpine_version.empty?
 
   system(<<-STRING
@@ -835,11 +846,12 @@ def rsync(source_dir : Path, files : Enumerable(Path), args : Enumerable(String)
 end
 
 def check_time(hosts : Enumerable(String))
+  puts("checking time")
   hosts_out_of_sync = hosts
     .map { |host|
       out_of_sync = Channel(Bool).new
       spawn do
-        remote_now = Time.unix(`ssh #{host} -- date --utc +%s`.to_i)
+        remote_now = Time.unix(ssh(host, ["date --utc +%s"]).to_i)
         now = Time.utc
         dt = remote_now - now
         out_of_sync.send(dt.abs > 2.seconds)
@@ -849,6 +861,20 @@ def check_time(hosts : Enumerable(String))
     .select { |_, out_of_sync| out_of_sync.receive }
     .map { |host, _| host }
   raise "#{hosts_out_of_sync} time is out of sync" unless hosts_out_of_sync.empty?
+end
+
+def check_i2p_host(host : String)
+  puts("checking i2p configuration at #{host}")
+  private_key = File.read_lines(HOSTS_DIR.join(host).join("etc/i2pd/tunnels.conf"))
+    .select { |i| i.starts_with?("keys =") }
+    .map { |i| i.split(" = ")[1] }[0]
+  check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 440, path: Path["/var/lib/i2pd/#{private_key}"])
+end
+
+def check_manual_upload(host : String, *, owner : String, group : String, mode : UInt16, path : Path)
+  raise "#{path}: unexpected owner" unless ssh(host, ["sudo stat -c %U #{path}"]) == owner
+  raise "#{path}: unexpected group" unless ssh(host, ["sudo stat -c %G #{path}"]) == group
+  raise "#{path}: unexpected mode" unless ssh(host, ["sudo stat -c %a #{path}"]).to_i == mode
 end
 
 def children_recursive(dir : Path) : Array(Path)
@@ -868,6 +894,10 @@ def children_recursive_inner(dir : Path) : Array(Path)
       end
     }
     .map { |i| Path[i] }
+end
+
+def all_hosts : Array(String)
+  Dir.children(HOSTS_DIR)
 end
 
 def find_hosts(host : String?) : Array(String)
