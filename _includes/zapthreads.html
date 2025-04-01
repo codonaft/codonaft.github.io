@@ -171,12 +171,10 @@
 </div>
 
 <script type="module">
-import { francAll } from '/assets/js/vendor/franc-min.min.js';
+import { detectAll } from '/assets/js/vendor/tinyld.min.js';
 import BrowserDetector from '/assets/js/vendor/browser-dtector.min.js';
 
 const browser = new BrowserDetector(window.navigator.userAgent).parseUserAgent().name;
-const iso6391To3 = {en: 'eng', ru: 'rus'};
-const targetLang = iso6391To3['{{ page.lang }}'];
 const domParser = new DOMParser();
 
 function validateNoImages(doc) {
@@ -191,12 +189,10 @@ function validateLang(doc, language) {
  if (language === undefined || language === '{{ page.lang }}') {
   [...doc.querySelectorAll('a, code')].forEach(i => i.remove());
   const raw = doc.querySelector('body').innerHTML.replace(/<[^>]+>/g, '');
-
-  const all = francAll(raw, {
-   minLength: Math.min({{ site.theme_settings.nostr.max_comment_length }}, raw.length)
-  });
-  const result = all.find(([lang, _]) => lang === targetLang);
-  valid = result && result[1] > 0.2;
+  const all = detectAll(raw.slice(0, Math.min({{ site.theme_settings.nostr.max_comment_length }}, raw.length)));
+  console.log('detected languages', all);
+  const result = all.find(({ lang }) => lang === '{{ page.lang }}');
+  valid = result && result.accuracy > 0.01;
  }
  if (!valid) throw new Error('Language is different than in blogpost?');
 }

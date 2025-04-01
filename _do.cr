@@ -29,7 +29,7 @@ ALPINE_VERSION           = "3.21"
 AQUATIC_VERSION          = "0.9.0"
 BINDGEN_VERSION          = "0.70.1"
 BROWSER_DETECTOR_VERSION = "4.1.0"
-FRANC_VERSION            = "6.2.0"
+TINYLD_VERSION           = "1.3.4"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
@@ -215,7 +215,7 @@ def update
     #{update_media_captions}
     #{update_hls}
     #{update_p2p_media_loader}
-    #{update_franc}
+    #{update_tinyld}
     wait
     STRING
   )
@@ -706,11 +706,9 @@ def prepare_jekyll
   raise "prepare_jekyll failure" unless $?.success?
 end
 
-def update_franc
-  # https://esm.sh/franc-min@6?bundle
+def update_tinyld
   <<-STRING
-    wget -q 'https://esm.sh/v135/franc-min@#{FRANC_VERSION}/es2022/franc-min.bundle.mjs' -O 'assets/js/vendor/franc-min.js' &
-    wget -q 'https://esm.sh/v135/franc-min@#{FRANC_VERSION}/es2022/franc-min.bundle.mjs.map' -O 'assets/js/vendor/franc-min.js.map' &
+    wget -q 'https://cdn.jsdelivr.net/npm/tinyld@#{TINYLD_VERSION}/dist/tinyld.light.browser.js' -O 'assets/js/vendor/tinyld.min.js' &
   STRING
 end
 

@@ -7,6 +7,7 @@ Powered by
 - [Vidstack Player](https://github.com/codonaft/vidstack-player) ([license](https://github.com/codonaft/vidstack-player/blob/codonaft/LICENSE))
 - [ytdefer](https://github.com/groupboard/ytdefer) ([license](licenses/LICENSE-ytdefer.txt))
 - [ZapThreads](https://github.com/codonaft/zapthreads-codonaft) ([license](https://github.com/franzaps/zapthreads/blob/master/LICENSE))
+- [tinyld](https://github.com/komodojp/tinyld#readme) ([license](https://github.com/komodojp/tinyld/blob/develop/license))
 - [browser-dtector](https://github.com/sibiraj-s/browser-dtector#readme) ([license](https://github.com/sibiraj-s/browser-dtector/blob/master/LICENSE))
 - fonts
     - [Font Awesome](https://fontawesome.com) ([license](https://fontawesome.com/license/free))
