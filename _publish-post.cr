@@ -3,6 +3,7 @@
 require "colorize"
 require "http/client"
 require "json"
+require "mime"
 require "uri"
 require "yaml"
 
@@ -19,6 +20,9 @@ class PostMetadata
 
   @[YAML::Field(key: "title")]
   property title : String
+
+  @[YAML::Field(key: "feature-img")]
+  property feature_img : String
 
   @[YAML::Field(key: "permalink")]
   property permalink : String
@@ -89,16 +93,23 @@ def main
   metadata = PostMetadata.from_yaml(raw_metadata)
   raise "nostr metadata is already set" if metadata.nostr
 
-  url = URI.parse(config["url"].as_s)
-  url.path = metadata.permalink.rchop('/')
-  content = "#{metadata.title}\n\n#{url.to_s}\n\n#{message}"
+  url = URI
+    .parse(config["url"].as_s)
+    .resolve(metadata.permalink.rchop('/'))
+    .normalize
+  content = "#{metadata.title}\n\n#{url}\n\n#{message}"
 
   now = Time.utc
   dt = now - metadata.time
   raise "Unexpected delta time #{dt}" if dt.negative? || dt > ALLOWED_TIME_DIFF
   raise "Inconsistent post filename/metadata date" unless post_date == metadata.time.date
 
-  # TODO: thumbnail media attachment https://github.com/nostr-protocol/nips/blob/master/92.md
+  feature_image_url = URI
+    .parse(config["url"].as_s)
+    .resolve(metadata.feature_img)
+    .normalize
+  feature_image_mime_type = MIME.from_filename(metadata.feature_img)
+
   lang_label = "ISO-639-1"
   unsigned_event = {
     "content"    => content,
@@ -110,6 +121,7 @@ def main
       ["subject", metadata.title],
       ["L", lang_label],
       ["l", lang, lang_label],
+      ["imeta", "url #{feature_image_url}", "m #{feature_image_mime_type}"],
     ] + metadata.tags.map { |t| ["t", t.downcase] },
   }.to_json
 
