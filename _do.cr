@@ -353,7 +353,6 @@ def health(config)
       [] of String
     end
 
-  # TODO: validate all parsed URIs
   https_hosts = (site_hosts + cdns + custom_hosts)
     .reject { |i| IGNORE_HOSTS.includes?(i) }
     .to_set
@@ -387,8 +386,9 @@ def health(config)
       puts
     }
     https_hosts.each { |i|
-      check_certificate(i, proxy)
-      check_ech(i)
+      https_uri = URI.parse("https://#{i}")
+      check_certificate(https_uri, proxy)
+      check_ech(https_uri)
       puts
     }
   })
@@ -451,8 +451,8 @@ def check_icmp(host)
   end
 end
 
-def check_ech(host : String)
-  body = JSON.parse(HTTP::Client.get("https://dns.google/resolve?name=#{host}&type=HTTPS").body)
+def check_ech(host : URI)
+  body = JSON.parse(HTTP::Client.get("https://dns.google/resolve?name=#{host.host}&type=HTTPS").body)
   answer = body["Answer"]?
   return if answer.nil? || answer.as_a?.nil?
   has_ech = answer.as_a.any? { |i|
@@ -475,10 +475,10 @@ def check_ws(host : URI, proxy : URI)
   end
 end
 
-def check_certificate(host : String, proxy : URI)
+def check_certificate(host : URI, proxy : URI)
   print("#{host} expires on ")
   begin
-    raw = `curl --proxy #{proxy} --verbose --insecure https://#{host} 2>&1 | grep '\\*  expire date'`
+    raw = `curl --proxy #{proxy} --verbose --insecure #{host} 2>&1 | grep '\\*  expire date'`
       .strip
       .split(": ")[1]
     time = Time.parse!(raw, "%b %e %H:%M:%S %Y %Z")
@@ -576,6 +576,7 @@ def check
   raise "file format failure" unless $?.success?
 
   check_time(all_hosts())
+  # TODO: check whether any cron tasks are running, wait until they finish
   [MEDIA_HOST, MIRROR_HOST].each { |i| check_i2p_host(i) }
 
   if DEBUG
