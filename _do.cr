@@ -131,7 +131,7 @@ end
 
 def start
   if DEBUG
-    warn("skipping start")
+    warn("skipping start\n")
     return
   end
   step("start")
@@ -223,7 +223,7 @@ end
 
 def sync
   if DEBUG
-    warn("skipping sync")
+    warn("skipping sync\n")
     return
   end
   step("sync")
@@ -315,7 +315,7 @@ end
 
 def health(config)
   if DEBUG
-    warn("skipping health")
+    warn("skipping health\n")
     return
   end
   step("health")
@@ -341,6 +341,8 @@ def health(config)
     .split('\n')
     .map { |i| i.gsub(/.*https:\/\//, "").strip }
     .reject { |i| i.empty? }
+
+  # TODO: grep https URLs from blogposts, check HTTP 200 responses
 
   bancheck = "_bancheck.txt"
   custom_hosts =
@@ -593,7 +595,7 @@ def build_aquatic(host : String)
   full_executable_path = bin_dir.join(executable)
 
   if nonempty_exists?(full_executable_path)
-    warn("skipping #{full_executable_path}")
+    warn("skipping #{full_executable_path}\n")
     return
   end
   Dir.mkdir_p(bin_dir, 0o755)
@@ -650,7 +652,7 @@ def build_jekyll(host : String, *, destination : Path, configs : Array(Path) = [
   prepare_jekyll
   output_dir = BUILD_DIR.join(host, destination)
   # if File.directory?(output_dir) && File.directory?("vendor")
-  #   warn("skipping jekyll #{destination}")
+  #   warn("skipping jekyll #{destination}\n")
   #   return
   # end
   Dir.mkdir_p(output_dir, 0o755)

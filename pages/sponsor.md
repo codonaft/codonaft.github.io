@@ -229,7 +229,7 @@ because they are cheaper to copy, they are implemented by competitors, etc.
 - scrolljacking
 - useless <a href="https://www.facebook.com/help/124895950923762" target="_blank">over-detailed</a> documentation, which quickly becomes {% include span_with_tooltip.html body="obsolete" tooltip="Rather than maintaining such &quot;documentation&quot;, it's cheaper to turn it into a single link that jumps to and highlights the exact input field" %}
 - sudden non-disableable {% include span_with_tooltip.html body="notifications" tooltip="Including &quot;GDPR cookies blabla&quot;, which is a result of regulating things the wrong way" %}/tooltips/tutorials/announcements of features
-- [useless](https://github.com/notune/captcha-solver#readme) CAPTCHAs, which bury your precious [flow state](/how-to-take-notes-like-a-programmer/#whats-the-point)
+- [useless](https://github.com/search?q=captcha%20solver&type=repositories) CAPTCHAs, which bury your precious [flow state](/how-to-take-notes-like-a-programmer/#whats-the-point)
     - other than something like DDoS attacks, there's absolutely no reason to {% include span_with_tooltip.html body="distinguish bots" tooltip="What and why are we fighting? We're at the point of history, where bots <i>might</i> even transit to normal members of society" %} from humans anymore
     - it's ironical that companies like OpenAI/Google/Cloudflare/etc. are wasting their time improving bot detection
         - they could even **monetize** bots traffic, by turning bots into a ~~[crypto mining farm](https://github.com/mCaptcha/mCaptcha#readme)~~ distributed browser-based [ML inference](https://github.com/xenova/transformers.js#readme) engine, or whatever ecological enough, both to human mentality and to the business

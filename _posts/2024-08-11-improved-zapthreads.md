@@ -41,7 +41,7 @@ Others may simply never go back to such websites, thinking that they are malicio
 
 Some websites just keep showing previously logged in user even if I changed it.
 That just feels like incorrect behavior.
-As end-user I would suspect that making actions from such website would mean accidentally signing events by other user.
+As an end-user I would suspect that making actions from such website would mean accidentally signing events by other user.
 
 For now we have a single [active](https://github.com/diegogurpegui/nos2x-fox/tree/v1.14.0#screenshots) [profile](https://github.com/neilck/aka-extension#readme) for all websites and no way to make permissionless check that currently selected profile has authorized session on the given website or not.
 
@@ -91,7 +91,7 @@ With such design, a website
 - can't and doesn't need to distinguish external signer users from those who are less secured
 - will less likely to annoy with unnecessary permission requests.
 
-Most likely this topic was discussed
+Most likely this topic was discussed in
 {% include span_with_tooltip.html body="the past" tooltip="However I didn't find it. I'd be grateful for any links to the related discussions!" %}
 and I suspect that I'm naïvely missing some case that breaks this design somewhere,
 so your thoughts on all this are very welcome.
