@@ -15,8 +15,10 @@ require "yaml"
 DEBUG = ARGV.empty? || !["sync", "deploy", "health"].includes?(ARGV[0])
 TRACE = ENV["TRACE"]? == "1"
 
+WILDCARD_HOST = "0.0.0.0"
+
 DEBUG_HOST = "localhost"
-# DEBUG_HOST = "0.0.0.0"
+# DEBUG_HOST = WILDCARD_HOST
 
 MEDIA_HOST  = "media.codonaft"
 MIRROR_HOST = "mirror.codonaft"
@@ -413,23 +415,25 @@ def with_socks_proxy(country, f : URI ->)
     else
       UInt16.new(exposed_port_from_container)
     end
+  proxy = URI.parse("socks5://127.0.0.1:#{exposed_port}")
 
   # needs_restart = is_stopped || `podman logs #{name}`.includes?("All routers are down")
   if is_stopped
     system(<<-STRING
-      podman run --replace --detach --name '#{name}' -p #{exposed_port}:#{port} -it "alpine:#{ALPINE_VERSION}" /bin/sh -c "
+      podman run --replace --detach --name '#{name}' -p '#{proxy.host}:#{proxy.port}:#{port}' -it "alpine:#{ALPINE_VERSION}" /bin/sh -c "
       set -xeuo pipefail
 
       apk add --update --no-cache tor
 
-      tor --SocksPort #{port} \
+      tor --SocksPort '#{WILDCARD_HOST}:#{port}' \
         --ExitNodes '{#{country}}' \
         --ExitRelay 0 \
         --StrictNodes 1 \
         --NumEntryGuards 1 \
         --NumDirectoryGuards 1 \
         --MaxCircuitDirtiness 10 \
-        --HiddenServiceStatistics 0"
+        --HiddenServiceStatistics 0 \
+        --Log #{TRACE ? "debug" : "notice"}"
       STRING
     )
   end
@@ -440,7 +444,6 @@ def with_socks_proxy(country, f : URI ->)
     sleep(1.seconds)
   end
 
-  proxy = URI.parse("socks5://127.0.0.1:#{exposed_port}")
   f.call(proxy)
 end
 
@@ -514,8 +517,8 @@ end
 def update_banlists
   sbc = `wget -qO - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts || wget -qO - http://sbc.io/hosts/hosts`
     .split('\n')
-    .select { |i| i.starts_with?("0.0.0.0 ") }
-    .reject { |i| i == "0.0.0.0 0.0.0.0" }
+    .select { |i| i.starts_with?("#{WILDCARD_HOST} ") }
+    .reject { |i| i == "#{WILDCARD_HOST} #{WILDCARD_HOST}" }
     .map { |i| i.split(' ') }
     .select { |i| i.size > 1 }
     .map { |i| i[1] }
@@ -562,7 +565,7 @@ def check
 
   puts("checking dependencies")
   system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
-  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && emerge '=app-arch/libarchive-3.7.6' '=app-arch/unzip-6.0_p27-r1' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.14.0' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-23.10' '=net-dns/bind-tools-9.16.50' '=net-libs/nodejs-22.4.1-r1' '=net-misc/rsync-3.3.0-r1' '=net-misc/wget-1.24.5' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
+  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && emerge '=app-arch/libarchive-3.7.6' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.14.0' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-23.10' '=net-dns/bind-tools-9.16.50' '=net-libs/nodejs-22.4.1-r1' '=net-misc/rsync-3.3.0-r1' '=net-misc/wget-1.24.5' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
 
   system(<<-STRING
     set -euo pipefail
