@@ -97,13 +97,21 @@ const codecSupported = codec =>
  ("ManagedMediaSource" in window && ManagedMediaSource.isTypeSupported(codec)) || ("MediaSource" in window && MediaSource.isTypeSupported(codec));
 
 document.addEventListener("DOMContentLoaded", () => {
- const i2p = window.location.hostname.endsWith('.i2p');
+ const hostname = window.location.hostname;
+ const i2p = hostname.endsWith('.i2p');
+ const onion = hostname.endsWith('.onion');
 
- if (i2p) document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.visibility = 'visible');
+ if (i2p || onion) document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.visibility = 'visible');
 
  const mediaUrls = [...{{ site.theme_settings.p2p_player.media_urls_overwrite | jsonify }}, ...{{ site.theme_settings.p2p_player.media_urls | jsonify }}].filter(i => {
   const i2pMedia = i.endsWith('.i2p');
-  return i2p ? i2pMedia : !i2pMedia;
+  const onionMedia = i.endsWith('.onion');
+  if (i2p) {
+   return i2pMedia;
+  } else if (onion) {
+   return onionMedia;
+  }
+  return !i2pMedia && !onionMedia;
  });
 
  const HlsWithP2P = HlsJsP2PEngine.injectMixin(window.Hls);
@@ -496,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
      p2p: {
       core: {
        // swarmId: swarmId,
-       isP2PDisabled: i2p,
+       isP2PDisabled: i2p || onion,
        // simultaneousHttpDownloads: 2,
        // simultaneousP2PDownloads: 3,
        // highDemandTimeWindow: 15,

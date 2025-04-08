@@ -1,0 +1,6 @@
+url: "http://codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion"
+theme_settings:
+  upstream_url: "https://codonaft.com"
+  p2p_player:
+    media_urls_overwrite:
+    - http://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion

@@ -127,7 +127,8 @@ def build
   Dir.mkdir_p(CACHE_DIR, 0o755)
   build_vidstack_player
   build_zapthreads
-  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"], configs: [Path["_config.yml"], Path["_config.mirror.yml"]]) unless DEBUG
+  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"], configs: [Path["_config.yml"], Path["_config.i2p.yml"]]) unless DEBUG
+  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion"], configs: [Path["_config.yml"], Path["_config.tor.yml"]]) unless DEBUG
   build_aquatic(MEDIA_HOST)
 end
 
@@ -137,8 +138,8 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "i2pd", "local", "nginx"])
+  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "i2pd", "local", "nginx", "tor"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -582,7 +583,15 @@ def check
 
   check_time(all_hosts())
   # TODO: check whether any cron tasks are running, wait until they finish
-  [MEDIA_HOST, MIRROR_HOST].each { |i| check_i2p_host(i) }
+  [MEDIA_HOST, MIRROR_HOST].map { |i|
+    done = Channel(Nil).new
+    spawn do
+      check_i2p_host(i)
+      check_tor_host(i)
+      done.send(nil)
+    end
+    done
+  }.each { |i| i.receive }
 
   if DEBUG
     warn("DEBUG\n")
@@ -872,13 +881,29 @@ def check_i2p_host(host : String)
   private_key = File.read_lines(HOSTS_DIR.join(host).join("etc/i2pd/tunnels.conf"))
     .select { |i| i.starts_with?("keys =") }
     .map { |i| i.split(" = ")[1] }[0]
-  check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 440, path: Path["/var/lib/i2pd/#{private_key}"])
+  service_dir = Path["/var/lib/i2pd"]
+  check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 700, path: service_dir)
+  check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 440, path: service_dir.join(private_key))
 end
 
-def check_manual_upload(host : String, *, owner : String, group : String, mode : UInt16, path : Path)
+def check_tor_host(host : String)
+  puts("checking tor configuration at #{host}")
+  service_dir = Path[File.read_lines(HOSTS_DIR.join(host).join("etc/tor/torrc"))
+    .select { |i| i.starts_with?("HiddenServiceDir") }
+    .map { |i| i.split(" ")[1] }[0]]
+  check_manual_upload(host, owner: "tor", group: "tor", mode: 700, path: service_dir)
+  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hs_ed25519_secret_key"))
+  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hs_ed25519_public_key"))
+  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hostname"), data: service_dir.basename)
+end
+
+def check_manual_upload(host : String, *, owner : String, group : String, mode : UInt16, path : Path, data : String? = nil)
   raise "#{path}: unexpected owner" unless ssh(host, ["sudo stat -c %U #{path}"]) == owner
   raise "#{path}: unexpected group" unless ssh(host, ["sudo stat -c %G #{path}"]) == group
   raise "#{path}: unexpected mode" unless ssh(host, ["sudo stat -c %a #{path}"]).to_i == mode
+  unless data.nil?
+    raise "#{path}: unexpected data" unless ssh(host, ["sudo cat #{path}"]).strip == data
+  end
 end
 
 def children_recursive(dir : Path) : Array(Path)

@@ -1,0 +1,6 @@
+Log notice syslog
+ExitRelay 0
+ExcludeExitNodes {am}, {az}, {by}, {ee}, {ge}, {kg}, {kz}, {lt}, {ly}, {md}, {ru}, {tj}, {tm}, {ua}, {uz}, {ie}
+
+HiddenServiceDir /var/lib/tor/codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/
+HiddenServicePort 80 127.0.0.1:80

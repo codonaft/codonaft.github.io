@@ -1,4 +1,4 @@
-© 2018—∞ [codonaft.com](https://codonaft.com)
+© 2018—∞ [codonaft.com](https://codonaft.com) | [tor](http://codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion) | [i2p](http://codonftbnpdkjwyflssto3iklawhuthbe37l6swigegqkyyfmiqa.b32.i2p)
 
 Powered by
 - [Jekyll](https://jekyllrb.com)
