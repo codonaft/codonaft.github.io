@@ -300,6 +300,7 @@ def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bun
   end
 
   # FIXME: hangs forever
+  # TODO: use blastr from container?
   failed_relays = relays.reject do |relay|
     begin
       found_event(event, relay) && found_event(approval_event, relay)

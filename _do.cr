@@ -301,11 +301,11 @@ end
 
 def ssh(host : String, commands : Array(String), *, tty : Bool = false)
   if tty
-    input = (commands + ["exit"]).join(';')
+    input = (commands + ["exit"]).join(';').gsub("'", '"')
     system("ssh -tt #{host} /bin/sh <<< '#{input}'")
     "" # FIXME
   else
-    input = commands.join(';')
+    input = commands.join(';').gsub("'", '"')
     `ssh #{host} -- '#{input}'`.strip
   end
 end
@@ -346,6 +346,8 @@ def health(config)
     .reject { |i| i.empty? }
 
   # TODO: grep https URLs from blogposts, check HTTP 200 responses
+
+  check_domain(site_url)
 
   bancheck = "_bancheck.txt"
   custom_hosts =
@@ -482,25 +484,37 @@ def check_ws(host : URI, proxy : URI)
 end
 
 def check_certificate(host : URI, proxy : URI)
-  print("#{host} expires on ")
+  print("certificate for #{host.host} expires on ")
   begin
     raw = `curl --proxy #{proxy} --verbose --insecure #{host} 2>&1 | grep '\\*  expire date'`
       .strip
       .split(": ")[1]
-    time = Time.parse!(raw, "%b %e %H:%M:%S %Y %Z")
-    now = Time.utc
-    if now < time
-      if now + 3.days >= time
-        warn(time)
-      else
-        ok(time)
-      end
-    else
-      error(time)
-    end
+    time = Time.parse!(raw, "%b %e %T %Y %Z")
+    print_expiration(time)
   rescue e
     error(e)
   end
+end
+
+def check_domain(url : URI)
+  domain = url.host
+  print("domain #{domain} expires on ")
+  time = `whois #{domain}`
+    .split("\n")
+    .select { |i| i.includes?("Expiry Date:") || i.includes?("Expiration Date:") }
+    .map { |i|
+      start = i.index(": ")
+      if start.nil?
+        nil
+      else
+        i[start + 1..].strip
+      end
+    }
+    .select { |i| !i.nil? && !i.empty? && i[-1] == 'Z' }
+    .map { |i| Time.parse_rfc3339(i.not_nil!) }
+    .min
+  print_expiration(time)
+  puts
 end
 
 def check_ban(host : String, banlists : Set(String))
@@ -558,11 +572,12 @@ end
 def check
   step("check")
 
-  # TODO
-  raise("other instance keeps running") if `ps a`
-                                             .split('\n')
-                                             .select { |i| i.includes?("crystal") && i.includes?(__FILE__) }
-                                             .any? { |i| i.split(' ')[0].to_i != Process.pid }
+  ps = processes()
+
+  current_ps_name = "/#{Path[__FILE__].basename}"
+  raise "other instance keeps running" if ps
+                                            .select { |(_, i)| i.includes?("crystal") && i.includes?(current_ps_name) }
+                                            .any? { |(pid, _)| pid != Process.ppid }
 
   puts("checking dependencies")
   system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
@@ -581,17 +596,7 @@ def check
   )
   raise "file format failure" unless $?.success?
 
-  check_time(all_hosts())
-  # TODO: check whether any cron tasks are running, wait until they finish
-  [MEDIA_HOST, MIRROR_HOST].map { |i|
-    done = Channel(Nil).new
-    spawn do
-      check_i2p_host(i)
-      check_tor_host(i)
-      done.send(nil)
-    end
-    done
-  }.each { |i| i.receive }
+  check_ssh_hosts(ps)
 
   if DEBUG
     warn("DEBUG\n")
@@ -858,24 +863,6 @@ def rsync(source_dir : Path, files : Enumerable(Path), args : Enumerable(String)
   raise "unexpected rsync exit status=#{status.system_exit_status} source_dir=#{source_dir} args=#{args}" unless status.success? || status.system_exit_status == some_attrs_not_transferred
 end
 
-def check_time(hosts : Enumerable(String))
-  puts("checking time")
-  hosts_out_of_sync = hosts
-    .map { |host|
-      out_of_sync = Channel(Bool).new
-      spawn do
-        remote_now = Time.unix(ssh(host, ["date --utc +%s"]).to_i)
-        now = Time.utc
-        dt = remote_now - now
-        out_of_sync.send(dt.abs > 2.seconds)
-      end
-      {host, out_of_sync}
-    }
-    .select { |_, out_of_sync| out_of_sync.receive }
-    .map { |host, _| host }
-  raise "#{hosts_out_of_sync} time is out of sync" unless hosts_out_of_sync.empty?
-end
-
 def check_i2p_host(host : String)
   puts("checking i2p configuration at #{host}")
   private_key = File.read_lines(HOSTS_DIR.join(host).join("etc/i2pd/tunnels.conf"))
@@ -897,6 +884,52 @@ def check_tor_host(host : String)
   check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hostname"), data: service_dir.basename)
 end
 
+def check_ssh_hosts(ps : Array(Tuple(Int64, String)))
+  all_hosts()
+    .map { |i|
+      check_existing_ssh_connection(i, ps)
+      done = Channel(Nil | Exception).new
+      spawn do
+        begin
+          raise "unexpected timezone" unless ssh(i, ["date +%Z"]) == "UTC"
+
+          remote_now = Time.unix(ssh(i, ["date --utc +%s"]).to_i)
+          now = Time.utc
+          raise "#{i}: time is out of sync" if (remote_now - now).abs > 2.seconds
+
+          last_reboot = ssh(i, ["grep 'received a new kernel' /var/log/messages | tail -n1"])
+          unless last_reboot.empty?
+            reboot_time = Time.parse_utc("#{Time.utc.year} #{last_reboot}", "%Y %b %e %T")
+            raise "#{i}: possibly rebooting right now" if (reboot_time - now).abs < 10.seconds
+          end
+
+          check_i2p_host(i)
+          check_tor_host(i)
+
+          while ssh(i, ["pgrep --count --parent $(pgrep --exact crond | paste -sd ',')"]).to_i > 0
+            puts("#{i}: running a cron job")
+            sleep(1.seconds)
+          end
+
+          done.send(nil)
+        rescue ex
+          done.send(ex)
+        end
+      end
+      done
+    }
+    .each { |i|
+      ex = i.receive
+      raise ex unless ex.nil?
+    }
+end
+
+def check_existing_ssh_connection(host : String, ps : Array(Tuple(Int64, String)))
+  raise "multiplexed ssh://#{host} not found" unless ps.any? { |_, i|
+                                                       i.starts_with?("ssh: ") && i.ends_with?("[mux]") && i.includes?("@#{host}:")
+                                                     }
+end
+
 def check_manual_upload(host : String, *, owner : String, group : String, mode : UInt16, path : Path, data : String? = nil)
   raise "#{path}: unexpected owner" unless ssh(host, ["sudo stat -c %U #{path}"]) == owner
   raise "#{path}: unexpected group" unless ssh(host, ["sudo stat -c %G #{path}"]) == group
@@ -904,6 +937,19 @@ def check_manual_upload(host : String, *, owner : String, group : String, mode :
   unless data.nil?
     raise "#{path}: unexpected data" unless ssh(host, ["sudo cat #{path}"]).strip == data
   end
+end
+
+def processes
+  Dir.entries("/proc")
+    .select { |entry| entry =~ /^\d+$/ }
+    .flat_map { |pid|
+      begin
+        cmdline = File.read("/proc/#{pid}/cmdline").gsub('\0', ' ').strip
+        [{pid.to_i64, cmdline}]
+      rescue ex : IO::Error
+        [] of Tuple(Int64, String)
+      end
+    }
 end
 
 def children_recursive(dir : Path) : Array(Path)
@@ -1211,6 +1257,19 @@ end
 
 def nonempty_exists?(path : Path)
   File.file?(path) && !File.empty?(path)
+end
+
+def print_expiration(time)
+  now = Time.utc
+  if now < time
+    if now + 30.days >= time
+      warn(time)
+    else
+      ok(time)
+    end
+  else
+    error(time)
+  end
 end
 
 def trace(text)
