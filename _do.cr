@@ -48,12 +48,13 @@ OPUS_BITRATE_KBPS = 256
 BANDWIDTH_MB_PER_SEC = 20
 IGNORE_HOSTS         = ["personal.tracker.com", "tracker.novage.com.ua", "www.googletagmanager.com"]
 
-HOSTS_DIR       = Path["_hosts"]
-BUILD_DIR       = Path[".build"]
-CACHE_DIR       = BUILD_DIR.join(".cache")
-BANLISTS        = CACHE_DIR.join("banlists.txt")
-COMMON_ROOT     = Path["_ohmyvps/alpine/alpine-root"]
-MEDIA_BUILD_DIR = BUILD_DIR.join(MEDIA_HOST, "/var/www", PUBLIC_MEDIA_HOST)
+HOSTS_DIR        = Path["_hosts"]
+BUILD_DIR        = Path[".build"]
+CACHE_DIR        = BUILD_DIR.join(".cache")
+BANLISTS         = CACHE_DIR.join("banlists.txt")
+BROKEN_POST_URLS = CACHE_DIR.join("broken_post_urls.txt")
+COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
+MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, "/var/www", PUBLIC_MEDIA_HOST)
 
 def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
@@ -149,7 +150,7 @@ def encode_media(input : String, config : YAML::Any, language : String)
   audio, video =
     if input.starts_with?("https://")
       url = URI.parse(input)
-      raise "unexpected url" if url.host != "youtu.be"
+      raise "unexpected url" unless url.host == "youtu.be"
       output_dir = MEDIA_BUILD_DIR.join(url.path)
 
       download_youtube_thumbnail(url, output_dir)
@@ -327,7 +328,6 @@ def health(config)
     if nonempty_exists?(BANLISTS) && File.info(BANLISTS).modification_time + 1.days > Time.utc
       File.read_lines(BANLISTS).to_set
     else
-      puts("updating banlists")
       update_banlists
     end
 
@@ -345,7 +345,17 @@ def health(config)
     .map { |i| i.gsub(/.*https:\/\//, "").strip }
     .reject { |i| i.empty? }
 
-  # TODO: grep https URLs from blogposts, check HTTP 200 responses
+  broken_post_urls =
+    if nonempty_exists?(BROKEN_POST_URLS) && File.info(BROKEN_POST_URLS).modification_time + 30.days > Time.utc
+      File.read_lines(BROKEN_POST_URLS).to_set
+    else
+      update_broken_post_urls
+    end
+  if broken_post_urls.empty?
+    ok("all post URLs are ok\n")
+  else
+    warn("#{broken_post_urls.size} broken post URLs: #{broken_post_urls}\n")
+  end
 
   check_domain(site_url)
 
@@ -530,6 +540,8 @@ def check_ban(host : String, banlists : Set(String))
 end
 
 def update_banlists
+  puts("updating banlists")
+
   sbc = `wget -qO - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts || wget -qO - http://sbc.io/hosts/hosts`
     .split('\n')
     .select { |i| i.starts_with?("#{WILDCARD_HOST} ") }
@@ -567,6 +579,45 @@ def update_banlists
   raise "banlists fetch failure" if result.empty?
   File.write(BANLISTS, result.join('\n'))
   result
+end
+
+def update_broken_post_urls
+  all_urls = `git grep '(https://' **/*.md | grep --only-matching 'https://[a-zA-Z0-9%?=#()/._-]*'`
+    .split('\n')
+    .map { |i| i.rchop(')').strip }
+    .reject { |i| i.empty? }
+    .map { |i|
+      begin
+        URI.parse(i)
+      rescue e
+        nil
+      end
+    }
+    .reject { |i| i.nil? }
+    .to_set
+
+  puts("checking #{all_urls.size} post URLs")
+
+  broken_urls = all_urls
+    .map { |i|
+      done = Channel(Tuple(URI, Bool)).new
+      spawn do
+        url = i.not_nil!
+        result = begin
+          HTTP::Client.get(url).status_code == 404
+        rescue e
+          false
+        end
+        done.send({url, result})
+      end
+      done
+    }
+    .map { |i| i.receive }
+    .select { |_, i| i }
+    .map { |url, _| url.not_nil!.to_s }
+
+  File.write(BROKEN_POST_URLS, broken_urls.join('\n'))
+  broken_urls
 end
 
 def check
