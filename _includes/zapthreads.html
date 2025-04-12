@@ -345,7 +345,7 @@ const i2p = window.location.hostname.endsWith('.i2p');
 const commentsSection = document.querySelector('.comments-section');
 
 if (i2p) {
-  commentsSection.innerHTML = '💬 {{ page.str.leave_comment_on_upstream }} <a href="{{ page.url | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>';
+  commentsSection.innerHTML = '💬 {{ page.str.leave_comment_on_upstream }} <a href="{{ page.url | prepend: site.theme_settings.tor }}" target="_blank">tor</a> | <a href="{{ page.url | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>';
 } else {
   commentsSection.innerHTML = `
    <zap-threads
