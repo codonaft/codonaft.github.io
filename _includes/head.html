@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-<!-- {% if site.theme_settings.external_google_fonts %}
+{% if site.theme_settings.external_google_fonts %}
 {% assign google_fonts_url="https://fonts.googleapis.com/css?family=" | append: site.theme_settings.google_fonts %}
 {% else %}
 {% assign google_fonts_url="/assets/css/vendor/google-fonts.min.css" %}
 {% endif %}
-{% include lazy_load_css.html href=google_fonts_url %} -->
+{% include lazy_load_css.html href=google_fonts_url %}
 
 {% if site.theme_settings.typed %}
 <script src="/assets/js/vendor/typed.min.js" defer></script>

@@ -12,7 +12,7 @@ require "json"
 require "uri"
 require "yaml"
 
-DEBUG = ARGV.empty? || !["sync", "deploy", "health"].includes?(ARGV[0])
+DEBUG = ARGV.empty? || !["sync", "build", "deploy", "health"].includes?(ARGV[0])
 TRACE = ENV["TRACE"]? == "1"
 
 WILDCARD_HOST = "0.0.0.0"
@@ -56,6 +56,8 @@ BROKEN_POST_URLS = CACHE_DIR.join("broken_post_urls.txt")
 COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
 MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, "/var/www", PUBLIC_MEDIA_HOST)
 
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+
 def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
   Dir.cd(repo_dir)
@@ -69,6 +71,10 @@ def main
   elsif ARGV.size == 1 && ARGV[0] == "health"
     check
     health(config)
+  elsif ARGV.size == 1 && ARGV[0] == "build"
+    check
+    update
+    build
   elsif ARGV.size > 2 && ARGV[0] == "encode"
     check
     encode_media(ARGV[1], config, ARGV[2])
@@ -88,6 +94,10 @@ def usage
 
        #{script} [debug]
          build, serve jekyll in debug mode locally
+
+       #{script} build
+         update and build in release mode
+           without deloying
 
        #{script} deploy
          update, build, sync and deploy to PROD
@@ -841,7 +851,11 @@ def update_fonts
     api='https://gwfh.mranftl.com/api/fonts/'
 
     # FIXME: https://github.com/majodev/google-webfonts-helper/issues/184
-    wget 'https://fonts.gstatic.com/s/notocoloremoji/v30/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.2.woff2' -qO 'assets/fonts/noto-color-emoji-v30-emoji-regular.woff2' &
+    noto_color_emoji_url=$(
+      wget -qO - --user-agent='#{USER_AGENT}' 'https://fonts.googleapis.com/css?family=Noto Color Emoji:400' | \
+        grep 'Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.2.woff2' | \
+        sed 's!.*url(!!;s!) format.*!!') && \
+          wget "${noto_color_emoji_url}" -qO 'assets/fonts/noto-color-emoji-v34-emoji-regular.woff2' &
 
     font_uris=(
       #'noto-color-emoji?download=zip&subsets=emoji&variants=regular' # FIXME: https://github.com/majodev/google-webfonts-helper/issues/184
