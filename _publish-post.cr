@@ -135,7 +135,9 @@ def main
   File.write(event_backup, event_json)
   puts("saved event backup to #{event_backup}")
 
-  relays = prod ? nostr["relays"].as_a.map(&.to_s) : ["ws://localhost:8080"]
+  other_relays = File.read_lines("_relays.txt").map { |i| i.strip }.select { |i| !i.empty? }
+
+  relays = prod ? (nostr["relays"].as_a.map(&.to_s) + other_relays) : ["ws://localhost:8080"]
   repo_uri = prod ? `git config --get remote.origin.url`.strip : Dir.current
   raise "git config failed" unless $?.success?
   branch = `git branch --show-current`.strip
@@ -299,58 +301,7 @@ def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bun
     end
   end
 
-  # FIXME: hangs forever
-  # TODO: use blastr from container?
-  failed_relays = relays.reject do |relay|
-    begin
-      found_event(event, relay) && found_event(approval_event, relay)
-    rescue e
-      false
-    end
-  end
-  puts("failed to publish to relays: #{failed_relays}") unless failed_relays.empty?
-
-  if prod
-    print("broadcast both events? [n] ")
-    if (gets || "").strip == "y"
-      broadcast(event, failed_relays)
-      broadcast(approval_event, failed_relays)
-    end
-    puts("FINISHED")
-  end
-end
-
-def broadcast(event : JSON::Any, failed_relays : Array(String))
-  other_relays = begin
-    File.read_lines("_relays.txt")
-      .map { |i| i.strip }
-      .to_set
-  rescue e
-    Set(String).new
-  end
-
-  begin
-    relays_to_lookup = other_relays + failed_relays.to_set
-    puts("looking for #{event["id"]} in #{relays_to_lookup.size}")
-    relays = relays_to_lookup
-      .reject { |i|
-        begin
-          i.empty? || found_event(event, i)
-        rescue e
-          false
-        end
-      }
-      .to_a
-    puts("broadcasting #{event["id"]} to #{relays.size}")
-    puts(nak_raw(["event"] + relays, event.to_json))
-  rescue e
-    puts("failed to broadcast #{event.to_json}")
-    puts(e)
-  end
-end
-
-def found_event(event : JSON::Any, relay : String)
-  nak(["req", "-i", event["id"].to_json, relay])["id"] == event["id"]
+  puts("FINISHED")
 end
 
 def await_successful_deployment(url : URI)

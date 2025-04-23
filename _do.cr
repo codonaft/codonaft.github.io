@@ -25,17 +25,20 @@ MIRROR_HOST = "mirror.codonaft"
 
 PUBLIC_MEDIA_HOST = "#{MEDIA_HOST}.com"
 
-TARGET_CPU = "nocona" # ssh media.codonaft -- rustc --print target-cpus | grep native | sed 's!.* (currently !!;s!)\\.!!'
+TARGET_CPU = {MEDIA_HOST => "nocona"} # ssh media.codonaft -- rustc --print target-cpus | grep native | sed 's!.* (currently !!;s!)\.!!'
 
-ALPINE_VERSION           = "3.21"
+ALPINE_VERSION           = "3.21.3"
 AQUATIC_VERSION          = "0.9.0"
-BINDGEN_VERSION          = "0.70.1"
 BROWSER_DETECTOR_VERSION = "4.1.0"
-TINYLD_VERSION           = "1.3.4"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
+RUST_VERSION             = "1.86.0"
+TINYLD_VERSION           = "1.3.4"
+
+# BROADCASTR_VERSION       = "0.0.0"
+BROADCASTR_VERSION = URI.parse("https://github.com/codonaft/broadcastr")
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
 CODEC_H264 = "avc1.64002a"
@@ -136,11 +139,27 @@ end
 def build
   step("build")
   Dir.mkdir_p(CACHE_DIR, 0o755)
+
   build_vidstack_player
   build_zapthreads
   build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"], configs: [Path["_config.yml"], Path["_config.i2p.yml"]]) unless DEBUG
   build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion"], configs: [Path["_config.yml"], Path["_config.tor.yml"]]) unless DEBUG
-  build_aquatic(MEDIA_HOST)
+
+  build_rust_app(
+    MEDIA_HOST,
+    executable: "aquatic_ws",
+    version: AQUATIC_VERSION,
+    dependencies: ["clang17-libclang", "cmake", "findutils", "g++", "linux-headers", "liburing", "make", "rust-bindgen"],
+    cflags: "-D_GNU_SOURCE",
+    rustflags: "\\$(rustc --print target-features | grep '    avx512' | grep -v 'avx512fp16' | awk '{print \\$1}' | sed 's/^/-C target-feature=-/' | xargs)",
+  )
+
+  build_rust_app(
+    MEDIA_HOST,
+    executable: "broadcastr",
+    version: BROADCASTR_VERSION,
+    dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
+  )
 end
 
 def start
@@ -150,7 +169,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "i2pd", "local", "nginx", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "i2pd", "local", "nginx", "tor"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -666,10 +685,23 @@ def check
   end
 end
 
-def build_aquatic(host : String)
-  config = HOSTS_DIR.join(host, "/etc/aquatic/aquatic_ws.conf")
+def build_rust_app(
+  host : String,
+  *,
+  executable : String,
+  version : String | URI,
+  cflags : String = "",
+  rustflags : String = "",
+  dependencies : Array(String) = [] of String,
+)
+  cargo_version_arg =
+    if version.is_a?(String)
+      "--version"
+    elsif version.is_a?(URI)
+      "--git"
+    end
+
   bin_dir = BUILD_DIR.join(host, "/usr/local/bin")
-  executable = "aquatic_ws"
   full_executable_path = bin_dir.join(executable)
 
   if nonempty_exists?(full_executable_path)
@@ -680,20 +712,25 @@ def build_aquatic(host : String)
 
   alpine_version = ssh(host, ["cat /etc/alpine-release"])
   alpine_version = ALPINE_VERSION if alpine_version.empty?
+  warn("alpine #{host} version #{alpine_version} != alpine build version #{ALPINE_VERSION}") unless alpine_version == ALPINE_VERSION
+  target_cpu = TARGET_CPU[host]
 
   system(<<-STRING
     podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{alpine_version}" /bin/sh -c "
     set -xeuo pipefail
 
-    apk add --update --no-cache cargo clang17-libclang cmake findutils g++ git linux-headers liburing make rust
+    apk add --update --no-cache 'cargo>=#{RUST_VERSION}' 'rust>=#{RUST_VERSION}' || {
+      apk add --update --no-cache rustup
+      rustup-init -y --profile minimal --default-toolchain '#{RUST_VERSION}'
+    }
 
-    DISABLE_AVX512=\\$(rustc --print target-features | grep '    avx512' | grep -v 'avx512fp16' | awk '{print \\$1}'  | sed 's/^/-C target-feature=-/' | xargs)
-    export RUSTFLAGS=\\"-C target-cpu=#{TARGET_CPU} \\${DISABLE_AVX512} -C force-frame-pointers=y\\"
-    export CFLAGS='-D_GNU_SOURCE -march=#{TARGET_CPU} -O3'
+    export CFLAGS='-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}'
+    export CXXFLAGS='-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}'
+    export RUSTFLAGS=\\"-C target-cpu=#{target_cpu} -C force-frame-pointers=y #{rustflags}\\"
     export PATH=\\"\\${HOME}/.cargo/bin:\\${PATH}\\"
 
-    cargo install --force --locked bindgen-cli --version '#{BINDGEN_VERSION}'
-    cargo install --force --locked aquatic_ws --version '#{AQUATIC_VERSION}'
+    apk add --update --no-cache git #{dependencies.join(" ")}
+    cargo install --force --locked #{executable} #{cargo_version_arg} '#{version}'
     mv ~/.cargo/bin/#{executable} /build"
   STRING
   )

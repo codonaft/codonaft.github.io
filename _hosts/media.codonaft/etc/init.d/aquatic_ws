@@ -1,15 +1,15 @@
 #!/sbin/openrc-run
 
-CONFIG_FILE="/etc/aquatic/aquatic_ws.conf"
-
 name="aquatic_ws"
 
-command="/usr/local/bin/aquatic_ws"
+CONFIG_FILE="/etc/aquatic/${name}.conf"
+
+command="/usr/local/bin/${name}"
 command_args="--config-file ${CONFIG_FILE}"
 command_user="nobody:nobody"
 command_background="true"
 
-pidfile="/run/aquatic_ws.pid"
+pidfile="/run/${name}.pid"
 extra_started_commands="reload"
 output_logger="logger"
 error_logger="logger"
@@ -44,7 +44,7 @@ location = '/var/www/'
 config = tomllib.load(open('${CONFIG_FILE}', 'rb'))
 output = config['access_list']['path']
 
-syslog('aquatic_ws: generating info hashes')
+syslog('${name}: generating info hashes')
 with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode='wt') as temp:
 	for i in glob('%s/*/*/main.m3u8' % location):
 		def write_hashes(n, stream_type):
@@ -52,7 +52,7 @@ with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode
 				stream_swarm_id = b'v2-https://%s-%s-%d' % (i.replace(location, '').encode('utf-8'), stream_type, index)
 				raw_item = base64.b64encode(hashlib.md5(stream_swarm_id).digest()[1:])
 				item = raw_item.hex()
-				syslog('aquatic_ws: %s %s %s' % (stream_swarm_id, raw_item, item))
+				syslog('${name}: %s %s %s' % (stream_swarm_id, raw_item, item))
 				temp.write(item + '\\n')
 		with open(i) as p:
 			playlist = p.readlines()
