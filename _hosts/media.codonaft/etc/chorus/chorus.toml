@@ -1,0 +1,38 @@
+data_directory = "/var/lib/chorus/data"
+blossom_directory = "/var/lib/chorus/blossom"
+
+hostname = "nostr.codonaft.com"
+ip_address = "::ffff:127.0.0.1"
+port = 7777
+
+chorus_is_behind_a_proxy = false
+use_tls = false
+enable_negentropy = true
+
+name = "codonaft.com"
+description = "Private nostr relay. It's also available here: ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr and here ws://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr"
+icon_url = "https://codonaft.com/assets/img/avatar.webp"
+banner_url = "https://codonaft.com/assets/img/nostr-cover.webp"
+
+open_relay = false
+serve_ephemeral = true
+serve_relay_lists = false
+admin_hex_keys = ["efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"]
+contact_public_key_hex = "efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"
+
+verify_events = true
+allow_scraping = true
+allow_scrape_if_limited_to = 100
+allow_scrape_if_max_seconds = 7200
+max_subscriptions = 128
+
+server_log_level = "Info"
+library_log_level = "Info"
+client_log_level = "Warn"
+
+enable_ip_blocking = false
+minimum_ban_seconds = 0
+timeout_seconds = 60
+max_connections_per_ip = 9223372036854775807
+throttling_bytes_per_second = 131072
+throttling_burst = 4194304

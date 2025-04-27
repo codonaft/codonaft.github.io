@@ -1,0 +1,17 @@
+#!/sbin/openrc-run
+
+name="chorus"
+
+command="/usr/local/bin/${name}"
+command_user="chorus:chorus"
+command_background="true"
+command_args="/etc/chorus/chorus.toml"
+
+pidfile="/run/${name}.pid"
+output_logger="logger"
+error_logger="logger"
+
+depend() {
+	need net
+	use logger
+}

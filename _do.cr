@@ -25,20 +25,22 @@ MIRROR_HOST = "mirror.codonaft"
 
 PUBLIC_MEDIA_HOST = "#{MEDIA_HOST}.com"
 
-TARGET_CPU = {MEDIA_HOST => "nocona"} # ssh media.codonaft -- rustc --print target-cpus | grep native | sed 's!.* (currently !!;s!)\.!!'
+# ssh media.codonaft -- "sudo apk add --no-cache rust && rustc --print target-cpus | grep native | sed 's/.* (currently //;s/)\.//' && sudo apk del --no-cache rust"
+TARGET_CPU = {
+  MEDIA_HOST  => "nocona",
+  MIRROR_HOST => "broadwell",
+}
 
 ALPINE_VERSION           = "3.21.3"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
+CHORUS_VERSION           = "2.0.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 RUST_VERSION             = "1.86.0"
 TINYLD_VERSION           = "1.3.4"
-
-# BROADCASTR_VERSION       = "0.0.0"
-BROADCASTR_VERSION = URI.parse("https://github.com/codonaft/broadcastr")
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
 CODEC_H264 = "avc1.64002a"
@@ -50,6 +52,8 @@ OPUS_BITRATE_KBPS = 256
 
 BANDWIDTH_MB_PER_SEC = 20
 IGNORE_HOSTS         = ["personal.tracker.com", "tracker.novage.com.ua", "www.googletagmanager.com"]
+
+MAIN_SITE_CONFIG = Path["_config.yml"]
 
 HOSTS_DIR        = Path["_hosts"]
 BUILD_DIR        = Path[".build"]
@@ -65,7 +69,7 @@ def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
   Dir.cd(repo_dir)
 
-  config = YAML.parse(File.read("_config.yml"))
+  config = YAML.parse(File.read(MAIN_SITE_CONFIG))
   if !ARGV.empty? && (ARGV.includes?("-h") || ARGV.includes?("--help"))
     usage
   elsif ARGV.size == 1 && ARGV[0] == "sync"
@@ -74,16 +78,24 @@ def main
   elsif ARGV.size == 1 && ARGV[0] == "health"
     check
     health(config)
-  elsif ARGV.size == 1 && ARGV[0] == "build"
+  elsif ARGV.size >= 1 && ARGV[0] == "build"
     check
     update
     build
+    if ARGV.size == 2 && ARGV[1] == "run"
+      serve(DEBUG_HOST)
+    end
   elsif ARGV.size > 2 && ARGV[0] == "encode"
     check
     encode_media(ARGV[1], config, ARGV[2])
-  elsif ARGV.empty? || ["debug", "deploy"].includes?(ARGV[0])
+  elsif ARGV.size == 1 && ARGV[0] == "deploy"
     check
-    deploy_and_serve(config)
+    deploy(config)
+  elsif ARGV.empty? || ARGV[0] == "debug"
+    check
+    update
+    build
+    serve(DEBUG_HOST)
   else
     usage
   end
@@ -102,11 +114,13 @@ def usage
          update and build in release mode
            without deloying
 
+       #{script} build run
+         same, also serve jekyll in release mode locally
+
        #{script} deploy
          update, build, sync and deploy to PROD
            without pushing to the git repos
          run health checks
-         serve jekyll in release mode locally
 
        #{script} sync
          sync to PROD
@@ -127,13 +141,13 @@ def usage
   exit 1
 end
 
-def deploy_and_serve(config)
+def deploy(config)
   update
   build
   sync
+  configure(config)
   start
   health(config)
-  serve(DEBUG_HOST)
 end
 
 def build
@@ -142,12 +156,13 @@ def build
 
   build_vidstack_player
   build_zapthreads
-  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaft.i2p"], configs: [Path["_config.yml"], Path["_config.i2p.yml"]]) unless DEBUG
-  build_jekyll(MIRROR_HOST, destination: Path["/var/www/codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion"], configs: [Path["_config.yml"], Path["_config.tor.yml"]]) unless DEBUG
+
+  build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.i2p.yml"]]) unless DEBUG
+  build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.tor.yml"]]) unless DEBUG
 
   build_rust_app(
     MEDIA_HOST,
-    executable: "aquatic_ws",
+    crate: "aquatic_ws",
     version: AQUATIC_VERSION,
     dependencies: ["clang17-libclang", "cmake", "findutils", "g++", "linux-headers", "liburing", "make", "rust-bindgen"],
     cflags: "-D_GNU_SOURCE",
@@ -156,10 +171,28 @@ def build
 
   build_rust_app(
     MEDIA_HOST,
-    executable: "broadcastr",
-    version: BROADCASTR_VERSION,
+    crate: "broadcastr",
+    git: URI.parse("https://github.com/codonaft/broadcastr"),
     dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
   )
+
+  build_rust_app(
+    MEDIA_HOST,
+    crate: "chorus",
+    version: "v#{CHORUS_VERSION}",
+    git: URI.parse("https://github.com/mikedilger/chorus"),
+    executables: ["chorus", "chorus_compress", "chorus_dump", "chorus_dump_approvals", "chorus_moderate", "chorus_cmd"],
+    dependencies: ["g++", "openssl-dev", "openssl-libs-static"], # TODO
+  )
+end
+
+def configure(config)
+  if DEBUG
+    warn("skipping configure\n")
+    return
+  end
+  step("configure")
+  configure_chorus(MEDIA_HOST, config)
 end
 
 def start
@@ -169,7 +202,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "i2pd", "local", "nginx", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "chorus", "i2pd", "local", "nginx", "tor"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -179,7 +212,7 @@ def encode_media(input : String, config : YAML::Any, language : String)
   audio, video =
     if input.starts_with?("https://")
       url = URI.parse(input)
-      raise "unexpected url" unless url.host == "youtu.be"
+      raise "unexpected url" unless url.hostname == "youtu.be"
       output_dir = MEDIA_BUILD_DIR.join(url.path)
 
       download_youtube_thumbnail(url, output_dir)
@@ -317,6 +350,14 @@ def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files
   ssh(host, ["sudo etckeeper commit sync 2>>/dev/null"])
 end
 
+def add_user_commands(user : String)
+  home_dir = Path["/var/lib"].join(user)
+  [
+    "sudo useradd --system --create-home --home-dir #{home_dir} --user-group --shell /sbin/nologin #{user} 2>>/dev/null",
+    "sudo chmod 00700 #{home_dir}",
+  ]
+end
+
 def start_openrc(host : String, *, services : Array(String))
   ssh(
     host,
@@ -404,13 +445,31 @@ def health(config)
     .to_set
   general_hosts = stuns.to_set + https_hosts
 
+  ignored_nostr_relays = JSON.parse(
+    File.read(HOSTS_DIR.join(MEDIA_HOST).join(Path["/etc/broadcastr/blocked.json"])))
+    .as_a
+    .map { |i| URI.parse(i.as_s) }
+    .to_set
   trackers = p2p_player_config["trackers"].as_a.map { |i| URI.parse(i.as_s) }
-  wss_uris = (`git grep --only-matching 'wss://[a-zA-Z0-9/._-]*'`
+
+  # TODO
+  relay_mirrors = [
+    "ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr",
+    "ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr/publish",
+  ].map { |i| URI.parse(i) }
+
+  other_relays = File
+    .read_lines("_relays.txt")
+    .map { |i| i.strip }
+    .reject { |i| i.empty? }
+    .map { |i| URI.parse(i) }
+    .reject { |i| i.hostname.nil? || i.hostname == "127.0.0.1" } + relay_mirrors
+  wss_uris = (trackers + other_relays + `git grep --only-matching 'wss://[a-zA-Z0-9/._-]*'`
     .split('\n')
     .map { |i| i.strip.gsub(/.*wss:\/\//, "") }
     .reject { |i| i.empty? || IGNORE_HOSTS.any? { |ignored| i.includes?(ignored) } }
-    .map { |i| URI.parse("wss://#{i}") } + trackers)
-    .reject { |i| i.hostname.nil? }
+    .map { |i| URI.parse("wss://#{i}") })
+    .reject { |i| i.hostname.nil? || (ignored_nostr_relays.includes?(i) && !other_relays.includes?(i)) }
     .to_set
 
   with_socks_proxy("ru", ->(proxy : URI) {
@@ -489,6 +548,14 @@ def with_socks_proxy(country, f : URI ->)
   f.call(proxy)
 end
 
+def configure_chorus(host, config)
+  theme_settings = config["theme_settings"]
+  npub = theme_settings["nostr"]["npub"].as_s
+  pubkey_hex = JSON.parse(`nak decode #{npub}`)["pubkey"].as_s
+  moderator_command = "sudo --user=chorus chorus_cmd /etc/chorus/chorus.toml add_user #{pubkey_hex} 1"
+  ssh(host, add_user_commands("chorus") + [moderator_command])
+end
+
 def check_icmp(host)
   output = `ping -c1 #{host} 2>&1 | grep --extended-regexp '(^ping:|100%|time=[0-9\\.]*)' | sed 's!.*time=!!;s!.*transmitted, !!'`.strip
   if output.starts_with?("ping:") || output.includes?("100%")
@@ -499,7 +566,7 @@ def check_icmp(host)
 end
 
 def check_ech(host : URI)
-  body = JSON.parse(HTTP::Client.get("https://dns.google/resolve?name=#{host.host}&type=HTTPS").body)
+  body = JSON.parse(HTTP::Client.get("https://dns.google/resolve?name=#{host.hostname}&type=HTTPS").body)
   answer = body["Answer"]?
   return if answer.nil? || answer.as_a?.nil?
   has_ech = answer.as_a.any? { |i|
@@ -512,7 +579,7 @@ end
 
 def check_ws(host : URI, proxy : URI)
   now = Time.utc
-  output = `echo -n | websocat --socks5 #{proxy.host}:#{proxy.port} -v #{host} 2>&1`
+  output = `echo -n | websocat --socks5 '#{proxy.host}:#{proxy.port}' -v #{host} 2>&1`
   if output.includes?("Both directions finished")
     latency = (Time.utc - now).milliseconds
     ok("#{latency} ms")
@@ -523,7 +590,7 @@ def check_ws(host : URI, proxy : URI)
 end
 
 def check_certificate(host : URI, proxy : URI)
-  print("certificate for #{host.host} expires on ")
+  print("certificate for #{host.hostname} expires on ")
   begin
     raw = `curl --proxy #{proxy} --verbose --insecure #{host} 2>&1 | grep '\\*  expire date'`
       .strip
@@ -536,7 +603,7 @@ def check_certificate(host : URI, proxy : URI)
 end
 
 def check_domain(url : URI)
-  domain = url.host
+  domain = url.hostname
   print("domain #{domain} expires on ")
   time = `whois #{domain}`
     .split("\n")
@@ -661,7 +728,7 @@ def check
 
   puts("checking dependencies")
   system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
-  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && emerge '=app-arch/libarchive-3.7.6' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.14.0' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-23.10' '=net-dns/bind-tools-9.16.50' '=net-libs/nodejs-22.4.1-r1' '=net-misc/rsync-3.3.0-r1' '=net-misc/wget-1.24.5' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
+  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
 
   system(<<-STRING
     set -euo pipefail
@@ -688,32 +755,43 @@ end
 def build_rust_app(
   host : String,
   *,
-  executable : String,
-  version : String | URI,
+  crate : String,
+  version : String | Nil = nil,
+  git : URI | Nil = nil,
+  executables : Array(String) = [] of String,
   cflags : String = "",
   rustflags : String = "",
   dependencies : Array(String) = [] of String,
 )
-  cargo_version_arg =
-    if version.is_a?(String)
-      "--version"
-    elsif version.is_a?(URI)
-      "--git"
-    end
+  if executables.empty?
+    executables = [crate]
+  end
 
   bin_dir = BUILD_DIR.join(host, "/usr/local/bin")
-  full_executable_path = bin_dir.join(executable)
-
-  if nonempty_exists?(full_executable_path)
-    warn("skipping #{full_executable_path}\n")
+  if executables.all? { |i| nonempty_exists?(bin_dir.join(i)) }
+    warn("skipping #{crate}\n")
     return
   end
+  trace("building #{crate}\n")
   Dir.mkdir_p(bin_dir, 0o755)
 
   alpine_version = ssh(host, ["cat /etc/alpine-release"])
   alpine_version = ALPINE_VERSION if alpine_version.empty?
   warn("alpine #{host} version #{alpine_version} != alpine build version #{ALPINE_VERSION}") unless alpine_version == ALPINE_VERSION
   target_cpu = TARGET_CPU[host]
+
+  cargo_args =
+    if git.nil?
+      raise "unspecified version" if version.nil?
+      "#{crate} --version #{version}"
+    else
+      version = version.nil? ? "" : " --tag #{version}"
+      "--git #{git}#{version}"
+    end
+
+  install_executables_commands = executables
+    .map { |i| "mv ~/.cargo/bin/#{i} /build" }
+    .join("\n")
 
   system(<<-STRING
     podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{alpine_version}" /bin/sh -c "
@@ -730,8 +808,8 @@ def build_rust_app(
     export PATH=\\"\\${HOME}/.cargo/bin:\\${PATH}\\"
 
     apk add --update --no-cache git #{dependencies.join(" ")}
-    cargo install --force --locked #{executable} #{cargo_version_arg} '#{version}'
-    mv ~/.cargo/bin/#{executable} /build"
+    cargo install --force --locked #{cargo_args}
+    #{install_executables_commands}"
   STRING
   )
 end
@@ -763,9 +841,13 @@ def build_zapthreads
   raise "zapthreads build failure" unless $?.success?
 end
 
-def build_jekyll(host : String, *, destination : Path, configs : Array(Path) = [] of Path)
+def build_jekyll(host : String, *, configs : Array(Path))
   prepare_jekyll
+
+  url = URI.parse(configs.reverse.map { |i| YAML.parse(File.read(i))["url"] }.select { |i| !i.nil? }[0].as_s)
+  destination = Path["/var/www"].join(url.hostname.not_nil!)
   output_dir = BUILD_DIR.join(host, destination)
+
   # if File.directory?(output_dir) && File.directory?("vendor")
   #   warn("skipping jekyll #{destination}\n")
   #   return

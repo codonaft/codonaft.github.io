@@ -7,3 +7,17 @@
         rc-service --ifstarted aquatic_ws reload 2>>/dev/stdout | logger
       fi
     done &
+
+[ -f /etc/init.d/broadcastr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/broadcastr/ /etc/conf.d/ |
+  while read -r directory events filename ; do
+    if [[ "${filename}" == *".json" || "${filename}" == "broadcastr" ]] ; then
+      rc-service --ifstarted broadcastr restart 2>>/dev/stdout | logger
+    fi
+  done &
+
+[ -f /etc/init.d/chorus ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/chorus/ |
+  while read -r directory events filename ; do
+    if [[ "${filename}" == "chorus.toml" ]] ; then
+      rc-service --ifstarted chorus restart 2>>/dev/stdout | logger
+    fi
+  done &
