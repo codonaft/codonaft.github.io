@@ -1,11 +1,11 @@
 #!/sbin/openrc-run
 
-name="chorus"
+name="rnostr"
 
 command="/usr/local/bin/${name}"
-command_user="chorus:chorus"
+command_user="${name}:${name}"
 command_background="true"
-command_args="/etc/chorus/chorus.toml"
+command_args="relay --watch -c /etc/${name}/${name}.toml"
 
 pidfile="/run/${name}.pid"
 output_logger="logger"

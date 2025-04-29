@@ -1,0 +1,49 @@
+[information]
+name = "codonaft.com"
+description = "Personal nostr relay. It's also available here: ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr and here ws://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr"
+software = "https://github.com/rnostr/rnostr"
+pubkey = "efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"
+
+[data]
+path = "/var/lib/rnostr/data"
+db_query_timeout = "100ms"
+
+[network]
+host = "localhost"
+port = 7777
+#real_ip_header = "x-forwarded-for"
+
+[thread]
+http = 1
+reader = 1
+
+[limitation]
+max_message_length = 524288
+max_subscriptions = 20
+max_filters = 10
+max_limit = 300
+max_subid_length = 100
+min_prefix = 10
+max_event_tags = 5000
+max_event_time_older_than_now = 94608000
+max_event_time_newer_than_now = 900
+
+[metrics]
+enabled = false
+
+[auth]
+enabled = true
+
+[auth.event]
+event_pubkey_whitelist = ["efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"]
+allow_mentioning_whitelisted_pubkeys = true
+
+[rate_limiter]
+#enabled = true
+enabled = false
+
+[count]
+enabled = false
+
+[search]
+enabled = false

@@ -34,7 +34,6 @@ TARGET_CPU = {
 ALPINE_VERSION           = "3.21.3"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
-CHORUS_VERSION           = "2.0.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
@@ -178,11 +177,10 @@ def build
 
   build_rust_app(
     MEDIA_HOST,
-    crate: "chorus",
-    version: "v#{CHORUS_VERSION}",
-    git: URI.parse("https://github.com/mikedilger/chorus"),
-    executables: ["chorus", "chorus_compress", "chorus_dump", "chorus_dump_approvals", "chorus_moderate", "chorus_cmd"],
-    dependencies: ["g++", "openssl-dev", "openssl-libs-static"], # TODO
+    crate: "rnostr",
+    branch: "codonaft",
+    git: URI.parse("https://github.com/codonaft/rnostr"),
+    dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
   )
 end
 
@@ -192,7 +190,7 @@ def configure(config)
     return
   end
   step("configure")
-  configure_chorus(MEDIA_HOST, config)
+  configure_rnostr(MEDIA_HOST, config)
 end
 
 def start
@@ -202,7 +200,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "chorus", "i2pd", "local", "nginx", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "rnostr", "i2pd", "local", "nginx", "tor"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -548,12 +546,8 @@ def with_socks_proxy(country, f : URI ->)
   f.call(proxy)
 end
 
-def configure_chorus(host, config)
-  theme_settings = config["theme_settings"]
-  npub = theme_settings["nostr"]["npub"].as_s
-  pubkey_hex = JSON.parse(`nak decode #{npub}`)["pubkey"].as_s
-  moderator_command = "sudo --user=chorus chorus_cmd /etc/chorus/chorus.toml add_user #{pubkey_hex} 1"
-  ssh(host, add_user_commands("chorus") + [moderator_command])
+def configure_rnostr(host, config)
+  ssh(host, add_user_commands("rnostr"))
 end
 
 def check_icmp(host)
@@ -758,6 +752,7 @@ def build_rust_app(
   crate : String,
   version : String | Nil = nil,
   git : URI | Nil = nil,
+  branch : String | Nil = nil,
   executables : Array(String) = [] of String,
   cflags : String = "",
   rustflags : String = "",
@@ -785,8 +780,10 @@ def build_rust_app(
       raise "unspecified version" if version.nil?
       "#{crate} --version #{version}"
     else
+      raise "either version or branch is allowed" if !version.nil? && !branch.nil?
       version = version.nil? ? "" : " --tag #{version}"
-      "--git #{git}#{version}"
+      branch = branch.nil? ? "" : " --branch #{branch}"
+      "--git #{git}#{version}#{branch}"
     end
 
   install_executables_commands = executables
@@ -1090,7 +1087,7 @@ def check_ssh_hosts(ps : Array(Tuple(Int64, String)))
           check_i2p_host(i)
           check_tor_host(i)
 
-          while ssh(i, ["pgrep --count --parent $(pgrep --exact crond | paste -sd ',')"]).to_i > 0
+          while ssh(i, ["sudo pgrep --count --parent $(sudo pgrep --exact crond | paste -sd ',')"]).to_i > 0
             puts("#{i}: running a cron job")
             sleep(1.seconds)
           end

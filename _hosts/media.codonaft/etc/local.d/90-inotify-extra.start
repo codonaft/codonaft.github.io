@@ -15,9 +15,10 @@
     fi
   done &
 
-[ -f /etc/init.d/chorus ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/chorus/ |
-  while read -r directory events filename ; do
-    if [[ "${filename}" == "chorus.toml" ]] ; then
-      rc-service --ifstarted chorus restart 2>>/dev/stdout | logger
-    fi
-  done &
+# using rnostr relay --watch for now, however it's unclear whether it's working correctly
+# [ -f /etc/init.d/rnostr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/rnostr/ |
+#   while read -r directory events filename ; do
+#     if [[ "${filename}" == "rnostr.toml" ]] ; then
+#       rc-service --ifstarted rnostr restart 2>>/dev/stdout | logger
+#     fi
+#   done &
