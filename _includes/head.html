@@ -62,6 +62,7 @@ MathJax.Hub.Config({
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 {% endif %}
 
+{% assign media_urls = site.theme_settings.p2p_player.media_urls_overwrite | concat: site.theme_settings.p2p_player.media_urls %}
 
 <link rel="stylesheet" href="/assets/css/vendor/vidstack-player/video.css" />
 <link rel="stylesheet" href="/assets/css/vendor/vidstack-player/theme.css" />
@@ -103,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
  if (i2p || onion) document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.visibility = 'visible');
 
- const mediaUrls = [...{{ site.theme_settings.p2p_player.media_urls_overwrite | jsonify }}, ...{{ site.theme_settings.p2p_player.media_urls | jsonify }}].filter(i => {
+ const mediaUrls = {{ media_urls | jsonify }}.filter(i => {
   const i2pMedia = i.endsWith('.i2p');
   const onionMedia = i.endsWith('.onion');
   if (i2p) {
@@ -169,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentTime = loadCurrentTime(player);
 
   if (ZapThreads !== undefined) {
-   const timeReference = '{{ site.baseurl | prepend: site.url }}{{ page.url }}' + playerQueryParameters(playerIndex, currentTime);
+   const timeReference = '{{ page.url | prepend: site.baseurl | prepend: site.url }}' + playerQueryParameters(playerIndex, currentTime);
    ZapThreads.setAdditionalTags([['r', timeReference]]);
   }
 
@@ -655,7 +656,18 @@ gtag('config', '{{ site.theme_settings.google_analytics }}');
 {% seo %}
 {% endif %}
 
+{% assign domain = site.url | split: '.' | last %}
+<link rel="alternate" href="{{ site.url }}/ru/" hreflang="ru" />
+<link rel="alternate" href="{{ site.url }}/" hreflang="x-default" />
 <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.url }}/{% if page.lang != 'en' %}{{ page.lang }}/{% endif %}{{ site.baseurl }}feed.xml"/>
+{% if domain != 'i2p' %}
+<meta http-equiv="X-I2P-Location" content="{{ page.url | prepend: site.baseurl | prepend: 'http://codonftbnpdkjwyflssto3iklawhuthbe37l6swigegqkyyfmiqa.b32.i2p' }}">
+{% endif %}
+{% if domain != 'onion' %}
+<meta http-equiv="Onion-Location" content="{{ page.url | prepend: site.baseurl | prepend: 'http://codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion' }}">
+<meta http-equiv="Permissions-Policy" content="ambient-light-sensor=(), battery=(), bluetooth=(), browsing-topics=(), camera=(), conversion-measurement=(), display-capture=(), geolocation=(), identity-credentials-get=(), interest-cohort=(), microphone=(), midi=(), otp-credentials=(), payment=(), picture-in-picture=(self), publickey-credentials-create=(), publickey-credentials-get=(), sync-xhr=()">
+<link rel="dns-prefetch" href="{{ media_urls[0] }}" />
+{% endif %}
 
 <script type="module" src="/assets/js/main.min.js" defer></script>
 {% include lazy_load_css.html href="/assets/css/main.css" %}

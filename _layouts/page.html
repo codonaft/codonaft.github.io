@@ -2,25 +2,23 @@
 layout: default
 ---
 <article {% if page.feature-img %}class="feature-image"{% endif %}>
-  <header id="main" style="background-image: url('{{ site.baseurl }}/{{ page.feature-img }}')">
+ <header id="main" style="background-image: url('{{ site.baseurl }}/{{ page.feature-img }}')">
 {% if page.feature-title %}
-    <h1 class="feature-title" id="{{ page.feature-title | default: "" | cgi_escape }}"><span>{{ page.feature-title }}</span></h1>
+  <h1 class="feature-title" id="{{ page.feature-title | default: "" | cgi_escape }}"><span>{{ page.feature-title }}</span></h1>
 {% else %}
-    <h1 class="title" id="{{ page.title | default: "" | cgi_escape }}">
-        {{ page.title }}
-    </h1>
+  <h1 class="title" id="{{ page.title | default: "" | cgi_escape }}">{{ page.title }}</h1>
 {% endif %}
-  </header>
-  <section class="post-content">
-  {% if page.bootstrap %}
-  <div class="bootstrap-iso">
-  {% endif %}
-	{{ content }}
-  {% if page.bootstrap %}
-  </div>
-  {% endif %}
-  </section>
-  <!--
-  {% capture tag_list %}{{ page.tags | join: "|"}}{% endcapture %}
-  {% include tags_list.html tags=tag_list %} -->
+ </header>
+ <section class="post-content">
+{% if page.bootstrap %}
+ <div class="bootstrap-iso">
+{% endif %}
+{{ content }}
+{% if page.bootstrap %}
+ </div>
+{% endif %}
+ </section>
+ <!--
+ {% capture tag_list %}{{ page.tags | join: "|"}}{% endcapture %}
+ {% include tags_list.html tags=tag_list %} -->
 </article>

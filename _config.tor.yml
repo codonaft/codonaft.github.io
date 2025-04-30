@@ -4,3 +4,14 @@ theme_settings:
   p2p_player:
     media_urls_overwrite:
     - http://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion
+  nostr:
+    spam_api_overwrite: http://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr/spam.nostr.band/spam_api
+    profile_relays_overwrite:
+    - wss://purplepag.es
+    - wss://hist.nostr.land
+    relays_overwrite:
+    - ws://oxtrdevav64z64yb7x6rjg4ntzqjhedm5b5zjqulugknhzr46ny2qbad.onion
+    - ws://gnostr2jnapk72mnagq3cuykfon73temzp77hcbncn4silgt77boruid.onion
+    read_cache_relays_overwrite:
+    - ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr
+    - ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr/relay.primal.net

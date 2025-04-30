@@ -1,3 +1,8 @@
+{% if site.theme_settings.upstream_url %}
+{% assign site_url = site.theme_settings.upstream_url %}
+{% else %}
+{% assign site_url = site.url %}
+{% endif %}
 {% if include.heart_only %}
 <div class="share-buttons">
  <p><div class="meta">{{ page.str.share_or_support_other_ways }}</div></p>
@@ -12,34 +17,34 @@
 {% endunless %}
  <ul class="share-buttons">
 {% if site.theme_settings.share_buttons.telegram %}
-<li><a href="https://telegram.me/share/url?url={{ site.baseurl | prepend: site.url }}{{ page.url }}" title="Telegram" target="_blank">{% include icons/telegram.svg %}</a></li>
+<li><a href="https://telegram.me/share/url?url={{ page.url | prepend: site.baseurl | prepend: site_url }}" title="Telegram" target="_blank">{% include icons/telegram.svg %}</a></li>
 {% endif %}
 {% if site.theme_settings.share_buttons.vk and page.lang == 'ru' %}
-  <li><a href="https://vk.com/share.php?url={{ site.baseurl | prepend: site.url }}{{ page.url }}" title="VK" target="_blank">{% include icons/vk.svg %}</a></li>
+  <li><a href="https://vk.com/share.php?url={{ page.url | prepend: site.baseurl | prepend: site_url }}" title="VK" target="_blank">{% include icons/vk.svg %}</a></li>
 {% endif %}
 {% if site.theme_settings.share_buttons.facebook %}
-  <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ site.baseurl | prepend: site.url }}{{ page.url }}" title="FB" target="_blank">{% include icons/facebook.svg %}</a></li>
+  <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | prepend: site.baseurl | prepend: site_url }}" title="FB" target="_blank">{% include icons/facebook.svg %}</a></li>
 {% endif %}
 {% if site.theme_settings.share_buttons.twitter %}
-  <li><a href="https://x.com/intent/tweet?source={{ site.baseurl | prepend: site.url }}{{ page.url }}&text={{ page.title | url_encode }}%20{{ site.baseurl | prepend: site.url }}{{ page.url }}" title="Twitter" target="_blank">{% include icons/twitter.svg %}</a></li>
+  <li><a href="https://x.com/intent/tweet?source={{ page.url | prepend: site.baseurl | prepend: site_url }}&text={{ page.title | url_encode }}%20{{ page.url | prepend: site.baseurl | prepend: site_url }}" title="Twitter" target="_blank">{% include icons/twitter.svg %}</a></li>
 {% endif %}
 {% if site.theme_settings.share_buttons.viber %}
   <li>
-   <a href="viber://forward?text={{ page.url | prepend: site.baseurl | prepend: site.url }}" target="_blank">
+   <a href="viber://forward?text={{ page.url | prepend: site.baseurl | prepend: site_url }}" target="_blank">
     <i class="fab fa-viber fa-2x" aria-hidden="true"></i>
    </a>
   </li>
 {% endif %}
 {% if site.theme_settings.share_buttons.whatsapp %}
   <li>
-   <a href="whatsapp://send?text={{ page.url | prepend: site.baseurl | prepend: site.url }}" target="_blank">
+   <a href="whatsapp://send?text={{ page.url | prepend: site.baseurl | prepend: site_url }}" target="_blank">
     <i class="fab fa-whatsapp fa-2x" aria-hidden="true"></i>
    </a>
   </li>
 {% endif %}
 {% if site.theme_settings.share_buttons.tumblr %}
   <li>
-   <a href="http://www.tumblr.com/share?v=3&u={{ page.url | prepend: site.baseurl | prepend: site.url }}&quote={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&s=" target="_blank" title="{{ page.str.share_on }} Tumblr">
+   <a href="http://www.tumblr.com/share?v=3&u={{ page.url | prepend: site.baseurl | prepend: site_url }}&quote={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&s=" target="_blank" title="{{ page.str.share_on }} Tumblr">
     <i class="fab fa-tumblr-square fa-2x" aria-hidden="true"></i>
     <span class="sr-only">{{ page.str.share_on }} Tumblr</span>
    </a>
@@ -47,7 +52,7 @@
 {% endif %}
 {% if site.theme_settings.share_buttons.pinterest %}
   <li>
-   <a href="http://pinterest.com/pin/create/button/?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&description=" target="_blank" title="{{ page.str.pin_it }}">
+   <a href="http://pinterest.com/pin/create/button/?url={{ page.url | prepend: site.baseurl | prepend: site_url }}&description=" target="_blank" title="{{ page.str.pin_it }}">
     <i class="fab fa-pinterest-square fa-2x" aria-hidden="true"></i>
     <span class="sr-only">{{ page.str.pin_it }}</span>
    </a>
@@ -55,7 +60,7 @@
 {% endif %}
 {% if site.theme_settings.share_buttons.pocket %}
   <li>
-   <a href="https://getpocket.com/save?url={{ page.url | prepend: site.baseurl | prepend: site.url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}" target="_blank" title="{{ page.str.add_to }} Pocket">
+   <a href="https://getpocket.com/save?url={{ page.url | prepend: site.baseurl | prepend: site_url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}" target="_blank" title="{{ page.str.add_to }} Pocket">
     <i class="fab fa fa-get-pocket fa-2x" aria-hidden="true"></i>
     <span class="sr-only">{{ page.str.add_to }} Pocket</span>
    </a>
@@ -63,21 +68,21 @@
 {% endif %}
 {% if site.theme_settings.share_buttons.reddit and page.lang == 'en' %}
   <li>
-   <a href="http://www.reddit.com/submit?url={{ site.baseurl | prepend: site.url }}{{ page.url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}" title="Reddit" target="_blank">
+   <a href="http://www.reddit.com/submit?url={{ page.url | prepend: site.baseurl | prepend: site_url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}" title="Reddit" target="_blank">
     {% include icons/reddit.svg %}
    </a>
   </li>
 {% endif %}
 {% if site.theme_settings.share_buttons.linkedin %}
   <li>
-   <a href="http://www.linkedin.com/shareArticle?mini=true&url={{ site.baseurl | prepend: site.url }}{{ page.url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&summary=&source={{ site.baseurl | prepend: site.url }}{{ page.url }}" title="LinkedIn" target="_blank">
+   <a href="http://www.linkedin.com/shareArticle?mini=true&url={{ page.url | prepend: site.baseurl | prepend: site_url }}&title={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&summary=&source={{ page.url | prepend: site.baseurl | prepend: site_url }}" title="LinkedIn" target="_blank">
     {% include icons/linkedin.svg %}
    </a>
   </li>
 {% endif %}
 {% if site.theme_settings.share_buttons.wordpress %}
   <li>
-   <a href="http://wordpress.com/press-this.php?u={{ page.url | prepend: site.baseurl | prepend: site.url }}&quote={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&s=" target="_blank" title="{{ page.str.share_on }} WordPress">
+   <a href="http://wordpress.com/press-this.php?u={{ page.url | prepend: site.baseurl | prepend: site_url }}&quote={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&s=" target="_blank" title="{{ page.str.share_on }} WordPress">
     <i class="fab fa-wordpress fa-2x" aria-hidden="true"></i>
     <span class="sr-only">{{ page.str.share_on }} WordPress</span>
    </a>
@@ -85,7 +90,7 @@
 {% endif %}
 {% if site.theme_settings.share_buttons.email %}
   <li>
-   <a href="mailto:?subject={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&body=:%20{{ page.url | prepend: site.baseurl | prepend: site.url }}" target="_blank" title="{{ page.str.email }}">
+   <a href="mailto:?subject={{ page.title | url_encode }}%20%7C%20{{ site.title | url_encode }}&body=:%20{{ page.url | prepend: site.baseurl | prepend: site_url }}" target="_blank" title="{{ page.str.email }}">
     <i class="fab fa-envelope-square fa-2x" aria-hidden="true"></i>
     <span class="sr-only">{{ page.str.email }}</span>
    </a>

@@ -12,7 +12,7 @@ require "json"
 require "uri"
 require "yaml"
 
-DEBUG = ARGV.empty? || !["sync", "build", "deploy", "health"].includes?(ARGV[0])
+DEBUG = ARGV.empty? || !["sync", "sync-nostr", "build", "deploy", "health"].includes?(ARGV[0])
 TRACE = ENV["TRACE"]? == "1"
 
 WILDCARD_HOST = "0.0.0.0"
@@ -74,6 +74,9 @@ def main
   elsif ARGV.size == 1 && ARGV[0] == "sync"
     check
     sync
+  elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
+    profiles = ARGV.size > 1 && ARGV[1] == "profiles"
+    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV.size == 1 && ARGV[0] == "health"
     check
     health(config)
@@ -125,6 +128,10 @@ def usage
          sync to PROD
            download newest non-conflicting versioned files to _ohmyvps and _hosts
            upload newest files from _ohmyvps, _hosts and .build
+
+       #{script} sync-nostr [profile]
+         fetch nostr events, push them to my relays
+         don't send events to profile-specific relays by default
 
        #{script} health
          run health checks
@@ -392,6 +399,13 @@ def health(config)
   end
   step("health")
 
+  all_hosts().each { |host|
+    step(host)
+    ssh(host, ["sudo /etc/init.d/nginx checkconfig", "sudo hdparm -t /dev/sd[a-z] | sed \"s!.*= !!\""], tty: true)
+  }
+
+  warn("github commit hash is different\n") unless JSON.parse(HTTP::Client.get("https://api.github.com/repos/codonaft/codonaft.github.io/commits").body)[0]["sha"].as_s == `git rev-parse HEAD`.strip
+
   banlists =
     if nonempty_exists?(BANLISTS) && File.info(BANLISTS).modification_time + 1.days > Time.utc
       File.read_lines(BANLISTS).to_set
@@ -461,7 +475,7 @@ def health(config)
     .map { |i| i.strip }
     .reject { |i| i.empty? }
     .map { |i| URI.parse(i) }
-    .reject { |i| i.hostname.nil? || i.hostname == "127.0.0.1" } + relay_mirrors
+    .reject { |i| i.hostname.nil? || i.hostname == "localhost" } + relay_mirrors
   wss_uris = (trackers + other_relays + `git grep --only-matching 'wss://[a-zA-Z0-9/._-]*'`
     .split('\n')
     .map { |i| i.strip.gsub(/.*wss:\/\//, "") }
@@ -714,7 +728,6 @@ def check
   step("check")
 
   ps = processes()
-
   current_ps_name = "/#{Path[__FILE__].basename}"
   raise "other instance keeps running" if ps
                                             .select { |(_, i)| i.includes?("crystal") && i.includes?(current_ps_name) }
@@ -723,6 +736,8 @@ def check
   puts("checking dependencies")
   system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
   raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
+  system("podman ps >>/dev/null")
+  raise "podman failed" unless $?.success?
 
   system(<<-STRING
     set -euo pipefail
@@ -841,6 +856,7 @@ end
 def build_jekyll(host : String, *, configs : Array(Path))
   prepare_jekyll
 
+  upstream_url = configs.map { |i| YAML.parse(File.read(i))["theme_settings"]["upstream_url"]? }.select { |i| !i.nil? }[0]?
   url = URI.parse(configs.reverse.map { |i| YAML.parse(File.read(i))["url"] }.select { |i| !i.nil? }[0].as_s)
   destination = Path["/var/www"].join(url.hostname.not_nil!)
   output_dir = BUILD_DIR.join(host, destination)
@@ -853,11 +869,15 @@ def build_jekyll(host : String, *, configs : Array(Path))
   configs_arg = configs.empty? ? "" : "--config #{configs.join(',')}"
   system("bundle exec jekyll build --future --destination #{output_dir} #{configs_arg}")
   raise "jekyll build failure" unless $?.success?
+  unless upstream_url.nil?
+    system("sed --in-place 's!#{upstream_url.as_s.gsub('.', "\\.")}!#{url}!g' #{output_dir.join("sitemap.xml")}")
+    raise "failed to update sitemap" unless $?.success?
+  end
 end
 
 def prepare_jekyll
   unless File.directory?("vendor")
-    FileUtils.rm_r(["Gemfile.lock", ".bundle"])
+    FileUtils.rm_rf(["Gemfile.lock", ".bundle"])
     system(<<-STRING
       set -xeuo pipefail
       gem update bundler
@@ -1120,6 +1140,117 @@ def check_manual_upload(host : String, *, owner : String, group : String, mode :
   end
 end
 
+def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
+  # TODO: do the same thing as cron bash job that uses rust nostr cli client? connect to relays over tor?
+
+  limit = 100
+  now = Time.utc
+  from = now - 3.years # TODO: last commit date? last blog date? previous blog date?
+  to = now + 15.minutes
+  profile_kinds = [0, 3, 10002]
+
+  nostr_config = config["theme_settings"]["nostr"]
+  npub = nostr_config["npub"].as_s
+  pk = JSON.parse(`nak decode #{npub}`)["pubkey"].as_s
+
+  profile_relays = nostr_config["profile_relays"].as_a.map { |i| i.as_s }
+  relays = nostr_config["relays"].as_a.map { |i| i.as_s }
+  read_cache_relays = nostr_config["read_cache_relays"].as_a.map { |i| i.as_s }
+  input_relays : Array(String) = relays + read_cache_relays + profile_relays
+
+  step("sync-nostr")
+  trace("pk=#{pk} input_relays=#{input_relays} output_relays=#{output_relays}")
+
+  nak = "nak req --limit #{limit} --since #{from.to_unix} --until #{to.to_unix}"
+
+  mentions = parse_nostr_events(`#{nak} -p #{pk} #{input_relays.join(' ')}`)
+    .reject { |i|
+      return false unless i["tags"].as_a.any? { |t| t.size > 1 && t[0] == "p" && t[1] == pk }
+      k = i["kind"].as_i
+      [3, 1984, 4454].includes?(k) || (k >= 5000 && k <= 7000) || (k >= 10000 && k <= 10102) || (k >= 20000 && k < 30000) || (k >= 30000 && k <= 30267)
+    }
+  puts("fetched #{mentions.size} mentions")
+
+  parsed_authored_events = parse_nostr_events(`#{nak} -a #{pk} #{input_relays.join(' ')}`)
+  authored_events = parsed_authored_events
+    .reject { |i|
+      return false unless i["pubkey"].as_s == pk
+      k = i["kind"].as_i
+      [4454, 10044].includes?(k) || (k >= 20000 && k < 30000)
+    }
+  puts("fetched #{authored_events.size} authored events")
+
+  puts("writing events")
+  nak_raw(["event"] + output_relays, (mentions + authored_events).map { |i| i.to_json })
+
+  if profiles
+    # TODO: check spam
+    fetch_comments_command = ([nak, "-k", "1", "-p", pk] + input_relays).join(' ')
+    trace(fetch_comments_command)
+    comments_pks = parse_nostr_events(`#{fetch_comments_command}`)
+      .select { |i| i["kind"].as_i == 1 && i["pubkey"].as_s != pk }
+      .map { |i| i["pubkey"].as_s }.to_set
+    request_profiles_command = (
+      [nak, "--since", "0", "-k", "0"] + comments_pks.map { |i| "-a #{i}" } + input_relays
+    ).join(' ')
+    trace(request_profiles_command)
+    comments_profile_events = parse_nostr_events(`#{request_profiles_command}`)
+      .select { |i| i["kind"].as_i == 0 }
+      .group_by { |i| i["pubkey"].as_s }
+      .reject { |p, _| p == pk }
+      .map { |_, g| g.max_by { |i| i["created_at"].as_i } }
+    puts("profile events of commenters = #{comments_profile_events.size}")
+
+    request_author_profile_events_command = (
+      [nak, "--since", "0", "-a", pk] + profile_kinds.map { |k| "-k #{k}" } + input_relays
+    ).join(' ')
+    trace(request_author_profile_events_command)
+    author_profile_events = parse_nostr_events(`#{request_author_profile_events_command}`)
+      .select { |i| profile_kinds.includes?(i["kind"].as_i) }
+    puts("author profile events = #{author_profile_events.size}")
+    nak_raw(["event"] + profile_relays, (comments_profile_events + author_profile_events).map { |i| i.to_json })
+  end
+  puts("finished writing events")
+end
+
+def nak_raw(args, input : Array(String) = [] of String)
+  # TODO: exit after timeout
+  output = Channel(Tuple(String, Process::Status)).new
+  trace("running nak #{args}")
+  spawn do
+    value = Process.run(command: "nak", args: args) do |p|
+      input.each do |line|
+        trace("writing stdin")
+        p.input.puts(line)
+        trace("writing stdin ok")
+      end
+      trace("closing stdin")
+      p.input.close
+      trace("closed stdin")
+      trace("reading stdout")
+      result = p.output.gets_to_end
+      trace("finished reading stdout")
+      result
+    end
+    trace("sending stdout")
+    output.send({value.strip, $?})
+    trace("sent stdout")
+  end
+  trace("waiting for stdout")
+  value, status = output.receive
+  trace("received stdout")
+  raise "#{args}: unexpected exit code #{status}, value=#{value}" unless status.success?
+  value
+end
+
+def parse_nostr_events(text)
+  text
+    .split('\n')
+    .reject { |i| i.strip.empty? }
+    .to_set
+    .map { |i| JSON.parse(i) }
+end
+
 def processes
   Dir.entries("/proc")
     .select { |entry| entry =~ /^\d+$/ }
@@ -1153,6 +1284,7 @@ def children_recursive_inner(dir : Path) : Array(Path)
 end
 
 def all_hosts : Array(String)
+  # TODO: from args
   Dir.children(HOSTS_DIR)
 end
 

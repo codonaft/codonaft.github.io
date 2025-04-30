@@ -126,15 +126,26 @@ theme_settings:
   zapthreads: true
 
   nostr:
+    enabled: true
     npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
     community: codonaft
     max_comment_length: 5000
     min_read_pow: 7
+
+    spam_api: https://spam.nostr.band/spam_api
+    profile_relays:
+    - wss://purplepag.es
+    - wss://hist.nostr.land
     relays:
     - wss://nostr-pub.wellorder.net
     - wss://relay.nostr.band
     read_cache_relays:
     - wss://relay.primal.net
+
+    spam_api_overwrite: ''
+    profile_relays_overwrite: []
+    relays_overwrite: []
+    read_cache_relays_overwrite: []
 
   special_page:
     search:

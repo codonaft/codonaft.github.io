@@ -12,6 +12,8 @@ PROD_BRANCH   = "master"
 
 ALLOWED_TIME_DIFF = 5.minutes
 
+TRACE = true
+
 class PostMetadata
   include YAML::Serializable
 
@@ -218,17 +220,28 @@ end
 def nak_raw(args, input = nil)
   # TODO: exit after timeout
   output = Channel(Tuple(String, Process::Status)).new
+  trace("running nak #{args}")
   spawn do
     value = Process.run(command: "nak", args: args) do |p|
       if input
+        trace("writing stdin")
         p.input.puts(input)
+        trace("closing stdin")
         p.input.close
+        trace("closed stdin")
       end
-      p.output.gets_to_end
+      trace("reading stdout")
+      result = p.output.gets_to_end
+      trace("finished reading stdout")
+      result
     end
+    trace("sending stdout")
     output.send({value.strip, $?})
+    trace("sent stdout")
   end
+  trace("waiting for stdout")
   value, status = output.receive
+  trace("received stdout")
   raise "#{args}: unexpected exit code #{status}, value=#{value}" unless status.success?
   value
 end
@@ -317,6 +330,13 @@ end
 def wait(time : Time::Span)
   puts("waiting #{time}")
   sleep(time)
+end
+
+def trace(text)
+  return unless TRACE
+  Colorize.with.dark_gray.surround(STDOUT) do
+    puts(text)
+  end
 end
 
 main

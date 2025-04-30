@@ -1,24 +1,24 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 [ -f /etc/init.d/aquatic_ws ] && [ -d /var/www ] && \
-  inotifywait --event close_write,moved_to,create --monitor --recursive /etc/aquatic/ /etc/init.d/ /var/www/ |
+  inotifywait --event close_write,moved_to,create --monitor --recursive /etc/aquatic/ /var/www/ |
     while read -r directory events filename ; do
-      if [[ "${filename}" == "aquatic_ws.conf" || "${filename}" == "aquatic_ws" || "${filename}" == *".m3u8" ]] ; then
+      if [[ "${filename}" == "aquatic_ws.conf" || "${filename}" == *".m3u8" ]] ; then
         rc-service --ifstarted aquatic_ws reload 2>>/dev/stdout | logger
       fi
     done &
 
-[ -f /etc/init.d/broadcastr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/broadcastr/ /etc/conf.d/ |
+[ -f /etc/init.d/broadcastr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/broadcastr/ |
   while read -r directory events filename ; do
-    if [[ "${filename}" == *".json" || "${filename}" == "broadcastr" ]] ; then
+    if [[ "${filename}" == *".json" ]] ; then
       rc-service --ifstarted broadcastr restart 2>>/dev/stdout | logger
     fi
   done &
 
-# using rnostr relay --watch for now, however it's unclear whether it's working correctly
-# [ -f /etc/init.d/rnostr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/rnostr/ |
-#   while read -r directory events filename ; do
-#     if [[ "${filename}" == "rnostr.toml" ]] ; then
-#       rc-service --ifstarted rnostr restart 2>>/dev/stdout | logger
-#     fi
-#   done &
+# rnostr relay --watch does nothing (probably under load only)
+[ -f /etc/init.d/rnostr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/rnostr/ |
+  while read -r directory events filename ; do
+    if [[ "${filename}" == "rnostr.toml" ]] ; then
+      rc-service --ifstarted rnostr restart 2>>/dev/stdout | logger
+    fi
+  done &

@@ -11,7 +11,7 @@ db_query_timeout = "100ms"
 [network]
 host = "localhost"
 port = 7777
-#real_ip_header = "x-forwarded-for"
+real_ip_header = "x-forwarded-for"
 
 [thread]
 http = 1
@@ -21,7 +21,7 @@ reader = 1
 max_message_length = 524288
 max_subscriptions = 20
 max_filters = 10
-max_limit = 300
+max_limit = 2000
 max_subid_length = 100
 min_prefix = 10
 max_event_tags = 5000
