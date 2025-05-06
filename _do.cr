@@ -60,7 +60,13 @@ CACHE_DIR        = BUILD_DIR.join(".cache")
 BANLISTS         = CACHE_DIR.join("banlists.txt")
 BROKEN_POST_URLS = CACHE_DIR.join("broken_post_urls.txt")
 COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
-MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, "/var/www", PUBLIC_MEDIA_HOST)
+
+SERVER_MEDIA_DIR = Path["var/www"].join(PUBLIC_MEDIA_HOST)
+MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, SERVER_MEDIA_DIR)
+
+MIRROR_FROM_TO = [
+  {MEDIA_HOST, [{MIRROR_HOST, SERVER_MEDIA_DIR}]},
+]
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 
@@ -68,33 +74,55 @@ def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
   Dir.cd(repo_dir)
 
+  ps = processes()
+  check(ps)
+
   config = YAML.parse(File.read(MAIN_SITE_CONFIG))
   if !ARGV.empty? && (ARGV.includes?("-h") || ARGV.includes?("--help"))
     usage
   elsif ARGV.size == 1 && ARGV[0] == "sync"
-    check
+    check_ssh_hosts(ps)
     sync
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV.size == 1 && ARGV[0] == "health"
-    check
+    check_ssh_hosts(ps)
     health(config)
   elsif ARGV.size >= 1 && ARGV[0] == "build"
-    check
     update
     build
     if ARGV.size == 2 && ARGV[1] == "run"
       serve(DEBUG_HOST)
     end
   elsif ARGV.size > 2 && ARGV[0] == "encode"
-    check
     encode_media(ARGV[1], config, ARGV[2])
   elsif ARGV.size == 1 && ARGV[0] == "deploy"
-    check
+    check_ssh_hosts(ps)
     deploy(config)
+  elsif ARGV.size == 1 && ARGV[0] == "cloudflare-banlist"
+    expr_begin = "ip.src in {"
+    expr_end = "}"
+    max_len = 4096 - expr_begin.size - expr_end.size
+    ips = Dir
+      .glob(".build/*/var/tmp/local-banlist.txt")
+      .flat_map { |i| File.read_lines(i) }
+      .map { |i| i.strip }
+      .select { |i| i.size > 0 }
+      .sort
+      .uniq
+      .join(' ')
+    while ips.size > 0
+      end_index = ips.rindex(' ', max_len)
+      if end_index.nil? || ips.size <= max_len
+        puts("#{expr_begin}#{ips.strip}#{expr_end}\n\n")
+        break
+      else
+        puts("#{expr_begin}#{ips[0..end_index].strip}#{expr_end}\n\n")
+        ips = ips[end_index..].strip
+      end
+    end
   elsif ARGV.empty? || ARGV[0] == "debug"
-    check
     update
     build
     serve(DEBUG_HOST)
@@ -136,6 +164,9 @@ def usage
        #{script} health
          run health checks
 
+       #{script} cloudflare-banlist
+         generate ban-lists for Security - WAF
+
        #{script} encode path/to/video-name.mkv <en|ru>
        #{script} encode https://youtu.be/CB9bS46vl04 <en|ru>
          encode (or download and transcode) media to HLS, put it to #{MEDIA_BUILD_DIR}/video-name/
@@ -158,6 +189,13 @@ end
 
 def build
   step("build")
+
+  if DEBUG
+    warn("DEBUG\n")
+  else
+    ok("PROD\n")
+  end
+
   Dir.mkdir_p(CACHE_DIR, 0o755)
 
   build_vidstack_player
@@ -317,6 +355,10 @@ def sync
   hosts = all_hosts()
   puts("hosts: #{hosts}")
 
+  mirror = MIRROR_FROM_TO.map { |source_host, destination_and_files|
+    {source_host, destination_and_files.select { |destination_host, _| hosts.includes?(destination_host) }}
+  }.to_h
+
   common_files = git_ls(COMMON_ROOT)
   hosts_files : Hash(String, Set(Path)) = hosts.map { |host|
     host_dir = HOSTS_DIR.join(host)
@@ -327,7 +369,7 @@ def sync
   hosts.map { |host|
     done = Channel(Nil).new
     spawn do
-      sync_host(host, hosts_files, common_files)
+      sync_host(host, hosts_files: hosts_files, common_files: common_files, mirror_to: mirror[host]?)
       done.send(nil)
     end
     done
@@ -336,7 +378,7 @@ def sync
   ok("sync finished\n")
 end
 
-def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files : Set(Path))
+def sync_host(host : String, *, hosts_files : Hash(String, Set(Path)), common_files : Set(Path), mirror_to : Array({String, Path}) | Nil)
   host_files : Set(Path) = hosts_files[host]
   all_hosts_files : Set(Path) = hosts_files
     .flat_map { |_, files| files.to_a }
@@ -351,6 +393,15 @@ def sync_host(host : String, hosts_files : Hash(String, Set(Path)), common_files
   host_build_dir = BUILD_DIR.join(host)
   host_build_files = children_recursive(host_build_dir).to_set
   filtered_sync(host, host_build_dir, upload: host_build_files) # TODO: with --delete specifically for jekyll ?
+
+  unless mirror_to.nil?
+    mirror_to.each { |destination_host, dir|
+      mirror_host_files = host_files.select { |i| i.to_s.starts_with?(dir.to_s) }
+      mirror_host_build_files = host_build_files.select { |i| i.to_s.starts_with?(dir.to_s) }
+      filtered_sync(destination_host, HOSTS_DIR.join(host), upload: mirror_host_files.to_set)
+      filtered_sync(destination_host, BUILD_DIR.join(host), upload: mirror_host_build_files.to_set)
+    }
+  end
 
   ssh(host, ["sudo etckeeper commit sync 2>>/dev/null"])
 end
@@ -724,41 +775,23 @@ def update_broken_post_urls
   broken_urls
 end
 
-def check
-  step("check")
-
-  ps = processes()
+def check(ps : Array(Tuple(Int64, String)))
   current_ps_name = "/#{Path[__FILE__].basename}"
   raise "other instance keeps running" if ps
                                             .select { |(_, i)| i.includes?("crystal") && i.includes?(current_ps_name) }
                                             .any? { |(pid, _)| pid != Process.ppid }
 
-  puts("checking dependencies")
-  system("which bsdtar bundle css-minify node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
-  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/uglifyjs-3.16.1' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0'" unless $?.success?
+  system("which bsdtar bundle css-minify git nak node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
+  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/uglifyjs-3.16.1' '=dev-vcs/git-2.49.0-r2' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0' && go install github.com/fiatjaf/nak@latest" unless $?.success?
   system("podman ps >>/dev/null")
   raise "podman failed" unless $?.success?
 
-  system(<<-STRING
-    set -euo pipefail
-    #{TRACE ? "set -x" : ""}
-    for i in $(grep --recursive vim:nofixendofline _includes | cut -d ':' -f1) ; do
-      if [[ $(wc --lines "$i" | awk '{print $1}') -ne 0 ]] ; then
-        echo "unexpected newline in $i"
-        exit 1
-      fi
-    done
-    STRING
-  )
-  raise "file format failure" unless $?.success?
-
-  check_ssh_hosts(ps)
-
-  if DEBUG
-    warn("DEBUG\n")
-  else
-    ok("PROD\n")
-  end
+  files_with_unexpected_newlines = `grep --recursive vim:nofixendofline _includes`
+    .strip
+    .split('\n')
+    .map { |i| i.split(':')[0] }
+    .select { |i| File.read(i).includes?('\n') }
+  raise "unexpected newline in #{files_with_unexpected_newlines}" unless files_with_unexpected_newlines.empty?
 end
 
 def build_rust_app(
@@ -1066,26 +1099,29 @@ end
 
 def check_i2p_host(host : String)
   puts("checking i2p configuration at #{host}")
-  private_key = File.read_lines(HOSTS_DIR.join(host).join("etc/i2pd/tunnels.conf"))
-    .select { |i| i.starts_with?("keys =") }
-    .map { |i| i.split(" = ")[1] }[0]
   service_dir = Path["/var/lib/i2pd"]
+  private_keys = File.read_lines(HOSTS_DIR.join(host).join("etc/i2pd/tunnels.conf"))
+    .select { |i| i.starts_with?("keys =") }
+    .map { |i| i.split(" = ")[1] }
   check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 700, path: service_dir)
-  check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 440, path: service_dir.join(private_key))
+  private_keys.each { |i| check_manual_upload(host, owner: "i2pd", group: "i2pd", mode: 440, path: service_dir.join(i)) }
 end
 
 def check_tor_host(host : String)
   puts("checking tor configuration at #{host}")
-  service_dir = Path[File.read_lines(HOSTS_DIR.join(host).join("etc/tor/torrc"))
+  service_dirs = File.read_lines(HOSTS_DIR.join(host).join("etc/tor/torrc"))
     .select { |i| i.starts_with?("HiddenServiceDir") }
-    .map { |i| i.split(" ")[1] }[0]]
-  check_manual_upload(host, owner: "tor", group: "tor", mode: 700, path: service_dir)
-  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hs_ed25519_secret_key"))
-  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hs_ed25519_public_key"))
-  check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: service_dir.join("hostname"), data: service_dir.basename)
+    .map { |i| Path[i.split(" ")[1]] }
+  service_dirs.map { |i|
+    check_manual_upload(host, owner: "tor", group: "tor", mode: 700, path: i)
+    check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: i.join("hs_ed25519_secret_key"))
+    check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: i.join("hs_ed25519_public_key"))
+    check_manual_upload(host, owner: "tor", group: "tor", mode: 400, path: i.join("hostname"), data: i.basename)
+  }
 end
 
 def check_ssh_hosts(ps : Array(Tuple(Int64, String)))
+  step("check_ssh_hosts")
   all_hosts()
     .map { |i|
       check_existing_ssh_connection(i, ps)
@@ -1132,12 +1168,15 @@ def check_existing_ssh_connection(host : String, ps : Array(Tuple(Int64, String)
 end
 
 def check_manual_upload(host : String, *, owner : String, group : String, mode : UInt16, path : Path, data : String? = nil)
-  raise "#{path}: unexpected owner" unless ssh(host, ["sudo stat -c %U #{path}"]) == owner
-  raise "#{path}: unexpected group" unless ssh(host, ["sudo stat -c %G #{path}"]) == group
-  raise "#{path}: unexpected mode" unless ssh(host, ["sudo stat -c %a #{path}"]).to_i == mode
-  unless data.nil?
-    raise "#{path}: unexpected data" unless ssh(host, ["sudo cat #{path}"]).strip == data
-  end
+  commands = ["stat -c %U,%G,%a"]
+  commands += ["cat"] unless data.nil?
+  output = ssh(host, commands.map { |i| "sudo #{i} #{path}" }).strip.split('\n')
+  stat = output[0].split(',')
+
+  raise "#{path}: unexpected owner" unless stat[0] == owner
+  raise "#{path}: unexpected group" unless stat[1] == group
+  raise "#{path}: unexpected mode" unless stat[2].to_i == mode
+  raise "#{path}: unexpected data" unless data.nil? || output[1] == data
 end
 
 def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
