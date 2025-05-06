@@ -35,6 +35,9 @@ defaults:
         previous_page: Prev
         javascript_required_comments: Please enable JavaScript to view comments.
         p2p_player_warning: Too slow? Try
+        onion_mirror: onion mirror
+        i2p_mirror: i2p mirror
+        or: or
         leave_comment_on_upstream: Leave comment using
   - scope:
       path: 'ru/*'
@@ -59,6 +62,9 @@ defaults:
         previous_page: Назад
         javascript_required_comments: Please enable JavaScript to view comments.
         p2p_player_warning: Медленно грузится? Попробуй
+        onion_mirror: зеркало
+        i2p_mirror: другое зеркало
+        or: или
         leave_comment_on_upstream: Оставить коммент через
 
 theme_settings:
@@ -80,6 +86,7 @@ theme_settings:
   flickr:
   gitlab:
   github: codonaft
+  i2p: http://codonftbnpdkjwyflssto3iklawhuthbe37l6swigegqkyyfmiqa.b32.i2p
   instagram:
   telegram_ru: codonaft_official
   keybase:
@@ -160,7 +167,7 @@ theme_settings:
   post_navigation: true
 
   p2p_player:
-    swarmPrefix: https://media.codonaft.com
+    swarm_prefix: https://media.codonaft.com
     media_urls:
     - https://media.codonaft.com
     - https://media-cached.codonaft.com

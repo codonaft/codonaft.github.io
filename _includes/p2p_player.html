@@ -7,7 +7,8 @@
  {% assign video_id = page.permalink | split: '/' | last %}
  {% endif %}
 
- {% assign stream_url_prefix = site.theme_settings.p2p_player.media_urls[0] | append: '/' | append: video_id %}
+ {% assign media_urls = site.theme_settings.p2p_player.media_urls_overwrite | concat: site.theme_settings.p2p_player.media_urls %}
+ {% assign stream_url_prefix = media_urls[0] | append: '/' | append: video_id %}
  {% assign stream_url = stream_url_prefix | append: "/main.m3u8" %}
  {% assign thumbnail_url = stream_url_prefix | append: "/thumbnail.webp" %}
 {% endif %}
@@ -38,9 +39,11 @@
    <media-video-layout></media-video-layout>
   </media-player>
  </div>
-{% if site.theme_settings.upstream_url %}
 {% assign domain = site.url | split: '.' | last %}
- <div class="p2p-player-warning">⚠️ {{ page.str.p2p_player_warning }} {% if domain == 'i2p' %}<a href="{{ page.url | prepend: site.theme_settings.tor }}" target="_blank">tor</a> | {% endif %}<a href="{{ page.url | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>
+{% if domain == 'onion' or domain == 'i2p' %}
+<div class="p2p-player-warning">⚠️ {{ page.str.p2p_player_warning }} <a href="{{ page.url | prepend: site.baseurl | prepend: site.theme_settings.upstream_url }}" target="_blank">clearnet</a></div>
+{% else %}
+<div class="p2p-player-warning" style="display: none">⚠️ {{ page.str.p2p_player_warning }} <a href="{{ page.url | prepend: site.baseurl | prepend: site.theme_settings.tor }}" target="_blank">{{ page.str.onion_mirror }}</a> {{ page.str.or }} <a href="{{ page.url | prepend: site.baseurl | prepend: site.theme_settings.i2p }}" target="_blank">{{ page.str.i2p_mirror }}</a></div>
 {% endif %}
 {% if include.chapters %}
  <div class="p2p-player-chapters">

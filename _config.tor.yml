@@ -4,6 +4,7 @@ theme_settings:
   p2p_player:
     media_urls_overwrite:
     - http://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion
+    - http://codonafte3ygy3szn5qwsdje4vp6mwobvzd75jl4ytyrb262cpkaegid.onion
   nostr:
     spam_api_overwrite: http://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr/spam.nostr.band/spam_api
     profile_relays_overwrite:

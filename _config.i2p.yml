@@ -4,6 +4,7 @@ theme_settings:
   p2p_player:
     media_urls_overwrite:
     - http://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p
+    - http://codonfttnvztewul3qgathdxjr2fnv34udrqyc6quw3zptqojnea.b32.i2p
   nostr:
     spam_api_overwrite: http://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr/spam.nostr.band/spam_api
     profile_relays_overwrite:
