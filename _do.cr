@@ -9,6 +9,7 @@ require "file_utils"
 require "http/client"
 require "ini"
 require "json"
+require "socket"
 require "uri"
 require "yaml"
 
@@ -56,6 +57,7 @@ MAIN_SITE_CONFIG = Path["_config.yml"]
 
 HOSTS_DIR        = Path["_hosts"]
 BUILD_DIR        = Path[".build"]
+BACKUP_DIR       = Path[".backup"]
 CACHE_DIR        = BUILD_DIR.join(".cache")
 BANLISTS         = CACHE_DIR.join("banlists.txt")
 BROKEN_POST_URLS = CACHE_DIR.join("broken_post_urls.txt")
@@ -101,27 +103,7 @@ def main
     check_ssh_hosts(ps)
     deploy(config)
   elsif ARGV.size == 1 && ARGV[0] == "cloudflare-banlist"
-    expr_begin = "ip.src in {"
-    expr_end = "}"
-    max_len = 4096 - expr_begin.size - expr_end.size
-    ips = Dir
-      .glob(".build/*/var/tmp/local-banlist.txt")
-      .flat_map { |i| File.read_lines(i) }
-      .map { |i| i.strip }
-      .select { |i| i.size > 0 }
-      .sort
-      .uniq
-      .join(' ')
-    while ips.size > 0
-      end_index = ips.rindex(' ', max_len)
-      if end_index.nil? || ips.size <= max_len
-        puts("#{expr_begin}#{ips.strip}#{expr_end}\n\n")
-        break
-      else
-        puts("#{expr_begin}#{ips[0..end_index].strip}#{expr_end}\n\n")
-        ips = ips[end_index..].strip
-      end
-    end
+    generate_cloudflare_banlist
   elsif ARGV.empty? || ARGV[0] == "debug"
     update
     build
@@ -371,10 +353,7 @@ def sync
     spawn do
       begin
         sync_host(host, hosts_files: hosts_files, common_files: common_files, mirror_to: mirror[host]?)
-
-        backup_dir = Path[".backup"].join(host)
-        continue_download(host, backup_dir, [Path["var/log/nginx/access.log"]])
-
+        continue_download(host, BACKUP_DIR.join(host), [Path["var/log/nginx/access.log"]])
         done.send(nil)
       rescue e
         error("host=#{host} sync failure: #{e}\n")
@@ -713,15 +692,20 @@ def check_domain(url : URI)
 end
 
 def check_ban(host : String, banlists : Set(String))
-  pattern = [host] + `nslookup #{host}`
+  pattern = [host] + resolve_domain(host)
+  is_banned = pattern.any? { |i| banlists.includes?(i) && i == host || i == "www.#{host}" }
+  error("#{host} is probably banned") if is_banned
+end
+
+def resolve_domain(host) : Array(String)
+  `nslookup #{host}`
     .split('\n')
     .skip(3)
     .select { |i| i.starts_with?("Address: ") }
     .map { |i| i.split(' ') }
     .select { |i| i.size > 1 }
     .map { |i| i[1].strip }
-  is_banned = pattern.any? { |i| banlists.includes?(i) && i == host || i == "www.#{host}" }
-  error("#{host} is probably banned") if is_banned
+    .map { |i| Socket::IPAddress.new(i, 0).address }
 end
 
 def update_banlists
@@ -803,6 +787,80 @@ def update_broken_post_urls
 
   File.write(BROKEN_POST_URLS, broken_urls.join('\n'))
   broken_urls
+end
+
+def generate_cloudflare_banlist
+  banlist_filename = BUILD_DIR.join(MEDIA_HOST).join("/var/tmp/local-banlist.txt")
+  local_banlist = File.read_lines(banlist_filename)
+    .map { |i| i.strip }
+    .select { |i| i.size > 0 }
+    .sort
+    .uniq
+  update_local_banlist(local_banlist.to_set, banlist_filename)
+
+  expr_begin = "ip.src in {"
+  expr_end = "}"
+  max_len = 4096 - expr_begin.size - expr_end.size
+
+  ips = local_banlist.join(' ')
+  while ips.size > 0
+    end_index = ips.rindex(' ', max_len)
+    if end_index.nil? || ips.size <= max_len
+      puts("#{expr_begin}#{ips.strip}#{expr_end}\n")
+      break
+    else
+      puts("#{expr_begin}#{ips[0..end_index].strip}#{expr_end}\n")
+      ips = ips[end_index..].strip
+    end
+  end
+end
+
+def update_local_banlist(banlist : Set(String), output : Path)
+  allowlist = (all_hosts
+    .flat_map { |i| ssh(i, ["sudo cat /etc/ssh/allowlist.txt"]).split('\n') }
+    .map { |i| i.strip }
+    .reject { |i| i.empty? } + resolve_domain(PUBLIC_MEDIA_HOST) + ["127.0.0.1", "::1"])
+    .to_set
+  puts "allowlist = #{allowlist.size}"
+  puts "banlist = #{banlist.size}"
+
+  tor_exit_nodes = `wget -qO - https://check.torproject.org/torbulkexitlist | grepcidr -e '0.0.0.0/0'`
+    .split('\n')
+    .map { |i| i.strip }
+    .reject { |i| i.empty? }
+    .to_set
+  puts "tor exit nodes = #{tor_exit_nodes.size}"
+  cloudflare_nets = [{'4', "0.0.0.0/0"}, {'6', "::/0"}]
+    .flat_map { |version, pattern| `wget -qO - https://www.cloudflare.com/ips-v#{version} | grepcidr -e '#{pattern}'`.split('\n') }
+    .map { |i| i.strip }
+    .reject { |i| i.empty? }
+    .to_set
+  puts "cloudflare nets = #{cloudflare_nets.size}"
+  raise "empty list" if allowlist.empty? || tor_exit_nodes.empty? || cloudflare_nets.empty?
+
+  access_log = BACKUP_DIR.join(MEDIA_HOST).join("/var/log/nginx/access.log")
+  new_ips = `grep -E '"((GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH) /.*\\.(env|git|jsp|php|rsp) HTTP/[123]\\.[01]|\\\\x.*)" 40[0|4] ' #{access_log} | awk '{print $1}' | sort -u`
+    .strip
+    .split('\n')
+    .to_set
+  puts "new ips = #{new_ips.size}"
+
+  total_ips = `awk '{print $1}' < #{access_log} | sort -u | wc -l`.strip
+  puts "total ips = #{total_ips}"
+
+  allowed_nets = allowlist.select { |i| i.includes?('/') }.to_set
+  banned_nets = banlist.select { |i| i.includes?('/') }.to_set
+  all_nets = banned_nets + cloudflare_nets + allowed_nets
+  new_banlist = (new_ips + banlist)
+    .reject { |i| tor_exit_nodes.includes?(i) || allowlist.includes?(i) || all_nets.any? { |net| is_in_net(i, net) } }
+    .to_set + banned_nets
+  puts "new banlist = #{new_banlist.size}"
+  File.write(output, new_banlist.to_a.sort.join('\n') + '\n')
+end
+
+def is_in_net(ip, net)
+  system("grepcidr -e '#{net}' <<< '#{ip}' >>/dev/null")
+  $?.success?
 end
 
 def check(ps : Array(Tuple(Int64, String)))
