@@ -367,13 +367,25 @@ def sync
   }.to_h
 
   hosts.map { |host|
-    done = Channel(Nil).new
+    done = Channel(Nil | Exception).new
     spawn do
-      sync_host(host, hosts_files: hosts_files, common_files: common_files, mirror_to: mirror[host]?)
-      done.send(nil)
+      begin
+        sync_host(host, hosts_files: hosts_files, common_files: common_files, mirror_to: mirror[host]?)
+
+        backup_dir = Path[".backup"].join(host)
+        continue_download(host, backup_dir, [Path["var/log/nginx/access.log"]])
+
+        done.send(nil)
+      rescue e
+        error("host=#{host} sync failure: #{e}\n")
+        done.send(e)
+      end
     end
     done
-  }.each { |i| i.receive }
+  }.each { |i|
+    e = i.receive
+    raise e unless e.nil?
+  }
 
   ok("sync finished\n")
 end
@@ -406,6 +418,23 @@ def sync_host(host : String, *, hosts_files : Hash(String, Set(Path)), common_fi
   ssh(host, ["sudo etckeeper commit sync 2>>/dev/null"])
 end
 
+def continue_download(host : String, local_dir : Path, files : Enumerable(Path))
+  Dir.mkdir_p(local_dir)
+  checks = files
+    .map { |i| [i, local_dir.join(i)] }
+    .select { |(i, local_full)| File.file?(local_full) }
+    .map { |(i, local_full)|
+      command = "head -c #{File.size(local_full)} /#{i} | sha256sum | cut -d' ' -f 1"
+      expected_checksum = `sha256sum #{local_full} | cut -d' ' -f 1`.strip
+      [command, expected_checksum]
+    }
+  checksums = ssh(host, checks.map { |(command, _)| command }).split('\n').reject { |i| i.empty? }
+  raise "unexpected output" unless checks.size == checksums.size
+  failures = checksums.zip(checks.map { |(_, expected_checksum)| expected_checksum }).reject { |a, b| a == b }
+  raise "some checksums failed: #{failures}" unless failures.empty?
+  rsync(local_dir, files, ["--append-verify", "#{host}:/", "."])
+end
+
 def add_user_commands(user : String)
   home_dir = Path["/var/lib"].join(user)
   [
@@ -427,6 +456,7 @@ def start_openrc(host : String, *, services : Array(String))
 end
 
 def ssh(host : String, commands : Array(String), *, tty : Bool = false)
+  return "" if commands.empty?
   if tty
     input = (commands + ["exit"]).join(';').gsub("'", '"')
     system("ssh -tt #{host} /bin/sh <<< '#{input}'")
@@ -1149,15 +1179,15 @@ def check_ssh_hosts(ps : Array(Tuple(Int64, String)))
           end
 
           done.send(nil)
-        rescue ex
-          done.send(ex)
+        rescue e
+          done.send(e)
         end
       end
       done
     }
     .each { |i|
-      ex = i.receive
-      raise ex unless ex.nil?
+      e = i.receive
+      raise e unless e.nil?
     }
 end
 
