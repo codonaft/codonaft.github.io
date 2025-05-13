@@ -183,8 +183,28 @@ def build
   build_vidstack_player
   build_zapthreads
 
-  build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.i2p.yml"]]) unless DEBUG
-  build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.tor.yml"]]) unless DEBUG
+  unless DEBUG
+    build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.i2p.yml"]])
+    build_jekyll(MIRROR_HOST, configs: [MAIN_SITE_CONFIG, Path["_config.tor.yml"]])
+    Dir
+      .glob(".build/*/var/www/*")
+      .select { |i| File.directory?(i) }
+      .map { |i| Path[i] }
+      .each { |i|
+        robots = i.join("robots.txt")
+        unless File.exists?(robots)
+          File.write(robots, <<-STRING
+            User-agent: *
+            Disallow: /
+            STRING
+          )
+        end
+
+        f = "favicon.ico"
+        favicon = i.join(f)
+        File.copy(Path["assets"].join(f), favicon) unless File.exists?(favicon)
+      }
+  end
 
   build_rust_app(
     MEDIA_HOST,

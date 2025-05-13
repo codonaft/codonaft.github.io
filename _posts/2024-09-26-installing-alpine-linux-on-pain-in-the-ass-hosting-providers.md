@@ -89,7 +89,7 @@ I wish the third step was less esoteric and more reliable.
 Most likely this installation method will stop working after few ISO image releases.
 
 ## netboot.xyz
-Another [approach](https://netboot.xyz/docs/booting/grub#on-debianubuntu), which is actually pretty user-friendly, is `grub-imageboot` + `netboot.xyz`.
+Another [approach](https://web.archive.org/web/20250321221414/https://netboot.xyz/docs/booting/grub#on-debianubuntu), which is actually pretty user-friendly, is `grub-imageboot` + `netboot.xyz`.
 It works. However, I'm personally *very* uneasy about the
 {% include span_with_tooltip.html large="true" body="security" tooltip="Due to implementation limitations, it downloads everything over untrusted HTTP, not HTTPS. Any compromised router/ISP may easily replace OS you're trying to install with a modified backdoored/malicious version. Untrusted protocol <i>could</i> be okay, however I have serious concerns about whether netboot.xyz actually correctly checks all required signatures that relate <i>specifically</i> to <span class='no-wrap'>Alpine Linux.</span>" %}
 of this approach and have less time to verify it.
