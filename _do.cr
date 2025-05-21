@@ -13,7 +13,7 @@ require "socket"
 require "uri"
 require "yaml"
 
-DEBUG = ARGV.empty? || !["sync", "sync-nostr", "build", "deploy", "health"].includes?(ARGV[0])
+DEBUG = ARGV.empty? || !["sync", "sync-nostr", "follow", "build", "deploy", "health"].includes?(ARGV[0])
 TRACE = ENV["TRACE"]? == "1"
 
 WILDCARD_HOST = "0.0.0.0"
@@ -80,7 +80,7 @@ def main
   check(ps)
 
   config = YAML.parse(File.read(MAIN_SITE_CONFIG))
-  if !ARGV.empty? && (ARGV.includes?("-h") || ARGV.includes?("--help"))
+  if ARGV.empty? || ARGV.includes?("-h") || ARGV.includes?("--help")
     usage
   elsif ARGV.size == 1 && ARGV[0] == "sync"
     check_ssh_hosts(ps)
@@ -88,6 +88,8 @@ def main
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
+  elsif ARGV[0] == "follow"
+    follow(config, ARGV[1..].to_set)
   elsif ARGV.size == 1 && ARGV[0] == "health"
     check_ssh_hosts(ps)
     health(config)
@@ -108,8 +110,6 @@ def main
     update
     build
     serve(DEBUG_HOST)
-  else
-    usage
   end
 end
 
@@ -142,6 +142,8 @@ def usage
        #{script} sync-nostr [profile]
          fetch nostr events, push them to my relays
          don't send events to profile-specific relays by default
+
+       NOSTR_SECRET_KEY='bunker://...' NOSTR_CLIENT_KEY='...' #{script} follow [npub|nprofile|hex]...
 
        #{script} health
          run health checks
@@ -1298,7 +1300,7 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
 
   nostr_config = config["theme_settings"]["nostr"]
   npub = nostr_config["npub"].as_s
-  pk = JSON.parse(`nak decode #{npub}`)["pubkey"].as_s
+  pk = decode_pk(npub)[0]
 
   profile_relays = nostr_config["profile_relays"].as_a.map { |i| i.as_s }
   relays = nostr_config["relays"].as_a.map { |i| i.as_s }
@@ -1358,6 +1360,116 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
     nak_raw(["event"] + profile_relays, (comments_profile_events + author_profile_events).map { |i| i.to_json })
   end
   puts("finished writing events")
+end
+
+def follow(config, profiles : Set(String))
+  nostr_config = config["theme_settings"]["nostr"]
+  # TODO: relays_from_config = nostr_config["relays"].as_a.map { |i| i.as_s }
+  relays_from_config = [] of String
+  relays = (File
+    .read_lines("_relays.txt")
+    .map { |i| i.strip } + relays_from_config)
+    .to_set
+    .reject { |i| i.empty? }
+    .map { |i| URI.parse(i).to_s }
+  pk = decode_pk(nostr_config["npub"].as_s)[0]
+
+  tags_and_created_at = `nak req -k 3 -a #{pk} #{relays.join(' ')}`
+    .split('\n')
+    .reject { |i| i.strip.empty? }
+    .map { |i| JSON.parse(i) }
+    .select { |i| i["pubkey"].as_s == pk && i["kind"].as_i == 3 }
+    .map { |i|
+      id = i["id"].as_s
+      created_at = i["created_at"].as_i
+      tags = i["tags"]
+        .as_a
+        .map { |i| i.as_a }
+        .select { |i| i[0].as_s == "p" }
+      {id, created_at, tags}
+    }
+
+  event = tags_and_created_at.max_by { |_, created_at, _| created_at }
+  newest_event = tags_and_created_at.max_by { |_, _, tags| tags.size }
+  raise "unambigious events #{event[0]} and #{newest_event[0]}" unless event[0] == newest_event[0]
+
+  tags = event[2]
+  old_profiles = tags.map { |i| i[1].as_s }
+  old_profiles_set = old_profiles.to_set
+  new_profiles_tags = profiles
+    .map { |i| i.strip }
+    .map { |i| decode_pk(i) }
+    .reject { |i| old_profiles.includes?(i[0]) }
+    .map { |i| ["p"] + i }
+  new_tags = tags + new_profiles_tags
+  raise "duplicate profiles" unless new_tags.map { |i| i[1] }.to_set.size == new_tags.size
+  raise "unexpected follow list size" unless old_profiles_set.size + new_profiles_tags.size == new_tags.size
+  puts "profiles: #{old_profiles_set.size} + #{new_profiles_tags.size}"
+  return if new_profiles_tags.empty?
+
+  unsigned_event = {
+    "kind"       => 3,
+    "created_at" => Time.utc.to_unix,
+    "tags"       => new_tags,
+  }.to_json
+
+  new_event = sign(unsigned_event, nostr_config)
+  Colorize.with.yellow.surround(STDOUT) do
+    new_event.to_pretty_json(STDOUT)
+  end
+  puts
+  print("PUBLISH to #{relays}? [n] ")
+  if (gets || "").strip == "y"
+    puts(nak_raw(["event"] + relays, new_event.to_json.split('\n')))
+  end
+end
+
+def decode_pk(profile : String) : Array(String)
+  raw = (["nprofile", "npub"].any? { |i| profile.starts_with?(i) } ? `nak decode #{profile}` : profile).strip
+  pk, relays =
+    if profile.starts_with?("nprofile")
+      data = JSON.parse(raw)
+      {data["pubkey"].as_s, data["relays"]?}
+    else
+      {raw, nil}
+    end
+  raise "unexpected #{pk} length" unless pk.size == 64
+
+  main_relay : Array(String) = if relays.nil?
+    [] of String
+  else
+    relays
+      .as_a
+      .map { |i|
+        begin
+          URI.parse(i.as_s.strip)
+        rescue e
+          nil
+        end
+      }
+      .select { |i| !i.nil? && i.scheme == "wss" }
+      .map { |i| i.to_s }
+      .first(1)
+  end
+  [pk] + main_relay
+end
+
+def sign(unsigned_event : String, nostr)
+  nak([
+    "event",
+    "--pow", nostr["min_read_pow"].to_s,
+  ], unsigned_event)
+end
+
+def nak(args, input = nil)
+  value = nak_raw(args, input.split('\n'))
+  begin
+    value = "{}" if value.empty?
+    JSON.parse(value)
+  rescue e
+    puts(value)
+    raise e
+  end
 end
 
 def nak_raw(args, input : Array(String) = [] of String)
@@ -1733,10 +1845,11 @@ def print_expiration(time)
 end
 
 def trace(text)
-  return unless TRACE
   Colorize.with.dark_gray.surround(STDOUT) do
     puts(text)
-  end
+  end if TRACE
+
+  text
 end
 
 def error(text)

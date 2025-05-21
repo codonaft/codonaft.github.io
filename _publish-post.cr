@@ -56,7 +56,7 @@ def main
   if ARGV.size < 2
     script = Path.new(__FILE__).relative_to(Dir.current)
     puts("usage:")
-    puts("  BUNKER_URI='bunker://...' AUTHORIZED_KEY='...' #{script} _posts/1984-11-11-actions-are-louder-than-words.md \"So keep building\nthings.\"")
+    puts("  NOSTR_SECRET_KEY='bunker://...' NOSTR_CLIENT_KEY='...' #{script} _posts/1984-11-11-actions-are-louder-than-words.md \"So keep building\nthings.\"")
     exit 1
   end
 
@@ -66,8 +66,6 @@ def main
 
   post = ARGV[0]
   message = ARGV[1]
-  bunker_uri = ENV["BUNKER_URI"]
-  authorized_key = ENV["AUTHORIZED_KEY"]
 
   raise "Post file has changed" if `git status --porcelain #{post}`.starts_with?(" M ")
   raise "git status failed" unless $?.success?
@@ -88,7 +86,7 @@ def main
   raise "Unexpected language #{lang}" unless supported_langs.includes?(lang)
 
   nostr = config["theme_settings"]["nostr"]
-  pubkey = nak(["decode", nostr["npub"].as_s])["pubkey"]
+  pubkey = `nak decode #{nostr["npub"]}`.strip
   community = nostr["community"]
 
   _, raw_metadata, body = File.read(post).split("---", limit: 3)
@@ -127,7 +125,7 @@ def main
     ] + metadata.tags.map { |t| ["t", t.downcase] },
   }.to_json
 
-  event = sign(unsigned_event, bunker_uri, authorized_key, nostr)
+  event = sign(unsigned_event, nostr)
   event_json = event.to_json
 
   prod = event["pubkey"] == pubkey
@@ -198,7 +196,7 @@ def main
       end
     end
 
-    approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bunker_uri, authorized_key)
+    approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays)
 
     puts("checking video availability")
     begin
@@ -257,12 +255,10 @@ def nak(args, input = nil)
   end
 end
 
-def sign(unsigned_event : String, bunker_uri : String, authorized_key : String, nostr)
+def sign(unsigned_event : String, nostr)
   event = nak([
     "event",
     "--pow", nostr["min_read_pow"].to_s,
-    "--connect", bunker_uri,
-    "--connect-as", authorized_key,
   ], unsigned_event)
 
   # nak(["verify"], event.to_json) # FIXME: fails due to incorrect string escaping?
@@ -270,7 +266,7 @@ def sign(unsigned_event : String, bunker_uri : String, authorized_key : String, 
   event
 end
 
-def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bunker_uri, authorized_key)
+def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays)
   puts("approving own post")
   community = nostr["community"]
   now = Time.utc
@@ -286,7 +282,7 @@ def approve_and_broadcast(nostr, pubkey, event, backup_prefix, prod, relays, bun
     "content" => event.to_json,
   }.to_json
 
-  approval_event = sign(unsigned_approval_event, bunker_uri, authorized_key, nostr)
+  approval_event = sign(unsigned_approval_event, nostr)
 
   approval_event_backup = "#{backup_prefix}.#{now.to_unix}.nostr.approval#{prod ? "" : ".test"}.json"
   File.write(approval_event_backup, approval_event.to_json)
