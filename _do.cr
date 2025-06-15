@@ -119,7 +119,7 @@ def usage
     <<-STRING
        usage:
 
-       #{script} [debug]
+       #{script} debug
          build, serve jekyll in debug mode locally
 
        #{script} build
