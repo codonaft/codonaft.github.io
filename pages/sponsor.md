@@ -10,10 +10,10 @@ lang-ru-uri: /ru/sponsor/
 {% include navbar_selection.html %}
 {% include sponsor.html %}
 
-I used to work on
-{% include span_with_tooltip.html body="various" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
-proprietary [products](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}) for experience,
-now I'm back to <span class='no-wrap'>Free and Open Source [development](https://github.com/alopatindev)</span> to make this world better!
+I've been doing
+{% include span_with_tooltip.html body="Software Development" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
+for [experience](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}).
+Now I'm back to Free and Open Source [development](https://github.com/alopatindev) to make this world better!
 
 Your support keeps me going ❤️
 
@@ -152,112 +152,35 @@ Your support keeps me going ❤️
 ## FAQ
 
 ### Why sponsoring independent FOSS developers? What's wrong with traditional businesses?
-Not necessarily "wrong", just mostly unaligned with my values.
+Traditional companies are actively contributing to the [metacrisis](https://en.wikipedia.org/wiki/Polycrisis#Metacrisis) we're living in right now.
 
-One of the core values I'm pursuing is just {% include span_with_tooltip.html body="**distraction minimization**" tooltip="Which, for instance, can be implemented by applying design principles that are somewhat similar to what Suckless.org is about (<span class='no-wrap'>but less strict version,</span> adapted for mainstream users)." %}: I don't want to trap users' attention in my products; they deserve [healthier](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) life!
+<details><summary markdown="span">More explanations! 👁️</summary>
+Proprietary software they make is currently at its peak of
+[various](https://youtu.be/NfiIXooD77s)
+[unhealthy](https://github.com/Alexlittle4/Zoom-violates-users-privacy#readme)
+[manipulative](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/) practices.
 
-<details><summary markdown="span">More explanations! 🤯</summary>
-{% include quote-small.html text="Why is it so hard to properly express<br>just this value alone in commercial products?" %}
+[They](https://youtu.be/7LqaotiGWjQ?t=3426s) are so stuck
+in capitalistic [values](https://www.snopes.com/fact-check/sony-patent-mcdonalds)
+that barely leave room for long-term delivery of *real* innovations and positive life quality changes.
 
-I perceive the three typical career paths the following way:
-<div class="pros-cons">
-<h4>1. Work for traditional company (or companies) as a contractor (or coworker)</h4>
-- Pros:
-    - 👍 possibility to practice {% include span_with_tooltip.html body="SE" tooltip="Software Engineering" %}
-        - best for initial gaining of SE experience
-    - 👍 possibility to choose organization maturity
-        - in a depressing range 🫤
-    - 👍 typically no sustainability fuss at all
-- Cons:
-    - 🤦‍♂️ (almost) **no control** over high-level decisions
-        - company will likely do some unethical things for various legitimate reasons
+Typical "new" software products are not new; it's basically blind mediocre ideas copy-pasting.
+Truly new software should attempt to introduce innovations that
+[shape society](https://yakihonne.com/article/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjq3qalptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svsxpqqqp65wqgewaehxw309ahx7um5wghxxmmydahxzen59e3k7mf0qythwumn8ghj7un9d3shjtnwdaehgu3wvfskuep0qy08wumn8ghj7mn0wd68yttsw43zuam9d3kx7unyv4ezumn9wshszjhfas)
+in a positive way!
 
-<h4>2. Work on Personal Projects</h4>
-- Pros:
-    - 👍 best for those who already {% include span_with_tooltip.html large="true" body="experienced enough" tooltip="And terrible for unexperienced developers. Don't get stuck on personal OSS projects if you're unexperienced, otherwise that feeds stereotype that OSS done by individuals == OSS done by unexperienced students" %} in SE
-    - 👍 full decisions control
-        - possibility to express unrestricted ethical values from the very beginning
-        - innovations {% include span_with_tooltip.html large="true" body="freedom" tooltip="<i>Technically</i>, you can introduce any adequate innovations (including simple things, like one-time authentication link sent via something more reliable and secure than SMS), while typical commercial organization (like bank) would usually decline certain useful innovations and prefer disastrous outdated dominant technologies for various &quot;rational&quot; reasons. Or might even integrate irrelevant popular technologies in order to &quot;sell better&quot; 🤦‍♂️" %}
-- Cons:
-    - 💀 extremely hard sustainability
-
-<h4>3. Open a traditional company</h4>
-- Pros:
-    - 👍 some decisions control
-        - restricted to democratic decisions across (co-)founders
-        - but some of the co-founders might *often* turn out to be overgrown psychopathic [infants](https://youtu.be/7LqaotiGWjQ?t=3426s) 💀
-            - what kind of decisions such company will be making in this case?
-- Cons:
-    - 🤦‍♂️ too much management, hard to perform actual SE as founder
-    - 🤦‍♂️ often very hard sustainability
-    - 💀 **parasitic survival values** for unknown period of time
-        - company rarely matures up to advanced enough stages of development, where high enough ethical values become adequate to express (without damaging company sustainability).
-</div>
-
-<div class="example">
-#### Few examples of parasitism in typical commercial products:
-1. Intentional (usually survival) **manipulative techniques**:
-    - intrusive advertising and notifications
-        - *"We've got something else for you!"* when user is about to close a page
-        - sudden loud commercials while you're listening to your silent relaxing meditative music (or even [worse](https://www.snopes.com/fact-check/sony-patent-mcdonalds))
-    - sudden [appearance](https://en.wikipedia.org/wiki/Clickjacking#Clickjacking_categories) of unwanted button in the position you were about to click
-    - replacement of normal support service with a retarded chatbot simulacrum, that gives only a limited number of {% include span_with_tooltip.html body="useless feedback options" tooltip="In urgent cases, user can't report a real issue, can't contact a human, and will waste a lot of time brute-forcing the confusing menu options, or will even receive an instant auto-close of the real reported issue with an amusing excuse" %}
-
-2. Hardcore intentional manipulative techniques, which suspiciously remind **scam techniques** which exist as something legal due to poor regulations:
-    - unannounced enabling of {% include span_with_tooltip.html body="useless paid services" tooltip="Mobile operators love it" %}
-    - overcomplicated UIs which intentionally {% include span_with_tooltip.html body="lead to mistakes" tooltip="Sends your money with wrong currency, enables unnecessary paid service, etc." %}
-    - {% include span_with_tooltip.html body="not providing" tooltip="Name at least one health insurance company for digital nomads that doesn't do that right now" %} purchased service at all with absurd excuse.
-</div>
-
-<p style="margin-bottom: 0">If I'd like to start a traditional company, then even as an ethical enough founder, I would most likely run into choices between:</p>
-- implementing similar parasitic stuff
-- or closing entire organization, since it's unlikely it will survive otherwise.
-
-{% include quote-small.html text="Sustainable organizations<br>slowly grow through stages of development" %}
-
-They often stuck in [endless](https://www.pcworld.com/article/418693/mozilla-nixes-firefox-os-bowing-out-of-mobile-race.html) [survival](https://www.zdnet.com/article/programming-language-rust-mozilla-job-cuts-have-hit-us-badly-but-heres-how-well-survive/) nightmare.
-Some of them run into conflicts between co-founders, which may lead to {% include span_with_tooltip.html large="true" body="corrupting the core values" tooltip="Think of OpenAI, which is no longer &quot;Open&quot;" %} of organization in [various](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy) [ways](https://www.youtube.com/watch?v=gutR_LNoZw0) or, ironically, even **abandoning** [core](https://en.wikipedia.org/wiki/Removal_of_Sam_Altman_from_OpenAI) [leaders](https://www.thecorporategovernanceinstitute.com/insights/case-studies/why-did-apples-board-fire-steve-jobs-in-1985/)!
-
-There's a huge chance to never make anything really ethical as an organization, despite long and painful efforts to grow it.
-
-### Ignorance
-Organizations naturally delegate {% include span_with_tooltip.html body="less important" tooltip="Or things that <strong>look</strong> less important" %} things to teams which gladly copy-paste terrible damaging ideas, due to various convincing excuses:
-because they are cheaper to copy, they are implemented by competitors, etc.
-
-<div class="example">
-#### Examples of poor/outdated (but paradoxically popular) engineering "patterns":
-- scrolljacking
-- useless <a href="https://www.facebook.com/help/124895950923762" target="_blank">over-detailed</a> documentation, which quickly becomes {% include span_with_tooltip.html body="obsolete" tooltip="Rather than maintaining such &quot;documentation&quot;, it's cheaper to turn it into a single link that jumps to and highlights the exact input field" %}
-- sudden non-disableable {% include span_with_tooltip.html body="notifications" tooltip="Including &quot;GDPR cookies blabla&quot;, which is a result of regulating things the wrong way" %}/tooltips/tutorials/announcements of features
-- [useless](https://github.com/search?q=captcha%20solver&type=repositories) CAPTCHAs, which bury your precious [flow state](/how-to-take-notes-like-a-programmer/#whats-the-point)
-    - other than something like DDoS attacks, there's absolutely no reason to {% include span_with_tooltip.html body="distinguish bots" tooltip="What and why are we fighting? We're at the point of history, where bots <i>might</i> even transit to normal members of society" %} from humans anymore
-    - it's ironical that companies like OpenAI/Google/Cloudflare/etc. are wasting their time improving bot detection
-        - they could even **monetize** bots traffic, by turning bots into a ~~[crypto mining farm](https://github.com/mCaptcha/mCaptcha#readme)~~ distributed browser-based [ML inference](https://github.com/xenova/transformers.js#readme) engine, or whatever ecological enough, both to human mentality and to the business
-- overcomplicate every single native GUI application by turning it into another web browser
-    - it's a fractal of issues; one of them is that such software inevitably becomes buggy (and usually {% include span_with_tooltip.html body="laggy" tooltip="Which is observable on the fastest available hardware on the market of today and tomorrow" %})
-        - sometimes to the point, where it becomes impossible to use without loss of attention and constant annoyance
-- offline anti-patterns, like a notification bell in your {% include span_with_tooltip.html body="microwave" tooltip="Thank God we don't yet have <span class='no-wrap'>&quot;Smart&quot; Teapots</span> that also do the bell-screaming and additionally beg monthly subscriptions for <span class='brand'>Premium Volumes</span> and <span class='brand'>Platinum Boiling Speeds</span>" %} that decreases quality of your neighbors' sleep
-    - reminds me an another popular (but orthogonal) anti-pattern: *cool* light (produced by conditioner or whatever) that decreases quality of your sleep.
-</div>
-
-{% include quote-small.html text="So why do I choose making personal FOSS projects?" %}
-
-Due to <i>possibility</i> to start without all this parasitism {% include span_with_tooltip.html large="true" body="from the very beginning" tooltip="Increasing risk of my own sustainability as a tradeoff" %}.
+When these companies make something that *seems* to be healthy and innovative—[it's](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy)
+[probably](https://calyxos.org/news/2025/06/11/android-16-plans/)
+[temporary](https://cointelegraph.com/news/ton-blockchain-freezes-2-6b-worth-of-inactive-tokens).
 </details>
 
----
+Independent FOSS developers can do something better. I'm targeting the following **principles**:
+- **Distraction Minimization**
+    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological](https://www.youtube.com/watch?v=Iy7i9ru7HB8&t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
+    - 🚫 no more popup traps, mental resource-wasting on CAPTCHA [imitation](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, [absurdly](https://www.facebook.com/help/124895950923762) <span class='no-wrap'>over-detailed</span> manuals and so on!
+- **Data Sovereignty**
+    - 🔒 *you* own your data, not third parties!
 
-### Why not simply combine work on {% include span_with_tooltip.html large="true" body="less risky" tooltip="Usually proprietary products,<br>owned by relatively mature companies" %} projects and personal projects as well?
-I've already done an honest series of experiments balancing time between providing my software development services
-to a really awesome company vs working solely on my projects.
-
-I increased allocation of work on my projects up to 40% and stopped because that was still not enough.
-
-Distributing focus on too many projects leads to mediocracy everywhere and constant burnout, which I'm still recovering from. 🧘‍♂️
-
----
-
-{% comment %}Q: What other values you base your products on?{% endcomment %}
 {::options parse_block_html="false" /}
 </div>
 

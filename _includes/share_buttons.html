@@ -6,7 +6,7 @@
 {% if include.heart_only %}
 <div class="share-buttons">
  <p><div class="meta">{{ page.str.share_or_support_other_ways }}</div></p>
- <ul class="share-buttons">
+ <ul class="share-buttons" style="margin-left: 0">
   <li><a href="{% if page.lang != 'en' %}/{{ page.lang }}{% endif %}/sponsor" alt="❤️" class="large pulsate">{% include icons/heart.svg %}</a></li>
  </ul>
 </div>
