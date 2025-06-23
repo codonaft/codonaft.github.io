@@ -42,7 +42,7 @@ lang-en-uri: /sponsor/
       <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
       <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
       <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.btc }}</code></p>
-      <p><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=20000" target="_blank">⚡Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
+      <p><a href="https://zapmeacoffee.com/{{ site.theme_settings.nostr.npub }}" target="_blank">⚡</a><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=10000" target="_blank">Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
     </div>
     <div class="grid-item">
       <p>{% include icons/tron.svg %}</p>
@@ -180,7 +180,7 @@ lang-en-uri: /sponsor/
 Независимые разработчики свободного ПО могут сделать кое-что получше. Я ориентируюсь на следующие **принципы**:
 
 - **Минимизация отвлечения внимания**
-    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально](https://www.youtube.com/watch?v=Iy7i9ru7HB8&t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
+    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально](https://youtu.be/Iy7i9ru7HB8?t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
     - 🚫 больше никаких всплывающих ловушек, трат ментальных ресурсов на решение [имитации](https://futurism.com/ai-model-turing-test) CAPTCHA, внезапных нежелательных туториалов, [абсурдно](https://www.facebook.com/help/124895950923762) подробных руководств и так далее!
 - **Суверенитет данных**
     - 🔒 *ты* владеешь своими данными, а не третьи лица!

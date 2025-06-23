@@ -42,7 +42,7 @@ Your support keeps me going ❤️
       <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
       <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
       <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.btc }}</code></p>
-      <p><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=20000" target="_blank">⚡Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
+      <p><a href="https://zapmeacoffee.com/{{ site.theme_settings.nostr.npub }}" target="_blank">⚡</a><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=10000" target="_blank">Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
     </div>
     <div class="grid-item">
       <p>{% include icons/tron.svg %}</p>
@@ -158,7 +158,8 @@ Traditional companies are actively contributing to the [metacrisis](https://en.w
 Proprietary software they make is currently at its peak of
 [various](https://youtu.be/NfiIXooD77s)
 [unhealthy](https://github.com/Alexlittle4/Zoom-violates-users-privacy#readme)
-[manipulative](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/) practices.
+[manipulative](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
+[practices](https://youtu.be/citnomJHr6I).
 
 [They](https://youtu.be/7LqaotiGWjQ?t=3426s) are so stuck
 in capitalistic [values](https://www.snopes.com/fact-check/sony-patent-mcdonalds)
@@ -176,7 +177,7 @@ When these companies make something that *seems* to be healthy and innovative—
 
 Independent FOSS developers can do something better. I'm targeting the following **principles**:
 - **Distraction Minimization**
-    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological](https://www.youtube.com/watch?v=Iy7i9ru7HB8&t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
+    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological](https://youtu.be/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
     - 🚫 no more popup traps, mental resource-wasting on CAPTCHA [imitation](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, [absurdly](https://www.facebook.com/help/124895950923762) <span class='no-wrap'>over-detailed</span> manuals and so on!
 - **Data Sovereignty**
     - 🔒 *you* own your data, not third parties!
