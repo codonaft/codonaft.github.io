@@ -256,10 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
     link.appendChild(textSpan);
     link.setAttribute('href', playerQueryParameters(playerIndex, startTime));
     link.addEventListener('click', event => {
-     player.currentTime = startTime;
-     if (!player.playing) {
+     if (player.playing) {
+      player.currentTime = startTime;
+     } else {
       shouldPlay = true;
-      player.play();
+      player.play().then(_ => player.currentTime = startTime);
      }
      player.scrollIntoView({ block: 'center', behavior: 'smooth' });
      event.preventDefault();
