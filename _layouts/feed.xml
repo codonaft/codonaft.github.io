@@ -34,7 +34,7 @@
    </item>
 {% endif %}
 {% assign post_index = post_index | plus:1 %}
-{% if post_index > 15 %}{% break %}{% endif %}
+{% comment %}{% if post_index > 15 %}{% break %}{% endif %}{% endcomment %}
 {% endfor %}
  </channel>
 </rss>
