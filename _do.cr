@@ -87,7 +87,7 @@ def main
     sync
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
-    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
+    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
     follow(config, ARGV[1..].to_set)
   elsif ARGV.size == 1 && ARGV[0] == "health"

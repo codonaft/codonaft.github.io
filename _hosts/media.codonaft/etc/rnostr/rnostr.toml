@@ -6,7 +6,7 @@ pubkey = "efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"
 
 [data]
 path = "/var/lib/rnostr/data"
-db_query_timeout = "100ms"
+db_query_timeout = "500ms"
 
 [network]
 host = "localhost"
