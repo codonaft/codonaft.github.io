@@ -34,10 +34,10 @@ iso="alpine-virt-${VERSION}-${ARCH}.iso"
 url="${MIRROR}/v${short_version}/releases/${ARCH}/${iso}"
 
 apt -y install wget
-wget "${url}" "${url}.sha256" "${url}.asc" "https://alpinelinux.org/keys/ncopa.asc"
+wget "${url}"{,.sha256,.asc} "https://alpinelinux.org/keys/ncopa.asc"
 sha256sum -c "${iso}.sha256"
 gpg --import < ncopa.asc
-gpg --verify "${iso}.asc" "${iso}"
+gpg --verify "${iso}"{.asc,}
 
 mount -t iso9660 "${iso}" /mnt
 cp -a /mnt/* /

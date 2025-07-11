@@ -72,14 +72,16 @@ MIRROR_FROM_TO = [
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 
+NAMESERVER = "1.1.1.1"
+
 def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
   Dir.cd(repo_dir)
 
   ps = processes()
-  check(ps)
-
   config = YAML.parse(File.read(MAIN_SITE_CONFIG))
+  check(config, ps)
+
   if ARGV.empty? || ARGV.includes?("-h") || ARGV.includes?("--help")
     usage
   elsif ARGV.size == 1 && ARGV[0] == "sync"
@@ -483,10 +485,20 @@ def health(config)
 
   all_hosts().each { |host|
     step(host)
+
     ssh(host, ["sudo /etc/init.d/nginx checkconfig", "sudo hdparm -t /dev/sd[a-z] | sed \"s!.*= !!\""], tty: true)
+
+    distro_version = alpine_version(host)
+    latest_distro_version = YAML.parse(HTTP::Client.get("https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml").body)[0]["version"].as_s
+    warn("alpine #{host} version #{distro_version} != #{latest_distro_version}") unless distro_version == latest_distro_version
   }
 
-  warn("github commit hash is different\n") unless JSON.parse(HTTP::Client.get("https://api.github.com/repos/codonaft/codonaft.github.io/commits").body)[0]["sha"].as_s == `git rev-parse HEAD`.strip
+  commits = JSON.parse(HTTP::Client.get("https://api.github.com/repos/codonaft/codonaft.github.io/commits").body)
+  if commits.as_a?.nil?
+    error("#{commits["message"]}\n")
+  else
+    warn("github commit hash is different\n") unless commits[0]["sha"].as_s == `git rev-parse HEAD`.strip
+  end
 
   banlists =
     if nonempty_exists?(BANLISTS) && File.info(BANLISTS).modification_time + 1.days > Time.utc
@@ -520,8 +532,6 @@ def health(config)
   else
     warn("#{broken_post_urls.size} broken post URLs: #{broken_post_urls}\n")
   end
-
-  check_domain(site_url)
 
   bancheck = "_bancheck.txt"
   custom_hosts =
@@ -558,7 +568,7 @@ def health(config)
     .reject { |i| i.empty? }
     .map { |i| URI.parse(i) }
     .reject { |i| i.hostname.nil? || i.hostname == "localhost" } + relay_mirrors
-  wss_uris = (trackers + other_relays + `git grep --only-matching 'wss://[a-zA-Z0-9/._-]*'`
+  wss_uris = (trackers + other_relays + `git grep --only-matching 'wss://[a-zA-Z0-9/._-]*' | grep -vE '(^|/)(relays|allowed|blocked)\\.json'`
     .split('\n')
     .map { |i| i.strip.gsub(/.*wss:\/\//, "") }
     .reject { |i| i.empty? || IGNORE_HOSTS.any? { |ignored| i.includes?(ignored) } }
@@ -576,18 +586,20 @@ def health(config)
       print("#{i} ")
       check_icmp(i)
       check_ban(i, banlists)
+      check_domain(i)
+      puts
+    }
+    https_hosts.each { |i|
+      https_uri = URI.parse("https://#{i}")
+      check_certificate(https_uri, proxy)
+      # TODO: check_response_code(https_uri, proxy)
+      check_ech(https_uri)
       puts
     }
     wss_uris.each { |i|
       print("#{i} ")
       check_ban(i.hostname.not_nil!, banlists)
       check_ws(i, proxy)
-      puts
-    }
-    https_hosts.each { |i|
-      https_uri = URI.parse("https://#{i}")
-      check_certificate(https_uri, proxy)
-      check_ech(https_uri)
       puts
     }
   })
@@ -692,12 +704,13 @@ def check_certificate(host : URI, proxy : URI)
   end
 end
 
-def check_domain(url : URI)
-  domain = url.hostname
+def check_domain(domain)
+  return unless domain.count('.') == 1
+  puts
   print("domain #{domain} expires on ")
   time = `whois #{domain}`
     .split("\n")
-    .select { |i| i.includes?("Expiry Date:") || i.includes?("Expiration Date:") }
+    .select { |i| i.includes?("Expiry Date:") || i.includes?("Expiration Date:") || i.includes?("paid-till:") }
     .map { |i|
       start = i.index(": ")
       if start.nil?
@@ -710,7 +723,8 @@ def check_domain(url : URI)
     .map { |i| Time.parse_rfc3339(i.not_nil!) }
     .min
   print_expiration(time)
-  puts
+  print("  ")
+  print_dnssec_status(domain)
 end
 
 def check_ban(host : String, banlists : Set(String))
@@ -720,7 +734,7 @@ def check_ban(host : String, banlists : Set(String))
 end
 
 def resolve_domain(host) : Array(String)
-  `nslookup #{host}`
+  `nslookup #{host} #{NAMESERVER}`
     .split('\n')
     .skip(3)
     .select { |i| i.starts_with?("Address: ") }
@@ -885,7 +899,7 @@ def is_in_net(ip, net)
   $?.success?
 end
 
-def check(ps : Array(Tuple(Int64, String)))
+def check(config, ps : Array(Tuple(Int64, String)))
   current_ps_name = "/#{Path[__FILE__].basename}"
   raise "other instance keeps running" if ps
                                             .select { |(_, i)| i.includes?("crystal") && i.includes?(current_ps_name) }
@@ -902,6 +916,11 @@ def check(ps : Array(Tuple(Int64, String)))
     .map { |i| i.split(':')[0] }
     .select { |i| File.read(i).includes?('\n') }
   raise "unexpected newline in #{files_with_unexpected_newlines}" unless files_with_unexpected_newlines.empty?
+
+  nostr_config = config["theme_settings"]["nostr"]
+  npub = nostr_config["npub"].as_s
+  nprofile = nostr_config["nprofile"].as_s
+  raise "#{npub} is not #{nprofile}" unless decode_pk(npub)[0] == decode_pk(nprofile)[0]
 end
 
 def build_rust_app(
@@ -928,9 +947,8 @@ def build_rust_app(
   trace("building #{crate}\n")
   Dir.mkdir_p(bin_dir, 0o755)
 
-  alpine_version = ssh(host, ["cat /etc/alpine-release"])
-  alpine_version = ALPINE_VERSION if alpine_version.empty?
-  warn("alpine #{host} version #{alpine_version} != alpine build version #{ALPINE_VERSION}") unless alpine_version == ALPINE_VERSION
+  distro_version = alpine_version(host)
+  warn("alpine #{host} version #{distro_version} != alpine build version #{ALPINE_VERSION}") unless distro_version == ALPINE_VERSION
   target_cpu = TARGET_CPU[host]
 
   cargo_args =
@@ -949,7 +967,7 @@ def build_rust_app(
     .join("\n")
 
   system(<<-STRING
-    podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{alpine_version}" /bin/sh -c "
+    podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{distro_version}" /bin/sh -c "
     set -xeuo pipefail
 
     apk add --update --no-cache 'cargo>=#{RUST_VERSION}' 'rust>=#{RUST_VERSION}' || {
@@ -1827,6 +1845,11 @@ def git_ls(dir : Path)
     .to_set
 end
 
+def alpine_version(host : String)
+  version = ssh(host, ["cat /etc/alpine-release"])
+  version.empty? ? ALPINE_VERSION : version
+end
+
 def nonempty_exists?(path : Path)
   File.file?(path) && !File.empty?(path)
 end
@@ -1841,6 +1864,17 @@ def print_expiration(time)
     end
   else
     error(time)
+  end
+end
+
+def print_dnssec_status(domain)
+  valid = ["A", "AAAA"].all? { |qtype|
+    `delv @#{NAMESERVER} #{domain} #{qtype}`.split("\n").includes?("; fully validated")
+  }
+  if valid
+    ok("dnssec is ok")
+  else
+    error("invalid dnssec")
   end
 end
 

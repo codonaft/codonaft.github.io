@@ -134,7 +134,7 @@ Another approach could be a use of some tricky **fuzzy search** engine.
 
 **UPDATE**: Actually the problem was my confusion about
 the [terminology](https://en.wikipedia.org/wiki/Quantile#Specialized_quantiles).
-So in *this* case the right solution is to add «quantile» keyword.
+So in *this* case the right solution is to add "quantile" keyword.
 
 ### Update Structure According to Your Mind Image
 Suppose you ain't able to find your note quickly, **even manually**. Possible reasons:

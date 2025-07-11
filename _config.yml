@@ -135,6 +135,7 @@ theme_settings:
   nostr:
     enabled: true
     npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
+    nprofile: nprofile1qqswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqywhwumn8ghj7mn0wd68yttsw43zuam9d3kx7unyv4ezumn9wsq3vamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmnyrks2sw
     community: codonaft
     max_comment_length: 5000
     min_read_pow: 7

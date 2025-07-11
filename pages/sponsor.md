@@ -161,9 +161,16 @@ Proprietary software they make is currently at its peak of
 [manipulative](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
 [practices](https://youtu.be/citnomJHr6I).
 
+These "solutions" are no longer usable, at least not
+[without](https://github.com/ungoogled-software/ungoogled-chromium#readme)
+[tons](https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies#readme)
+[of](https://github.com/dessant/buster#readme)
+[heavy](https://github.com/nang-dev/hover-paywalls-browser-extension#readme)
+[workarounds](https://github.com/jswanner/DontF-WithPaste#readme)!
+
 [They](https://youtu.be/7LqaotiGWjQ?t=3426s) are so stuck
 in capitalistic [values](https://www.snopes.com/fact-check/sony-patent-mcdonalds)
-that barely leave room for long-term delivery of *real* innovations and positive life quality changes.
+and self-defense that they barely leave room for long-term delivery of *real* innovations and positive life quality changes.
 
 Typical "new" software products are not new; it's basically blind mediocre ideas copy-pasting.
 Truly new software should attempt to introduce innovations that
@@ -178,9 +185,9 @@ When these companies make something that *seems* to be healthy and innovative—
 Independent FOSS developers can do something better. I'm targeting the following **principles**:
 - **Distraction Minimization**
     - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological](https://youtu.be/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
-    - 🚫 no more popup traps, mental resource-wasting on CAPTCHA [imitation](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, [absurdly](https://www.facebook.com/help/124895950923762) <span class='no-wrap'>over-detailed</span> manuals and so on!
+    - 🚫 no more mental resource-wasting on popup traps, CAPTCHA [{% include span_with_tooltip.html large="true" body="imitation" tooltip="CAPTCHA is useless: bots basically became indistinguishable from humans.<br>Time to change strategy: unexpected spammy load should be transformed into useful computations, with no harm to users, environment, or even businesses!" %}](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, absurdly <span class='no-wrap'>over-detailed</span> [{% include span_with_tooltip.html large="true" body="manuals" tooltip="Stop building the outdated and overcomplicated UI!<br>Well-designed, intuitive, AI-driven software <i>ideally</i> doesn't require any documentation!" %}](https://www.facebook.com/help/124895950923762) and so on!
 - **Data Sovereignty**
-    - 🔒 *you* own your data, not third parties!
+    - 🔒 *you* own your [data](https://martin.kleppmann.com/2019/10/23/local-first-at-onward.html), not third parties!
 
 {::options parse_block_html="false" /}
 </div>
