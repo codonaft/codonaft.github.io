@@ -587,6 +587,7 @@ def health(config)
     https_hosts.each { |i|
       https_uri = URI.parse("https://#{i}")
       check_certificate(https_uri, proxy)
+      # TODO: check_response_code(https_uri, proxy)
       check_ech(https_uri)
       puts
     }
