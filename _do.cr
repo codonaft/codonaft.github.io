@@ -708,7 +708,7 @@ def check_domain(domain)
   return unless domain.count('.') == 1
   puts
   print("domain #{domain} expires on ")
-  time = `whois #{domain}`
+  times = `whois #{domain}`
     .split("\n")
     .select { |i| i.includes?("Expiry Date:") || i.includes?("Expiration Date:") || i.includes?("paid-till:") }
     .map { |i|
@@ -721,8 +721,8 @@ def check_domain(domain)
     }
     .select { |i| !i.nil? && !i.empty? && i[-1] == 'Z' }
     .map { |i| Time.parse_rfc3339(i.not_nil!) }
-    .min
-  print_expiration(time)
+
+  print_expiration(times.empty? ? nil : times.min)
   print("  ")
   print_dnssec_status(domain)
 end
@@ -1855,6 +1855,10 @@ def nonempty_exists?(path : Path)
 end
 
 def print_expiration(time)
+  if time.nil?
+    warn("unknown expiration")
+    return
+  end
   now = Time.utc
   if now < time
     if now + 30.days >= time
