@@ -32,13 +32,14 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.21.3"
+ALPINE_VERSION           = "3.22.1"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
+RNOSTR_VERSION           = "0.4.8"
 RUST_VERSION             = "1.86.0"
 TINYLD_VERSION           = "1.3.4"
 
@@ -91,7 +92,7 @@ def main
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
-    follow(config, ARGV[1..].to_set)
+    follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es"])
   elsif ARGV.size == 1 && ARGV[0] == "health"
     check_ssh_hosts(ps)
     health(config)
@@ -229,8 +230,9 @@ def build
   build_rust_app(
     MEDIA_HOST,
     crate: "rnostr",
-    branch: "codonaft",
-    git: URI.parse("https://github.com/codonaft/rnostr"),
+    # branch: "codonaft",
+    # git: URI.parse("https://github.com/codonaft/rnostr"),
+    version: RNOSTR_VERSION,
     dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
   )
 end
@@ -1380,7 +1382,7 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
   puts("finished writing events")
 end
 
-def follow(config, profiles : Set(String))
+def follow(config, profiles : Set(String), profile_relays : Array(String))
   nostr_config = config["theme_settings"]["nostr"]
   # TODO: relays_from_config = nostr_config["relays"].as_a.map { |i| i.as_s }
   relays_from_config = [] of String
@@ -1389,7 +1391,7 @@ def follow(config, profiles : Set(String))
     .map { |i| i.strip } + relays_from_config)
     .to_set
     .reject { |i| i.empty? }
-    .map { |i| URI.parse(i).to_s }
+    .map { |i| URI.parse(i).to_s } + profile_relays
   pk = decode_pk(nostr_config["npub"].as_s)[0]
 
   tags_and_created_at = `nak req -k 3 -a #{pk} #{relays.join(' ')}`
