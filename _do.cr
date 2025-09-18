@@ -54,6 +54,8 @@ OPUS_BITRATE_KBPS = 256
 BANDWIDTH_MB_PER_SEC = 20
 IGNORE_HOSTS         = ["personal.tracker.com", "tracker.novage.com.ua", "www.googletagmanager.com"]
 
+CERTBOT_DOMAINS = ["media.codonaft.com", "nostr.codonaft.com", "test.codonaft.com"]
+
 MAIN_SITE_CONFIG = Path["_config.yml"]
 
 HOSTS_DIR        = Path["_hosts"]
@@ -235,6 +237,8 @@ def build
     version: RNOSTR_VERSION,
     dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
   )
+
+  generate_certbot_script(MEDIA_HOST)
 end
 
 def configure(config)
@@ -658,6 +662,27 @@ end
 
 def configure_rnostr(host, config)
   ssh(host, add_user_commands("rnostr"))
+end
+
+def generate_certbot_script(host)
+  domains = CERTBOT_DOMAINS.join(',')
+  user = ssh(host, ["echo -n ${USER}"])
+  home_dir = BUILD_DIR.join(host).join("home").join(user)
+  cron_dir = home_dir.join(".periodic/weekly")
+  output = cron_dir.join("certbot-prod.sh")
+
+  Dir.mkdir_p(cron_dir)
+  File.write(
+    output,
+    <<-STRING
+       #!/usr/bin/env bash
+
+       logger 'certbot PROD'
+       PROD=1 certbot-renew-or-create.sh '#{domains}' 'alopatindev@codonaft.com' /etc/nginx/ssl/codonaft.com/ 2>>/dev/stdout | logger
+
+       STRING
+  )
+  File.chmod(output, 0o755)
 end
 
 def check_icmp(host)
@@ -1191,8 +1216,7 @@ def filtered_sync(host : String, local_dir : Path, *,
 end
 
 def synchronizable(path : Path)
-  dir = path.parts[0]
-  dir != "home" && path != Path["etc/conf.d/nginx"]
+  !path.parts.includes?("USERNAME_WILL_BE_AUTOMATICALLY_REPLACED") && path != Path["etc/conf.d/nginx"]
 end
 
 def rsync(source_dir : Path, files : Enumerable(Path), args : Enumerable(String))
