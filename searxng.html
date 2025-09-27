@@ -55,25 +55,31 @@ const loadInstances = async () => {
  return best;
 };
 
-const detectLang = query => {
- const all = detectAll(query, { only: ['en', 'ru'] });
- console.log('detected languages', all)
- const good = all.filter(i => i.accuracy > 0.01);
- let lang = 'en';
- if (good.length > 0) {
-  good.sort((a, b) => b.accuracy - a.accuracy);
-  lang = good[0].lang;
+const detectLanguage = query => {
+ const en = 'en';
+ const allowedLanguages = params.get('allowed_languages');
+ const only = allowedLanguages ? allowedLanguages.split(',') : [en];
+ console.log('allowed languages', only);
+ if (only.length <= 1) {
+   return en;
  }
- return lang;
+
+ const all = detectAll(query, { only });
+ console.log('detected languages', all);
+
+ return all
+  .filter(i => i.accuracy > 0.01)
+  .sort((a, b) => b.accuracy - a.accuracy)[0]?
+  .lang || en;
 };
 
 const redirect = (url, query) => {
  params
   .entries()
-  .filter(([k, _]) => k !== 'fast')
+  .filter(([k, _]) => k !== 'fast' && k !== 'allowed_languages')
   .forEach(([k, v]) => url.searchParams.set(k, v));
  url.searchParams.set('q', query)
- url.searchParams.set('language', detectLang(query));
+ url.searchParams.set('language', detectLanguage(query));
  console.log(url);
  window.location.replace(url.toString());
 };
@@ -87,7 +93,7 @@ const query = params.get('q');
 if (query) {
  redirect(targetUrl, query);
 } else {
- document.body.innerHTML = '<p>This page accepts SearXNG <a target="_blank" href="https://docs.searxng.org/dev/search_api.html">GET parameters</a> + special optional parameter <code>fast=1</code> for hardcoded instances.</p><p>Example for browser settings (<code>chrome://settings/search</code> or <code>about:preferences#search</code>):</p><p><code>{{ site.url }}{{ page.url }}?q=%s&fast=1&image_proxy=True&categories=images</code></p>';
+ document.body.innerHTML = '<p>This page accepts SearXNG <a target="_blank" href="https://docs.searxng.org/dev/search_api.html">GET parameters</a> + special optional parameter <code>fast=1</code> for hardcoded instances and <code>allowed_languages=en,ru</code> for automatic language limit derived from the query.</p><p>Example for browser settings (<code>chrome://settings/search</code> or <code>about:preferences#search</code>):</p><p><code>{{ site.url }}{{ page.url }}?q=%s&fast=1&image_proxy=True&categories=images</code></p>';
 
  const input = document.createElement('input');
  input.name = 'q';
