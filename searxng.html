@@ -9,7 +9,7 @@ permalink: /searxng
 <link rel="icon" href="https://searx.space/favicon.png" sizes="any">
 <link rel="icon" href="https://searx.space/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="https://searx.space/favicon.png">
-<title>SearXNG Random Instance Redirector</title>
+<title>Minimalist SearXNG Redirector</title>
 <style>
 code { background-color: rgba(128, 128, 128, 0.4); padding: 0.1rem 0.25rem 0.1rem 0.25rem }
 .pale { color: #808080 }
@@ -19,11 +19,19 @@ code { background-color: rgba(128, 128, 128, 0.4); padding: 0.1rem 0.25rem 0.1re
 <script type="module">
 import { detectAll } from '{{ site.url }}/assets/js/vendor/tinyld.min.js';
 
+const INSTANCES_URL = 'https://searx.space/data/instances.json';
 const INSTANCES = ['search.charliewhiskey.net', 'search.im-in.space', 'search.ipsys.bf', 'search.mycotrip.tech', 'search.ononoki.org', 'search.pollorebozado.com', 'search.rowie.at', 'search.system51.co.uk', 'search.undertale.uk', 'search.url4irl.com', 'searx.bndkt.io', 'searx.dresden.network', 'searx.foss.family', 'searx.oloke.xyz', 'searx.ox2.fr', 'searx.party', 'searx.perennialte.ch', 'searx.tiekoetter.com', 'searx.zhenyapav.com', 'searxng.shreven.org']
 const LANGUAGES = ['en'];
 const TIMEOUT = 5000;
 const ATTEMPTS = 10;
 const CUSTOM_PARAMS = ['attempts', 'languages', 'fast', 'instances', 'timeout'];
+
+const tasks = [];
+const schedule = (f, pause) => tasks.push(setTimeout(f, pause));
+const cancelTasks = _ => {
+ tasks.forEach(clearTimeout);
+ tasks.length = 0;
+};
 
 const loadAndShuffleInstances = async params => {
  const attempts = Number(params.get('attempts')) || ATTEMPTS;
@@ -36,7 +44,7 @@ const loadAndShuffleInstances = async params => {
   });
  if (params.get('fast') === '1') return instances;
 
- const response = await fetch('https://searx.space/data/instances.json');
+ const response = await fetch(INSTANCES_URL);
  if (!response.ok) {
   console.log('failed to load instances');
   return instances;
@@ -108,53 +116,77 @@ const shuffle = xs => {
  return xs;
 };
 
-const redirect = async (params, queryFromForm) => {
+const redirect = async (params, shuffledInstances, queryFromForm) => {
+ window.removeEventListener('hashchange', main);
+ window.location.hash = '';
+
  document.body.innerHTML = '<div id="message" class="pale"></div>';
  const messageElement = document.querySelector('#message');
 
- const shuffledInstances = await loadAndShuffleInstances(params);
- console.log('will be trying instances', shuffledInstances);
-
  const targetUrl = new URL(shuffledInstances[0]);
  targetUrl.pathname = '/search';
- targetUrl.searchParams.set('safesearch', params.get('safesearch') || '0');
 
+ const newParams = new Map;
  params
   .entries()
   .filter(([k, _]) => !CUSTOM_PARAMS.includes(k))
-  .forEach(([k, v]) => targetUrl.searchParams.set(k, v));
+  .forEach(([k, v]) => newParams.set(k, v));
 
  const query = queryFromForm || params.get('q') || '';
- targetUrl.searchParams.set('language', detectLanguage(query, params));
- targetUrl.searchParams.set('q', query);
+ newParams.set('language', detectLanguage(query, params));
+ newParams.set('q', query);
+ newParams.set('safesearch', params.get('safesearch') || '0');
+ newParams.set('image_proxy', params.get('image_proxy') || 'True');
 
  const timeout = Number(params.get('timeout')) || TIMEOUT;
- for (let i = 0; i < shuffledInstances.length; i++) setTimeout(_ => {
+ const getMethod = params.get('get') === '1';
+ for (let i = 0; i < shuffledInstances.length; i++) schedule(_ => {
   window.stop();
   const retryTargetUrl = new URL(targetUrl.toString());
   retryTargetUrl.host = new URL(shuffledInstances[i]).host;
   if (i > 0) {
    messageElement.innerHTML = `Attempt ${i + 1}/${shuffledInstances.length}: ${retryTargetUrl.host}`;
   }
-  const href = retryTargetUrl.toString();
-  console.log('trying', href);
-  if (queryFromForm) {
-   window.location.href = href;
+  if (getMethod) {
+   newParams.forEach((value, key) => retryTargetUrl.searchParams.set(key, value));
+   const href = retryTargetUrl.toString();
+   console.log('get', href);
+   if (queryFromForm) {
+    window.location.href = href;
+   } else {
+    window.location.replace(href);
+   }
   } else {
-   window.location.replace(href);
+   const href = retryTargetUrl.toString();
+   console.log('post', href);
+   const form = document.createElement('form');
+   form.method = 'POST';
+   form.action = href;
+   newParams.forEach((value, key) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+   });
+   document.body.appendChild(form);
+   form.submit();
+   document.body.removeChild(form);
   }
  }, i * timeout);
 
- setTimeout(_ => messageElement.innerHTML = 'Failed', shuffledInstances.length * timeout);
+ schedule(_ => messageElement.innerHTML = 'Failed', shuffledInstances.length * timeout);
 };
 
-const main = _ => {
+const main = async _ => {
  const params = new URLSearchParams(window.location.hash.split('#')[1] || '');
+ const shuffledInstances = await loadAndShuffleInstances(params);
+ console.log('will be trying instances', shuffledInstances);
+
  if (params.has('q')) {
-  redirect(params);
+  redirect(params, shuffledInstances);
  } else {
-  const pageUrl = window.location.origin + window.location.pathname;
-  document.body.innerHTML = `<p>This page redirects to a <a rel="noopener noreferrer nofollow" href="${pageUrl}#q=" onclick="window.location.replace('${pageUrl}#q=')">random SearXNG</a> instance.</p><p>It also supports the <a rel="noopener noreferrer nofollow" target="_blank" href="https://docs.searxng.org/dev/search_api.html">GET parameters</a> (provided as an anchor for privacy) and the optional parameters:<p><p><ul><li><code>languages=en,fr,ru</code> to use automatic language filter derived from the query; default is <code>${LANGUAGES.join(',')}</code></li><li><code>fast=1</code> to force use of predefined instances (instead of fetching them using the <a rel="noopener noreferrer nofollow" target="_blank" href="https://searx.space/data/instances.json">API</a>); default is <code>0</code></li><li><code>instances=search.ononoki.org,searx.bndkt.io</code> to predefine the instances; default is <code>${INSTANCES.join(',')}</code></li><li><code>timeout</code> in milliseconds until attempting the next instance; default is <code>${TIMEOUT}</code></li><li><code>attempts</code> how many instances to try; default is <code>${ATTEMPTS}</code></li></ul></p><p>Example for <strong>browser search engine settings</strong> (<code>about:preferences#search</code> or <code>chrome://settings/search</code>): <code>${pageUrl}#q=%s&fast=1&image_proxy=True&categories=images&languages=en,fr,ru</code>.</p><p>For local use: <code>wget ${pageUrl} -O searxng.html</code>.</p><p>Additionally can be combined with the Violentmonkey <a rel="noopener noreferrer nofollow" target="_blank" href="https://userscripts.codonaft.com/searxng-redirect-on-failure.js">userscript</a> to turn search failures into redirects as well.</p>`;
+  document.body.innerHTML = '';
 
   const input = document.createElement('input');
   input.name = 'q';
@@ -164,22 +196,68 @@ const main = _ => {
   input.spellcheck = false;
   input.autocorrect = 'off';
   input.dir = 'auto';
+  input.style.borderWidth = '0.15rem';
+  input.style.fontSize = '1.5rem';
+  input.style.margin = '2rem 0 1.5rem 0';
   input.style.width = '99%';
 
   const form = document.createElement('form');
   form.addEventListener('submit', event => {
    event.preventDefault();
-   redirect(params, input.value);
+   redirect(params, shuffledInstances, input.value);
   });
 
   form.appendChild(input);
   document.body.appendChild(form);
+  input.focus();
+
+  const pageUrl = `${window.location.protocol}//${window.location.pathname}`;
+  const div = document.createElement('div');
+  div.innerHTML = `
+<p>This page redirects to a <a rel="noopener noreferrer nofollow" href="${pageUrl}#q=" onclick="window.location.replace('${pageUrl}#q=')">random SearXNG</a> instance.</p>
+<hr>
+<p>Examples for <strong>browser search engine settings</strong> (<code>about:preferences#search</code> or <code>chrome://settings/search</code>):</p>
+<ul>
+ <li><code>${pageUrl}#q=%s&languages=en,fr,ru</code></li>
+ <li><code>${pageUrl}#q=%s&fast=1&image_proxy=False&categories=images&languages=en,fr,ru&get=1</code></li>
+</ul>
+<p>Supports the following parameters (provided as an anchor for privacy):</p>
+<ul>
+ <li>normal SearXNG GET/POST <a rel="noopener" target="_blank" href="https://docs.searxng.org/dev/search_api.html">parameters</a> (<code>safesearch=0</code> and <code>image_proxy=True</code> are set by default)</li>
+ <li><code>languages</code> limit query-based language detection; comma-separated, default is <code>${LANGUAGES.join(',')}</code></li>
+ <li><code>get</code> pass parameters to the instance using GET method; default is <code>0</code></li>
+ <li><code>timeout</code> in milliseconds until attempting the next instance; default is <code>${TIMEOUT}</code></li>
+ <li><code>attempts</code> how many instances to try; default is <code>${ATTEMPTS}</code></li>
+ <li><code>fast</code> always use the predefined SearXNG instances rather than just as a fallback (no <a rel="noopener" target="_blank" href="${INSTANCES_URL}">API</a> will be used); default is <code>0</code></li>
+ <li><code>instances</code> the predefined instances (use <code>fast=1</code> to force the use of them); comma-separated, default is <code>${INSTANCES.join(',')}</code></li>
+</ul>
+<p>For local use (doesn't require any server): <code>wget ${pageUrl} -O searxng.html</code></p>
+<p>Additionally can be combined with the Violentmonkey userscripts:</p>
+<ul>
+ <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/redirect-searxng-on-failure.js">redirect-searxng-on-failure.js</a> — turn search failures into redirects</li>
+ <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/force-searxng-parameters.js">force-searxng-parameters.js</a> — always enable image proxy and disable SafeSearch</li>
+</ul>
+<hr>
+<p>Existing alternatives:</p>
+<ul>
+ <li><a rel="noopener" target="_blank" href="https://searx.neocities.org/">Neocities</a></li>
+ <li><a rel="noopener" target="_blank" href="https://github.com/demostanis/gimmeasearx">gimmeasearx</a></li>
+</ul>`;
+  document.body.appendChild(div);
  }
 };
 
 window.addEventListener('hashchange', main);
-main();
+window.addEventListener('pageshow', event => {
+ if (!event.persisted) return;
 
+ console.log('back button is probably pressed');
+ cancelTasks();
+ window.removeEventListener('hashchange', main);
+ window.addEventListener('hashchange', main);
+ main();
+});
+main();
 </script>
 </body>
 </html>
