@@ -32,7 +32,7 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.22.1"
+ALPINE_VERSION           = "3.22.2"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"

@@ -91,21 +91,23 @@ const loadAndShuffleInstances = async params => {
 };
 
 const detectLanguage = (query, params) => {
- const en = 'en';
  const allowedLanguages = params.get('languages');
- const only = allowedLanguages ? allowedLanguages.split(',') : LANGUAGES;
- console.log('allowed languages', only);
- if (only.length <= 1) return en;
+ const languagesRaw = allowedLanguages ? allowedLanguages.split(',') : LANGUAGES;
 
- const all = detectAll(query, { only });
- console.log('detected languages', all);
+ const all = 'all';
+ const only = languagesRaw.filter(i => i !== all);
+ console.log('allowed languages', languagesRaw);
+ if (only.length === 0) return all;
+ if (languagesRaw.length === 1) return only[0];
 
- const detected = all
+ const detected = detectAll(query, { only });
+ console.log('detected languages', detected);
+
+ const ranked = detected
   .filter(i => i.accuracy > 0.01)
   .sort((a, b) => b.accuracy - a.accuracy);
- if (detected.length === 0) return en;
 
- return detected[0].lang;
+ return ranked[0]?.lang || (languagesRaw.length > only.length ? all : only[0]);
 };
 
 const shuffle = xs => {
@@ -133,6 +135,7 @@ const redirect = async (params, shuffledInstances, queryFromForm) => {
   .forEach(([k, v]) => newParams.set(k, v));
 
  const query = queryFromForm || params.get('q') || '';
+ console.log(`query "${query}"`);
  newParams.set('language', detectLanguage(query, params));
  newParams.set('q', query);
  newParams.set('safesearch', params.get('safesearch') || '0');
@@ -157,6 +160,7 @@ const redirect = async (params, shuffledInstances, queryFromForm) => {
     window.location.replace(href);
    }
   } else {
+   retryTargetUrl.hash = new URLSearchParams(newParams).toString();
    const href = retryTargetUrl.toString();
    console.log('post', href);
    const form = document.createElement('form');
@@ -218,23 +222,23 @@ const main = async _ => {
 <hr>
 <p>Examples for <strong>browser search engine settings</strong> (<code>about:preferences#search</code> or <code>chrome://settings/search</code>):</p>
 <ul>
- <li><code>${pageUrl}#q=%s&languages=en,fr,ru</code></li>
- <li><code>${pageUrl}#q=%s&fast=1&image_proxy=False&categories=images&languages=en,fr,ru&get=1</code></li>
+ <li><code>${pageUrl}#q=%s&languages=all,en,fr,ru</code></li>
+ <li><code>${pageUrl}#q=%s&fast=1&image_proxy=False&categories=images,videos&languages=all,en,fr,ru&get=1</code></li>
 </ul>
 <p>Supports the following parameters (provided as an anchor for privacy):</p>
 <ul>
  <li>normal SearXNG GET/POST <a rel="noopener" target="_blank" href="https://docs.searxng.org/dev/search_api.html">parameters</a> (<code>safesearch=0</code> and <code>image_proxy=True</code> are set by default)</li>
- <li><code>languages</code> limit query-based language detection; comma-separated, default is <code>${LANGUAGES.join(',')}</code></li>
+ <li><code>languages</code> limit query-based language detection, fallbacks to the first language in the list when not detected (use <code>all</code> to fallback to SearXNG-based language detection instead); comma-separated, default is <code>${LANGUAGES.join(',')}</code></li>
  <li><code>get</code> pass parameters to the instance using GET method; default is <code>0</code></li>
  <li><code>timeout</code> in milliseconds until attempting the next instance; default is <code>${TIMEOUT}</code></li>
  <li><code>attempts</code> how many instances to try; default is <code>${ATTEMPTS}</code></li>
  <li><code>fast</code> always use the predefined SearXNG instances rather than just as a fallback (no <a rel="noopener" target="_blank" href="${INSTANCES_URL}">API</a> will be used); default is <code>0</code></li>
  <li><code>instances</code> the predefined instances (use <code>fast=1</code> to force the use of them); comma-separated, default is <code>${INSTANCES.join(',')}</code></li>
 </ul>
-<p>For local use (doesn't require any server): <code>wget ${pageUrl} -O searxng.html</code></p>
+${pageUrl.startsWith('file:') ? '' : `<p>For local use (doesn't require any server): <code>wget ${pageUrl} -O searxng.html</code></p>`}
 <p>Additionally can be combined with the Violentmonkey userscripts:</p>
 <ul>
- <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/redirect-searxng-on-failure.js">redirect-searxng-on-failure.js</a> — turn search failures into redirects</li>
+ <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/redirect-searxng-on-failure.js">redirect-searxng-on-failure.js</a> — turn search failures into the redirects</li>
  <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/force-searxng-parameters.js">force-searxng-parameters.js</a> — always enable image proxy and disable SafeSearch</li>
 </ul>
 <hr>
