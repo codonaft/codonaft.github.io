@@ -1,3 +1,7 @@
 [Adblock Plus 3.1]
 ://accounts.google.com/RotateCookiesPage?*
 ://www.gstatic.com/_/mss/boq-identity/_/js/*
+github.com##DIV[id="__ABoverlay"]
+habr.com##IMG[class="tm-event-card__image"]
+localhost##DIV[id="newsId"]
+www.youtube.com##DIV[class="ytp-fullscreen-grid"]
