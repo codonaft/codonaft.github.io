@@ -106,16 +106,22 @@ const detectLanguage = (query, params) => {
  const only = languagesRaw.filter(i => i !== all);
  console.log('allowed languages', languagesRaw);
  if (only.length === 0) return all;
- if (languagesRaw.length === 1) return only[0];
+ if (languagesRaw.length === 1) {
+   const result = only[0];
+   console.log('selected the only available language', result);
+   return result;
+ }
 
  const detected = detectAll(query, { only });
- console.log('detected languages', detected);
+ console.log('detected languages', JSON.stringify(detected));
 
  const ranked = detected
   .filter(i => i.accuracy > 0.01)
   .sort((a, b) => b.accuracy - a.accuracy);
 
- return ranked[0]?.lang || (languagesRaw.length > only.length ? all : only[0]);
+ const result = ranked[0]?.lang || (languagesRaw.length > only.length ? all : only[0]);
+ console.log('selected language', result);
+ return result;
 };
 
 const shuffle = xs => {
@@ -144,7 +150,7 @@ const redirect = async (params, shuffledInstances, queryFromForm) => {
 
  const query = queryFromForm || params.get('q') || '';
  console.log(`query "${query}"`);
- newParams.set('language', detectLanguage(query, params));
+ newParams.set('language', params.get('language') || detectLanguage(query, params));
  newParams.set('q', query);
  newParams.set('safesearch', params.get('safesearch') || '0');
  newParams.set('image_proxy', params.get('image_proxy') || 'True');
