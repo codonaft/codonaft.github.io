@@ -26,7 +26,6 @@ const TIMEOUT = 5000;
 const ATTEMPTS = 10;
 const CUSTOM_PARAMS = ['attempts', 'languages', 'fast', 'instances', 'timeout'];
 const STATS_KEY = 'searxngRedirectorStats';
-const STATS_TTL_SECS = 24 * 60 * 60;
 
 const tasks = [];
 const schedule = (f, pause) => tasks.push(setTimeout(f, pause));
@@ -68,7 +67,7 @@ const loadAndShuffleInstances = async params => {
     if (onion) {
      if (i?.network_type !== 'tor') return false;
     } else {
-     if (i?.network_type !== 'normal' || url.protocol !== 'https:' || i?.tls?.grade !== 'A+' || i?.html?.grade !== 'V') return false;
+     if (i?.network_type !== 'normal' || url.protocol !== 'https:' || i?.tls?.grade !== 'A+' || i?.http?.status_code !== 200 || (i.timing?.search?.success_percentage || 0) < 80 || i?.html?.grade !== 'V') return false;
     }
     return !i?.analytics;
    } catch(e) {
@@ -78,8 +77,10 @@ const loadAndShuffleInstances = async params => {
   })
   .map(([u, i]) => {
     const s = searxngRedirectorStats[u.hostname];
-    const localOkRate = (s && s.ttl > currentTime()) ? (s.ok + 1) / (s.failures + 1) : 1;
-    const key = [localOkRate, i?.uptime?.uptimeDay, i?.uptime?.uptimeMonth, 1 / i?.engines?.google?.error_rate, 1 / i?.engines?.duckduckgo?.error_rate];
+    const localOkRate = s ? (s.ok.count + 1) / (s.failure.count + 1) : 1;
+    const localOkUpdate = s ? s.ok.updated : 0;
+    const localFailureUpdate = s ? s.failure.updated : Infinity;
+    const key = [localOkUpdate, 1 / localFailureUpdate, localOkRate, i?.uptime?.uptimeDay, i?.uptime?.uptimeMonth, 1 / (i?.engines?.google?.error_rate || 0), 1 / (i?.engines?.duckduckgo?.error_rate || 0), 1 / (i?.engines?.brave?.error_rate || 0), 1 / (i?.engines?.bing?.error_rate || 0)];
     return [u, key];
   })
   .sort(([_a, a], [_b, b]) =>  {
@@ -161,14 +162,12 @@ const redirect = async (params, shuffledInstances, queryFromForm) => {
   window.stop();
   if (i > 0) {
    const searxngRedirectorStats = JSON.parse(localStorage.getItem(STATS_KEY) || '{}');
-   const stats = searxngRedirectorStats[new URL(shuffledInstances[i - 1]).hostname] || { ok: 0, failures: 0, ttl: 0 };
-   stats.failures++;
-   stats.ttl = currentTime() + STATS_TTL_SECS;
+   const stats = searxngRedirectorStats[new URL(shuffledInstances[i - 1]).hostname] || { ok: { count: 0, updated: 0 }, failure: { count: 0, updated: 0 } };
+   stats.failure.count++;
+   stats.failure.updated = currentTime();
 
-   const newValue = Object.fromEntries(Object.entries(searxngRedirectorStats)
-    .filter(([_k, v]) => v.ttl > currentTime()));
-   console.log('updating SearXNG redirector stats', newValue);
-   localStorage.setItem(STATS_KEY, JSON.stringify(newValue));
+   console.log('updating SearXNG redirector stats', searxngRedirectorStats);
+   localStorage.setItem(STATS_KEY, JSON.stringify(searxngRedirectorStats));
   }
 
   const retryTargetUrl = new URL(targetUrl.toString());
