@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+
+name="metasearch"
+
+command="/usr/local/bin/${name}"
+command_user="nobody:nobody"
+command_background="true"
+command_args="/etc/${name}/${name}.toml"
+
+pidfile="/run/${name}.pid"
+
+depend() {
+	need net
+	use logger
+}

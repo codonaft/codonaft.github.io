@@ -54,7 +54,7 @@ OPUS_BITRATE_KBPS = 256
 BANDWIDTH_MB_PER_SEC = 20
 IGNORE_HOSTS         = ["personal.tracker.com", "tracker.novage.com.ua", "www.googletagmanager.com"]
 
-CERTBOT_DOMAINS = ["media.codonaft.com", "nostr.codonaft.com", "test.codonaft.com"]
+CERTBOT_DOMAINS = ["media", "nostr", "metasearch", "test"].map { |i| "#{i}.codonaft.com" }
 
 MAIN_SITE_CONFIG = Path["_config.yml"]
 
@@ -243,6 +243,13 @@ def build
     dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
   )
 
+  build_rust_app(
+    MEDIA_HOST,
+    crate: "metasearch",
+    branch: "large-images",
+    git: URI.parse("https://github.com/alopatindev/metasearch2"),
+  )
+
   generate_certbot_script(MEDIA_HOST)
 end
 
@@ -262,7 +269,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "rnostr", "i2pd", "local", "nginx", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "tor"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -671,6 +678,8 @@ end
 def generate_certbot_script(host)
   domains = CERTBOT_DOMAINS.join(',')
   user = ssh(host, ["echo -n ${USER}"])
+  raise "unexpected username" if user.empty?
+
   home_dir = BUILD_DIR.join(host).join("home").join(user)
   cron_dir = home_dir.join(".periodic/weekly")
   output = cron_dir.join("certbot-prod.sh")
@@ -987,8 +996,12 @@ def build_rust_app(
       raise "unspecified version" if version.nil?
       "#{crate} --version #{version}"
     else
-      raise "either version or branch is allowed" if !version.nil? && !branch.nil?
-      version = version.nil? ? "" : " --tag #{version}"
+      version =
+        if version.nil?
+          ""
+        else
+          branch.nil? ? " --tag #{version}" : " --rev #{version}"
+        end
       branch = branch.nil? ? "" : " --branch #{branch}"
       "--git #{git}#{version}#{branch}"
     end
@@ -1597,7 +1610,7 @@ def find_hosts(host : String?) : Array(String)
     .split('\n')
     .map { |i| i.split(':') }
     .select { |i| i.size > 2 }
-    .map { |i| i[2].strip }
+    .map { |i| i[2].strip.sub(/^\./, "") }
     .reject { |i| i.empty? }
     .to_set
   (result + [host].to_set).to_a
