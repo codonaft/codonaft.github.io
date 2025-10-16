@@ -81,23 +81,27 @@ def main
   repo_dir = Path[File.dirname(File.realpath(__FILE__))]
   Dir.cd(repo_dir)
 
+  hosts = Dir.children(HOSTS_DIR)
+
   ps = processes()
   config = YAML.parse(File.read(MAIN_SITE_CONFIG))
   check(config, ps)
 
   if ARGV.empty? || ARGV.includes?("-h") || ARGV.includes?("--help")
     usage
-  elsif ARGV.size == 1 && ARGV[0] == "sync"
-    check_ssh_hosts(ps)
-    sync
+  elsif ARGV.size >= 1 && ARGV[0] == "sync"
+    hosts = ARGV.skip(1) if ARGV.size > 1
+    check_ssh_hosts(ps, hosts)
+    sync(hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
     follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es"])
-  elsif ARGV.size == 1 && ARGV[0] == "health"
-    check_ssh_hosts(ps)
-    health(config)
+  elsif ARGV.size >= 1 && ARGV[0] == "health"
+    hosts = ARGV.skip(1) if ARGV.size > 1
+    check_ssh_hosts(ps, hosts)
+    health(config, hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "build"
     update
     build
@@ -106,11 +110,12 @@ def main
     end
   elsif ARGV.size > 2 && ARGV[0] == "encode"
     encode_media(ARGV[1], config, ARGV[2])
-  elsif ARGV.size == 1 && ARGV[0] == "deploy"
-    check_ssh_hosts(ps)
-    deploy(config)
+  elsif ARGV.size >= 1 && ARGV[0] == "deploy"
+    hosts = ARGV.skip(1) if ARGV.size > 1
+    check_ssh_hosts(ps, hosts)
+    deploy(config, hosts)
   elsif ARGV.size == 1 && ARGV[0] == "cloudflare-banlist"
-    generate_cloudflare_banlist
+    generate_cloudflare_banlist(hosts)
   elsif ARGV.empty? || ARGV[0] == "debug"
     update
     build
@@ -134,12 +139,12 @@ def usage
        #{script} build run
          same, also serve jekyll in release mode locally
 
-       #{script} deploy
+       #{script} deploy [#{MEDIA_HOST} ...]
          update, build, sync and deploy to PROD
            without pushing to the git repos
          run health checks
 
-       #{script} sync
+       #{script} sync [#{MEDIA_HOST} ...]
          sync to PROD
            download newest non-conflicting versioned files to _ohmyvps and _hosts
            upload newest files from _ohmyvps, _hosts and .build
@@ -150,7 +155,7 @@ def usage
 
        NOSTR_SECRET_KEY='bunker://...' NOSTR_CLIENT_KEY='...' #{script} follow [npub|nprofile|hex]...
 
-       #{script} health
+       #{script} health [#{MEDIA_HOST} ...]
          run health checks
 
        #{script} cloudflare-banlist
@@ -167,13 +172,13 @@ def usage
   exit 1
 end
 
-def deploy(config)
+def deploy(config, hosts : Array(String))
   update
   build
-  sync
+  sync(hosts)
   configure(config)
   start
-  health(config)
+  health(config, hosts)
 end
 
 def build
@@ -342,7 +347,7 @@ def update
   )
 end
 
-def sync
+def sync(hosts : Array(String))
   if DEBUG
     warn("skipping sync\n")
     return
@@ -364,7 +369,6 @@ def sync
     system("git clone git@github.com:codonaft/zapthreads-codonaft.git _zapthreads")
   end
 
-  hosts = all_hosts()
   puts("hosts: #{hosts}")
 
   mirror = MIRROR_FROM_TO.map { |source_host, destination_and_files|
@@ -482,14 +486,14 @@ def serve(host : String, *, destination = Path["/_site"])
   system("bundle exec jekyll serve --future --host #{host} --destination #{output_dir}")
 end
 
-def health(config)
+def health(config, hosts : Array(String))
   if DEBUG
     warn("skipping health\n")
     return
   end
   step("health")
 
-  all_hosts().each { |host|
+  hosts.each { |host|
     step(host)
 
     ssh(host, ["sudo /etc/init.d/nginx checkconfig", "sudo hdparm -t /dev/sd[a-z] | sed \"s!.*= !!\""], tty: true)
@@ -852,14 +856,14 @@ def update_broken_post_urls
   broken_urls
 end
 
-def generate_cloudflare_banlist
+def generate_cloudflare_banlist(hosts : Array(String))
   banlist_filename = BUILD_DIR.join(MEDIA_HOST).join("/var/tmp/local-banlist.txt")
   local_banlist = File.read_lines(banlist_filename)
     .map { |i| i.strip }
     .select { |i| i.size > 0 }
     .sort
     .uniq
-  update_local_banlist(local_banlist.to_set, banlist_filename)
+  update_local_banlist(local_banlist.to_set, banlist_filename, hosts)
 
   expr_begin = "ip.src in {"
   expr_end = "}"
@@ -878,8 +882,8 @@ def generate_cloudflare_banlist
   end
 end
 
-def update_local_banlist(banlist : Set(String), output : Path)
-  allowlist = (all_hosts
+def update_local_banlist(banlist : Set(String), output : Path, hosts : Array(String))
+  allowlist = (hosts
     .flat_map { |i| ssh(i, ["sudo cat /etc/ssh/allowlist.txt"]).split('\n') }
     .map { |i| i.strip }
     .reject { |i| i.empty? } + resolve_domain(PUBLIC_MEDIA_HOST) + ["127.0.0.1", "::1"])
@@ -1274,9 +1278,9 @@ def check_tor_host(host : String)
   }
 end
 
-def check_ssh_hosts(ps : Array(Tuple(Int64, String)))
+def check_ssh_hosts(ps : Array(Tuple(Int64, String)), hosts : Array(String))
   step("check_ssh_hosts")
-  all_hosts()
+  hosts
     .map { |i|
       check_existing_ssh_connection(i, ps)
       done = Channel(Nil | Exception).new
@@ -1584,11 +1588,6 @@ def children_recursive_inner(dir : Path) : Array(Path)
       end
     }
     .map { |i| Path[i] }
-end
-
-def all_hosts : Array(String)
-  # TODO: from args
-  Dir.children(HOSTS_DIR)
 end
 
 def find_hosts(host : String?) : Array(String)
