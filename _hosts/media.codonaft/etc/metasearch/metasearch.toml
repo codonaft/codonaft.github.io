@@ -1,0 +1,24 @@
+bind = "127.0.0.1:28019"
+api = true
+
+[ui]
+favicon_url = "https://codonaft.com/favicon.ico"
+show_autocomplete = false
+show_settings_link = false
+
+[image_search]
+enabled = true
+max_download_size = 4194304
+
+[engines]
+bing = false
+minecraft_wiki = false
+
+[urls.replace]
+"medium.com" = "scribe.rip"
+".medium.com" = "scribe.rip"
+"x.com" = "xcancel.com"
+".x.com" = "xcancel.com"
+
+[urls.weight]
+".zhihu.com" = 0

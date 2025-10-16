@@ -15,6 +15,13 @@
     fi
   done &
 
+[ -f /etc/init.d/metasearch ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/metasearch/ |
+  while read -r directory events filename ; do
+    if [[ "${filename}" == "metasearch.toml" ]] ; then
+      rc-service --ifstarted metasearch restart 2>>/dev/stdout | logger
+    fi
+  done &
+
 # rnostr relay --watch does nothing (probably under load only)
 [ -f /etc/init.d/rnostr ] && inotifywait --event close_write,moved_to,create --monitor --recursive /etc/rnostr/ |
   while read -r directory events filename ; do
