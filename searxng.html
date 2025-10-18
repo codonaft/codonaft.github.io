@@ -22,6 +22,7 @@ import { detectAll } from '{{ site.url }}/assets/js/vendor/tinyld.min.js';
 const INSTANCES_URL = 'https://searx.space/data/instances.json';
 const INSTANCES = ['search.charliewhiskey.net', 'search.im-in.space', 'search.ipsys.bf', 'search.mycotrip.tech', 'search.ononoki.org', 'search.pollorebozado.com', 'search.rowie.at', 'search.system51.co.uk', 'search.undertale.uk', 'search.url4irl.com', 'searx.bndkt.io', 'searx.dresden.network', 'searx.foss.family', 'searx.oloke.xyz', 'searx.ox2.fr', 'searx.party', 'searx.perennialte.ch', 'searx.tiekoetter.com', 'searx.zhenyapav.com', 'searxng.shreven.org']
 const LANGUAGES = ['en'];
+const GET = '0';
 const TIMEOUT = 5000;
 const ATTEMPTS = 10;
 const CUSTOM_PARAMS = ['attempts', 'languages', 'fast', 'instances', 'timeout'];
@@ -157,7 +158,7 @@ const redirect = async (params, shuffledInstances, queryFromForm) => {
  newParams.set('image_proxy', params.get('image_proxy') || 'True');
 
  const timeout = Number(params.get('timeout')) || TIMEOUT;
- const getMethod = params.get('get') === '1';
+ const getMethod = (params.get('get') || GET) === '1';
  for (let i = 0; i < shuffledInstances.length; i++) schedule(_ => {
   window.stop();
   if (i > 0) {
@@ -240,7 +241,7 @@ const main = async _ => {
   document.body.appendChild(form);
   input.focus();
 
-  const pageUrl = `${window.location.protocol}//${window.location.pathname}`;
+  const pageUrl = window.location.toString();
   const div = document.createElement('div');
   div.innerHTML = `
 <p>This page redirects to a <a rel="noopener noreferrer nofollow" href="${pageUrl}#q=" onclick="window.location.replace('${pageUrl}#q=')">random SearXNG</a> instance.</p>
@@ -254,17 +255,18 @@ const main = async _ => {
 <ul>
  <li>normal SearXNG GET/POST <a rel="noopener" target="_blank" href="https://docs.searxng.org/dev/search_api.html">parameters</a> (<code>safesearch=0</code> and <code>image_proxy=True</code> are set by default)</li>
  <li><code>languages</code> limit query-based language detection, fallbacks to the first language in the list when not detected (use <code>all</code> to fallback to SearXNG-based language detection instead); comma-separated, default is <code>${LANGUAGES.join(',')}</code></li>
- <li><code>get</code> pass parameters to the instance using GET method; default is <code>0</code></li>
+ <li><code>get</code> pass parameters to the instance using GET method; default is <code>${GET}</code></li>
  <li><code>timeout</code> in milliseconds until attempting the next instance; default is <code>${TIMEOUT}</code></li>
  <li><code>attempts</code> how many instances to try; default is <code>${ATTEMPTS}</code></li>
  <li><code>fast</code> always use the predefined SearXNG instances rather than just as a fallback (no <a rel="noopener" target="_blank" href="${INSTANCES_URL}">API</a> will be used); default is <code>0</code></li>
  <li><code>instances</code> the predefined instances (use <code>fast=1</code> to force the use of them); comma-separated, default is <code>${INSTANCES.join(',')}</code></li>
 </ul>
 ${pageUrl.startsWith('file:') ? '' : `<p>For local use (doesn't require any server): <code>wget ${pageUrl} -O searxng.html</code></p>`}
+<p>License: MIT/Apache-2.0</p>
 <p>Additionally can be combined with the Violentmonkey userscripts:</p>
 <ul>
  <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/redirect-searxng-on-failure.js">redirect-searxng-on-failure.js</a> — turn search failures into the redirects</li>
- <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/force-searxng-parameters.js">force-searxng-parameters.js</a> — always enable image proxy and disable SafeSearch</li>
+ <li><a rel="noopener" target="_blank" href="https://userscripts.codonaft.com/force-searxng-parameters.js">force-searxng-parameters.js</a> — always enable image proxy, disable SafeSearch and more</li>
 </ul>
 <hr>
 <p>Existing alternatives:</p>
