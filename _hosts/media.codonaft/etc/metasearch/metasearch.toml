@@ -2,7 +2,7 @@ bind = "127.0.0.1:28019"
 api = true
 
 [ui]
-favicon_url = "https://codonaft.com/favicon.ico"
+favicon_url = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTEiLz48L3N2Zz4="
 show_autocomplete = false
 show_settings_link = false
 
