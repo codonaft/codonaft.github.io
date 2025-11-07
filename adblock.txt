@@ -5,5 +5,6 @@ github.com##DIV[id="__ABoverlay"]
 habr.com##IMG[class="tm-event-card__image"]
 localhost##DIV[id="newsId"]
 www.livescience.com##DIV[id="signupForm"][class="popup-form"]
+www.reddit.com##DETAILS[class="p-0 m-0 bg-transparent border-none rounded-none"]
 youtube.com###movie_player > div.ytp-ce-hide-button-container.ytp-ce-element-show
 youtube.com##DIV[class="ytp-fullscreen-grid"]
