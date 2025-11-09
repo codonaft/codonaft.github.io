@@ -149,6 +149,7 @@ theme_settings:
     - wss://relay.nostr.band
     read_cache_relays:
     - wss://relay.primal.net
+    - wss://nostr.codonaft.com
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []

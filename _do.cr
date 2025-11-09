@@ -807,14 +807,8 @@ def update_banlists
     .flat_map { |i| i.split('|') }
   File.delete(zi_zip)
 
-  rb_prefix = "https://reestr.rublacklist.net/api/v3"
-  rb_dpi = JSON.parse(HTTP::Client.get("#{rb_prefix}/dpi/").body).as_a.flat_map { |i| i["domains"].as_a }
-  rb_domains_and_ips = ["ct-domains", "domains", "ips"]
-    .flat_map { |request|
-      JSON
-        .parse(HTTP::Client.get("#{rb_prefix}/#{request}/").body)
-        .as_a
-    }
+  rb_dpi = fetch_rublacklist("dpi").flat_map { |i| i["domains"].as_a }
+  rb_domains_and_ips = ["ct-domains", "domains", "ips"].flat_map { |request| fetch_rublacklist(request) }
   rb = (rb_dpi + rb_domains_and_ips).map { |i| i.as_s }
 
   result = (sbc + zi + rb)
@@ -824,6 +818,13 @@ def update_banlists
   raise "banlists fetch failure" if result.empty?
   File.write(BANLISTS, result.join('\n'))
   result
+end
+
+def fetch_rublacklist(request)
+  trace("request=#{request}")
+  JSON
+    .parse(HTTP::Client.get("https://reestr.rublacklist.net/api/v3/#{request}/").body)
+    .as_a
 end
 
 def update_broken_post_urls
