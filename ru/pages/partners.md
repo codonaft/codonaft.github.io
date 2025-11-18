@@ -14,7 +14,7 @@ feature-img: "assets/img/keyboard-background.webp"
  </div>
  <div class="content">
   <h1>Ирина Радыно</h1>
-  <p><span class='no-wrap'><strong>Клинический психолог</strong>,</span> <span class='no-wrap'>EMDR-терапевт,</span> <span class='no-wrap'>интегральный коуч</span></p>
+  <p><span class='no-wrap'><strong>Клинический психолог</strong>,</span> <span class='no-wrap'>EMDR-терапевт,</span> <span class='no-wrap'>интегральный коуч,</span> <span class='no-wrap'>мультимодальный супервизор</span></p>
   <div class="contacts">
    <ul>
     <li><a href="https://www.linkedin.com/in/%D0%B8%D1%80%D0%B8%D0%BD%D0%B0-%D1%80%D0%B0%D0%B4%D1%8B%D0%BD%D0%BE-3581059a/" title="LinkedIn" target="_blank">{% include icons/linkedin.svg %} LinkedIn</a></li>
