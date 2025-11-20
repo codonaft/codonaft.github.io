@@ -1,10 +1,15 @@
 {% include html.html %}
+{% if page.origin-url %}
+{% assign origin_url = page.origin-url %}
+{% else if page.origin-nostr-tag %}
+{% assign origin_url = "https://primal.net/search/kind%3A1%20%23" | append: page.origin-nostr-tag | append: "%20%20from%3A" | append: site.theme_settings.nostr.nprofile %}
+{% endif %}
 <head>
   <noscript>
     <style>html { display: none; }</style>
-    <meta http-equiv="refresh" content="0; URL='{{ page.origin-url }}'" />
-    <link rel="canonical" href="{{ page.origin-url }}" />
+    <meta http-equiv="refresh" content="0; URL='{{ origin_url }}'" />
+    <link rel="canonical" href="{{ origin_url }}" />
   </noscript>
-  <script type="text/javascript">window.stop(); window.location = "{{ page.origin-url }}";</script>
+  <script type="text/javascript">window.stop(); window.location = "{{ origin_url }}";</script>
 </head>
 </html>
