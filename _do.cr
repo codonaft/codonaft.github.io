@@ -245,9 +245,11 @@ def build
 
   build_rust_app(
     MEDIA_HOST,
+    alpine_distro_version: "edge",
     crate: "metasearch",
     branch: "large-images",
     git: URI.parse("https://github.com/alopatindev/metasearch2"),
+    dependencies: ["clang21-libclang", "cmake", "make", "g++"],
   )
 
   generate_certbot_script(MEDIA_HOST)
@@ -967,6 +969,7 @@ end
 def build_rust_app(
   host : String,
   *,
+  alpine_distro_version : String | Nil = nil,
   crate : String,
   version : String | Nil = nil,
   git : URI | Nil = nil,
@@ -988,7 +991,7 @@ def build_rust_app(
   trace("building #{crate}\n")
   Dir.mkdir_p(bin_dir, 0o755)
 
-  distro_version = alpine_version(host)
+  distro_version = alpine_distro_version || alpine_version(host)
   warn("alpine #{host} version #{distro_version} != alpine build version #{ALPINE_VERSION}") unless distro_version == ALPINE_VERSION
   target_cpu = TARGET_CPU[host]
 
@@ -1426,15 +1429,9 @@ end
 
 def follow(config, profiles : Set(String), profile_relays : Array(String))
   nostr_config = config["theme_settings"]["nostr"]
-  # TODO: relays_from_config = nostr_config["relays"].as_a.map { |i| i.as_s }
-  relays_from_config = [] of String
-  relays = (File
-    .read_lines("_relays.txt")
-    .map { |i| i.strip } + relays_from_config)
-    .to_set
-    .reject { |i| i.empty? }
-    .map { |i| URI.parse(i).to_s } + profile_relays
+  relays = profile_relays + ["wss://sendit.nosflare.com", "wss://nostr.codonaft.com/publish"]
   pk = decode_pk(nostr_config["npub"].as_s)[0]
+  puts("requesting follow list")
 
   tags_and_created_at = `nak req -k 3 -a #{pk} #{relays.join(' ')}`
     .split('\n')
@@ -1484,6 +1481,7 @@ def follow(config, profiles : Set(String), profile_relays : Array(String))
   if (gets || "").strip == "y"
     puts(nak_raw(["event"] + relays, new_event.to_json.split('\n')))
   end
+  puts("finished")
 end
 
 def decode_pk(profile : String) : Array(String)
@@ -1517,6 +1515,7 @@ def decode_pk(profile : String) : Array(String)
 end
 
 def sign(unsigned_event : String, nostr)
+  puts("signing")
   nak([
     "event",
     "--pow", nostr["min_read_pow"].to_s,
