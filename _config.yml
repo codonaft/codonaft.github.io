@@ -135,7 +135,7 @@ theme_settings:
   nostr:
     enabled: true
     npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
-    nprofile: nprofile1qqswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqywhwumn8ghj7mn0wd68yttsw43zuam9d3kx7unyv4ezumn9wsq3vamnwvaz7tmjv4kxz7fwdehhxarj9e3xzmnyrks2sw
+    nprofile: nprofile1qqswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqyt8wumn8ghj7un9d3shjtnwdaehgu3wvfskueqpz3mhxue69uhhyetvv9ujuerpd46hxtnfdu9dfmdy
     community: codonaft
     max_comment_length: 5000
     min_read_pow: 7
@@ -145,8 +145,8 @@ theme_settings:
     - wss://purplepag.es
     - wss://hist.nostr.land
     relays:
-    - wss://nostr-pub.wellorder.net
     - wss://relay.nostr.band
+    - wss://relay.damus.io
     read_cache_relays:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
