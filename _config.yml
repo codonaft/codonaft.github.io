@@ -110,6 +110,7 @@ theme_settings:
   eth: "0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc"
   ltc: "LSBjTftxfzRPDMb3QaX8NMGTH3w1CyjDbz"
   zec: "t1bPyVoWijTjzSZqDeh1aFfSERRKhBNjp9S"
+  lightning: "alopatindev@rizful.com"
 
   share_buttons:
     vk:

@@ -42,7 +42,7 @@ lang-en-uri: /sponsor/
       <p style="margin-bottom: 0.7em"><a href="bitcoin:{{ site.theme_settings.btc }}?amount=0.0002">{% include icons/bitcoin.svg %}</a></p>
       <p style="margin-bottom: 0"><strong>Bitcoin</strong> (BTC):</p>
       <p style="margin-bottom: 0"><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.btc }}</code></p>
-      <p><a href="https://zapmeacoffee.com/{{ site.theme_settings.nostr.npub }}" target="_blank">⚡</a><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=10000" target="_blank">Lightning</a>: <code class="language-plaintext highlighter-rouge">alopatindev@stacker.news</code></p>
+      <p><a href="https://zapmeacoffee.com/{{ site.theme_settings.nostr.npub }}" target="_blank">⚡</a><a href="https://zapper.nostrapps.org/zap?id={{ site.theme_settings.nostr.npub }}&amount=10000" target="_blank">Lightning</a>: <code class="language-plaintext highlighter-rouge">{{ site.theme_settings.lightning }}</code></p>
     </div>
     <div class="grid-item">
       <p>{% include icons/tron.svg %}</p>
