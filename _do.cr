@@ -38,9 +38,9 @@ BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
+MIN_RUST_VERSION         = "1.91.1"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 RNOSTR_VERSION           = "0.4.8"
-RUST_VERSION             = "1.86.0"
 TINYLD_VERSION           = "1.3.4"
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
@@ -222,7 +222,7 @@ def build
     MEDIA_HOST,
     crate: "aquatic_ws",
     version: AQUATIC_VERSION,
-    dependencies: ["clang17-libclang", "cmake", "findutils", "g++", "linux-headers", "liburing", "make", "rust-bindgen"],
+    dependencies: ["clang21-static", "cmake", "findutils", "g++", "linux-headers", "liburing", "make", "rust-bindgen"],
     cflags: "-D_GNU_SOURCE",
     rustflags: "\\$(rustc --print target-features | grep '    avx512' | grep -v 'avx512fp16' | awk '{print \\$1}' | sed 's/^/-C target-feature=-/' | xargs)",
   )
@@ -245,7 +245,7 @@ def build
 
   build_rust_app(
     MEDIA_HOST,
-    alpine_distro_version: "edge",
+    allow_dynamic_linking: true,
     crate: "metasearch",
     branch: "large-images",
     git: URI.parse("https://github.com/alopatindev/metasearch2"),
@@ -970,6 +970,7 @@ def build_rust_app(
   host : String,
   *,
   alpine_distro_version : String | Nil = nil,
+  allow_dynamic_linking : Bool = false,
   crate : String,
   version : String | Nil = nil,
   git : URI | Nil = nil,
@@ -1018,21 +1019,30 @@ def build_rust_app(
     podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{distro_version}" /bin/sh -c "
     set -xeuo pipefail
 
-    apk add --update --no-cache 'cargo>=#{RUST_VERSION}' 'rust>=#{RUST_VERSION}' || {
+    #{allow_dynamic_linking ? "apk add --update --no-cache 'cargo>=#{MIN_RUST_VERSION}' 'rust>=#{MIN_RUST_VERSION}'" : "
       apk add --update --no-cache rustup
-      rustup-init -y --profile minimal --default-toolchain '#{RUST_VERSION}'
-    }
-
-    export CFLAGS='-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}'
-    export CXXFLAGS='-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}'
-    export RUSTFLAGS=\\"-C target-cpu=#{target_cpu} -C force-frame-pointers=y #{rustflags}\\"
-    export PATH=\\"\\${HOME}/.cargo/bin:\\${PATH}\\"
+      rustup-init -y --profile minimal --default-toolchain '#{MIN_RUST_VERSION}'
+      source ~/.cargo/env
+    "}
 
     apk add --update --no-cache git #{dependencies.join(" ")}
+
+    export CFLAGS=\\"-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}\\"
+    export CXXFLAGS=\\"\\${CFLAGS}\\"
+    export RUSTFLAGS=\\"-C target-cpu=#{target_cpu} -C force-frame-pointers=y #{allow_dynamic_linking ? "-C target-feature=-crt-static" : ""} #{rustflags}\\"
+
     cargo install --force --locked #{cargo_args}
     #{install_executables_commands}"
   STRING
   )
+
+  failed_executables = executables
+    .map { |i| bin_dir.join(i) }
+    .select { |i| !File.file?(i) || (!allow_dynamic_linking && `ldd #{i}`.strip != "statically linked") }
+  unless failed_executables.empty?
+    failed_executables.each { |i| File.delete?(i) }
+    raise "failed to properly build #{failed_executables}"
+  end
 end
 
 def build_vidstack_player
