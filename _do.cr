@@ -1038,7 +1038,7 @@ def build_rust_app(
 
   failed_executables = executables
     .map { |i| bin_dir.join(i) }
-    .select { |i| !File.file?(i) || (!allow_dynamic_linking && `ldd #{i}`.strip != "statically linked") }
+    .select { |i| !File.file?(i) || (!allow_dynamic_linking && `readelf --dynamic #{i}`.includes?("(NEEDED)")) }
   unless failed_executables.empty?
     failed_executables.each { |i| File.delete?(i) }
     raise "failed to properly build #{failed_executables}"

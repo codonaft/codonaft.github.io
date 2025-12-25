@@ -146,7 +146,7 @@ theme_settings:
     - wss://purplepag.es
     - wss://hist.nostr.land
     relays:
-    - wss://relay.nostr.band
+    - wss://nos.lol
     - wss://relay.damus.io
     read_cache_relays:
     - wss://relay.primal.net
