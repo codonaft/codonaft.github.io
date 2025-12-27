@@ -97,7 +97,7 @@ def main
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
-    follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es"])
+    follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.vertexlab.io"])
   elsif ARGV.size >= 1 && ARGV[0] == "health"
     hosts = ARGV.skip(1) if ARGV.size > 1
     check_ssh_hosts(ps, hosts)
@@ -736,7 +736,7 @@ end
 def check_certificate(host : URI, proxy : URI)
   print("certificate for #{host.hostname} expires on ")
   begin
-    raw = `curl --proxy #{proxy} --verbose --insecure #{host} 2>&1 | grep '\\*  expire date'`
+    raw = `curl --proxy #{proxy} --verbose --max-time 60 --insecure #{host} 2>&1 | grep '\\*  expire date'`
       .strip
       .split(": ")[1]
     time = Time.parse!(raw, "%b %e %T %Y %Z")
@@ -809,9 +809,10 @@ def update_banlists
     .flat_map { |i| i.split('|') }
   File.delete(zi_zip)
 
-  rb_dpi = fetch_rublacklist("dpi").flat_map { |i| i["domains"].as_a }
-  rb_domains_and_ips = ["ct-domains", "domains", "ips"].flat_map { |request| fetch_rublacklist(request) }
-  rb = (rb_dpi + rb_domains_and_ips).map { |i| i.as_s }
+  # rb_dpi = fetch_rublacklist("dpi").flat_map { |i| i["domains"].as_a }
+  # rb_domains_and_ips = ["ct-domains", "domains", "ips"].flat_map { |request| fetch_rublacklist(request) }
+  # rb = (rb_dpi + rb_domains_and_ips).map { |i| i.as_s }
+  rb = [] of String # FIXME
 
   result = (sbc + zi + rb)
     .map { |i| i.strip }

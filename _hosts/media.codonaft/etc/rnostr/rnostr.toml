@@ -35,7 +35,7 @@ enabled = false
 enabled = true
 
 [auth.event]
-event_pubkey_whitelist = ["efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19", "efd4d4a38bcd0004d31031a17972a6a6a3b32fe6f3953958c47d6325f2b8d106"]
+event_pubkey_whitelist = ["efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19", "efd4d4a38bcd0004d31031a17972a6a6a3b32fe6f3953958c47d6325f2b8d106", "e681745398e44c2ed67f116a02bc9e53d63d7de5eb26039224486801b0ac3c39"]
 allow_mentioning_whitelisted_pubkeys = true
 
 [rate_limiter]

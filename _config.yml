@@ -143,14 +143,18 @@ theme_settings:
 
     spam_api: https://spam.nostr.band/spam_api
     profile_relays:
-    - wss://purplepag.es
+    - wss://user.kindpag.es
     - wss://hist.nostr.land
+    - wss://relay.vertexlab.io
     relays:
     - wss://nos.lol
     - wss://relay.damus.io
+    - wss://wotr.relatr.xyz
+    - wss://nostr.data.haus
     read_cache_relays:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
+    - wss://archive.orly.dev
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []
