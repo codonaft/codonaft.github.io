@@ -2,6 +2,6 @@ broadcastr_args="
   --listen ws://localhost:6666
   --tor-proxy 127.0.0.1:9050
   --allowed-pubkeys npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
-  --relays https://codonaft.com/relays.json,file:///etc/broadcastr/allowed.json
+  --relays https://codonaft.com/relays.json,https://codonaft.com/relays_broadcasters.json,file:///etc/broadcastr/allowed.json
   --blocked-relays file:///etc/broadcastr/blocked.json
 "
