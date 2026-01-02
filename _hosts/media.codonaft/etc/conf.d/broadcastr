@@ -4,4 +4,5 @@ broadcastr_args="
   --allowed-pubkeys npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
   --relays https://codonaft.com/relays.json,https://codonaft.com/relays_broadcasters.json,file:///etc/broadcastr/allowed.json
   --blocked-relays file:///etc/broadcastr/blocked.json
+  --disable-spam-nostr-band
 "
