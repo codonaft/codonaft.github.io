@@ -136,7 +136,7 @@ theme_settings:
   nostr:
     enabled: true
     npub: npub1alptdev5srcw2hxg03567p4k6xs3lgj7f6545suc0rzp0xw98svse7rg94
-    nprofile: nprofile1qqswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqyt8wumn8ghj7un9d3shjtnwdaehgu3wvfskueqpz3mhxue69uhhyetvv9ujuerpd46hxtnfdu9dfmdy
+    nprofile: nprofile1qqswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqy28wumn8ghj7un9d3shjtnyv9kh2uewd9hszrthwden5te0dehhxtnvdakqz9thwden5te0dehhxarj9ejxzarp9e5xzatn73rtzy
     community: codonaft
     max_comment_length: 5000
     min_read_pow: 7
