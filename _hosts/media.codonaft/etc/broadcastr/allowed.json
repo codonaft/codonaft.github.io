@@ -1,11 +1,5 @@
 [
   "ws://35vr3xigzjv2xyzfyif6o2gksmkioppy4rmwag7d4bqmwuccs2u4jaid.onion",
   "ws://gnostr2jnapk72mnagq3cuykfon73temzp77hcbncn4silgt77boruid.onion",
-  "ws://localhost:7777",
-  "ws://oxtrdevav64z64yb7x6rjg4ntzqjhedm5b5zjqulugknhzr46ny2qbad.onion",
-  "wss://adre.su",
-  "wss://nos.lol",
-  "wss://nostr-pub.wellorder.net",
-  "wss://relay.damus.io",
-  "wss://relay.nostr.band"
+  "ws://localhost:7777"
 ]
