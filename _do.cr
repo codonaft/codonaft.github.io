@@ -63,6 +63,7 @@ BUILD_DIR        = Path[".build"]
 BACKUP_DIR       = Path[".backup"]
 CACHE_DIR        = BUILD_DIR.join(".cache")
 BANLISTS         = CACHE_DIR.join("banlists.txt")
+RELAYS           = Path["relays.json"]
 BROKEN_POST_URLS = CACHE_DIR.join("broken_post_urls.txt")
 COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
 
@@ -72,6 +73,8 @@ MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, SERVER_MEDIA_DIR)
 MIRROR_FROM_TO = [
   {MEDIA_HOST, [{MIRROR_HOST, SERVER_MEDIA_DIR}]},
 ]
+
+RELAY_URI = "wss://nostr.codonaft.com"
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 
@@ -95,7 +98,7 @@ def main
     sync(hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
-    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", "wss://nostr.codonaft.com", "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
+    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
     follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.vertexlab.io"])
   elsif ARGV.size >= 1 && ARGV[0] == "health"
@@ -253,6 +256,7 @@ def build
   )
 
   generate_certbot_script(MEDIA_HOST)
+  generate_relays
 end
 
 def configure(config)
@@ -698,6 +702,14 @@ def generate_certbot_script(host)
        STRING
   )
   File.chmod(output, 0o755)
+end
+
+def generate_relays
+  # TODO: check DNS
+  online = JSON.parse(HTTP::Client.get("https://api.nostr.watch/v1/online").body).as_a.map { |i| i.as_s }
+  old = JSON.parse(File.read(RELAYS)).as_a.map { |i| i.as_s }
+  result = ((online + old).to_set - [RELAY_URI]).to_a.sort.to_json
+  File.write(RELAYS, result)
 end
 
 def check_icmp(host)
