@@ -663,6 +663,7 @@ def with_socks_proxy(country, f : URI ->)
         --NumDirectoryGuards 1 \
         --MaxCircuitDirtiness 10 \
         --HiddenServiceStatistics 0 \
+        --AvoidDiskWrites 1 \
         --Log #{TRACE ? "debug" : "notice"}"
       STRING
     )

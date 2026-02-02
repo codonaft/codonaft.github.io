@@ -154,7 +154,7 @@ theme_settings:
     read_cache_relays:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
-    - wss://archive.orly.dev
+    #- wss://archive.orly.dev
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []
