@@ -148,13 +148,13 @@ theme_settings:
     - wss://relay.vertexlab.io
     relays:
     - wss://nos.lol
-    - wss://relay.damus.io
-    - wss://wotr.relatr.xyz
     - wss://nostr.data.haus
+    - wss://nostr.azzamo.net
+    #- wss://wotr.relatr.xyz
     read_cache_relays:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
-    - wss://archive.orly.dev
+    #- wss://archive.orly.dev
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []

@@ -32,7 +32,7 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.23.2"
+ALPINE_VERSION           = "3.23.3"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
@@ -663,6 +663,7 @@ def with_socks_proxy(country, f : URI ->)
         --NumDirectoryGuards 1 \
         --MaxCircuitDirtiness 10 \
         --HiddenServiceStatistics 0 \
+        --AvoidDiskWrites 1 \
         --Log #{TRACE ? "debug" : "notice"}"
       STRING
     )
