@@ -174,7 +174,7 @@ and self-defense that they barely leave room for long-term delivery of *real* in
 
 Typical "new" software products are not new; it's basically blind mediocre ideas copy-pasting.
 Truly new software should attempt to introduce innovations that
-[shape society](https://yakihonne.com/article/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
+[shape society](https://nosotros.app/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
 in a positive way!
 
 When these companies make something that *seems* to be healthy and innovative—[it's](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy)
