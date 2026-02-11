@@ -88,7 +88,7 @@ theme_settings:
   github: codonaft
   i2p: http://codonftbnpdkjwyflssto3iklawhuthbe37l6swigegqkyyfmiqa.b32.i2p
   instagram:
-  telegram_ru: codonaft_official
+  telegram_ru:
   keybase:
   linkedin: AlexanderLopatin
   patreon: alopatindev
@@ -103,8 +103,8 @@ theme_settings:
   vimeo:
   vk: codonaft
   wordpress:
-  youtube: "@codonaftFOSS"
-  youtube_ru: "@codonaft"
+  youtube:
+  youtube_ru:
 
   btc: "1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe"
   eth: "0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc"
