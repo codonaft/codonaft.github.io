@@ -1,0 +1,5 @@
+---
+layout: redirect
+permalink: "/why-nostr/"
+origin-url: "https://dev.nosotros.app/nevent1qqsqz2vyxrucv0cuqu85uy9u5kxxhjm72qtynw2aczlpckc5fum30dsprpmhxue69uhkummnw3ezucm0v3hkuctxwshxxmmdqy28wumn8ghj7un9d3shjtnyv9kh2uewd9hszrthwden5te0dehhxtnvdakqz9thwden5te0dehhxarj9ejxzarp9e5xzatnqgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxg4qgvv2"
+---

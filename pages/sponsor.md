@@ -74,7 +74,7 @@ Your support keeps me going ❤️
       <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
-    <div class="grid-item">
+    <!-- div class="grid-item">
       <a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" alt="Become Patron" title="Become Patron" rel="noopener noreferrer" target="_blank"><img style="width: 170pt; height: 40pt" alt="Become Patron" src="/assets/img/donate-with-patreon.svg"></a>
     </div>
 
@@ -94,7 +94,7 @@ Your support keeps me going ❤️
     <div class="grid-item">
       <a href="https://liberapay.com/alopatindev" alt="Support me on Liberapay" rel="noopener noreferrer" target="_blank">{% include icons/liberapay.svg %}</a>
       <p><strong>Liberapay</strong></p>
-    </div>
+    </div -->
   </div>
 </div>
 
@@ -174,7 +174,7 @@ and self-defense that they barely leave room for long-term delivery of *real* in
 
 Typical "new" software products are not new; it's basically blind mediocre ideas copy-pasting.
 Truly new software should attempt to introduce innovations that
-[shape society](https://nosotros.app/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
+[shape society](https://dev.nosotros.app/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
 in a positive way!
 
 When these companies make something that *seems* to be healthy and innovative—[it's](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy)

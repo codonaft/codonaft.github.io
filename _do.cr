@@ -38,7 +38,7 @@ BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
-MIN_RUST_VERSION         = "1.92.0"
+MIN_RUST_VERSION         = "1.93.1"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 RNOSTR_VERSION           = "0.4.8"
 TINYLD_VERSION           = "1.3.4"
@@ -253,6 +253,15 @@ def build
     branch: "large-images",
     git: URI.parse("https://github.com/alopatindev/metasearch2"),
     dependencies: ["clang21-libclang", "cmake", "make", "g++"],
+  )
+
+  build_rust_app(
+    MEDIA_HOST,
+    crate: "wstunnel-cli",
+    git: URI.parse("https://github.com/erebe/wstunnel"),
+    version: "v10.5.2",
+    executables: ["wstunnel"],
+    dependencies: ["gcc", "musl-dev"],
   )
 
   generate_certbot_script(MEDIA_HOST)

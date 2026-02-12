@@ -1,0 +1,1 @@
+wstunnel_args="server --no-color=true --log-lvl=off ws://localhost:9999"
