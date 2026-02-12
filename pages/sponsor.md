@@ -74,7 +74,7 @@ Your support keeps me going ❤️
       <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
-    <div class="grid-item">
+    <!-- div class="grid-item">
       <a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" alt="Become Patron" title="Become Patron" rel="noopener noreferrer" target="_blank"><img style="width: 170pt; height: 40pt" alt="Become Patron" src="/assets/img/donate-with-patreon.svg"></a>
     </div>
 
@@ -94,7 +94,7 @@ Your support keeps me going ❤️
     <div class="grid-item">
       <a href="https://liberapay.com/alopatindev" alt="Support me on Liberapay" rel="noopener noreferrer" target="_blank">{% include icons/liberapay.svg %}</a>
       <p><strong>Liberapay</strong></p>
-    </div>
+    </div -->
   </div>
 </div>
 

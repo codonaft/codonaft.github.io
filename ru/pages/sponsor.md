@@ -74,7 +74,7 @@ lang-en-uri: /sponsor/
       <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
-    <div class="grid-item">
+    <!-- div class="grid-item">
       <a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" alt="Стать патроном" title="Стать патроном" rel="noopener noreferrer" target="_blank"><img style="width: 170pt; height: 40pt" src="/assets/img/donate-with-patreon.svg"></a>
     </div>
 
@@ -94,7 +94,7 @@ lang-en-uri: /sponsor/
     <div class="grid-item">
       <a href="https://liberapay.com/alopatindev" alt="Поддержать с помощью Liberapay" title="Поддержать с помощью Liberapay" rel="noopener noreferrer" target="_blank">{% include icons/liberapay.svg %}</a>
       <p><strong>Liberapay</strong></p>
-    </div>
+    </div -->
   </div>
 </div>
 
