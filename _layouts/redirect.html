@@ -1,8 +1,15 @@
 {% include html.html %}
 {% if page.origin-url %}
 {% assign origin_url = page.origin-url %}
-{% else if page.origin-nostr-tag %}
+{% endif %}
+{% if page.origin-nostr-tag %}
 {% assign origin_url = "https://primal.net/search/kind%3A1%20%23" | append: page.origin-nostr-tag | append: "%20%20from%3A" | append: site.theme_settings.nostr.nprofile %}
+{% endif %}
+{% if page.origin-nostr-naddr %}
+{% assign origin_url = site.theme_settings.nostr.naddr_client | append: "/" | append: page.origin-nostr-naddr %}
+{% endif %}
+{% if page.origin-nostr-nevent %}
+{% assign origin_url = site.theme_settings.nostr.nevent_client | append: "/" | append: page.origin-nostr-nevent %}
 {% endif %}
 <head>
   <noscript>

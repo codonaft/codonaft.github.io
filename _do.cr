@@ -264,6 +264,15 @@ def build
     dependencies: ["gcc", "musl-dev"],
   )
 
+  [MIRROR_HOST, MEDIA_HOST].each do |host|
+    build_rust_app(
+      host,
+      crate: "quicssh-rs",
+      version: "0.1.5",
+      dependencies: ["gcc", "musl-dev"],
+    )
+  end
+
   generate_certbot_script(MEDIA_HOST)
   maybe_generate_relays
 end
@@ -283,8 +292,8 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "tor"])
+  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "tor", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -409,7 +418,7 @@ def sync(hosts : Array(String))
     spawn do
       begin
         sync_host(host, hosts_files: hosts_files, common_files: common_files, mirror_to: mirror[host]?)
-        continue_download(host, BACKUP_DIR.join(host), [Path["var/log/nginx/access.log"]])
+        download(host, BACKUP_DIR.join(host), [Path["var/log/nginx/access.log"]])
         done.send(nil)
       rescue e
         error("host=#{host} sync failure: #{e}\n")
@@ -453,21 +462,9 @@ def sync_host(host : String, *, hosts_files : Hash(String, Set(Path)), common_fi
   ssh(host, ["sudo etckeeper commit sync 2>>/dev/null"])
 end
 
-def continue_download(host : String, local_dir : Path, files : Enumerable(Path))
+def download(host : String, local_dir : Path, files : Enumerable(Path))
   Dir.mkdir_p(local_dir)
-  checks = files
-    .map { |i| [i, local_dir.join(i)] }
-    .select { |(i, local_full)| File.file?(local_full) }
-    .map { |(i, local_full)|
-      command = "head -c #{File.size(local_full)} /#{i} | sha256sum | cut -d' ' -f 1"
-      expected_checksum = `sha256sum #{local_full} | cut -d' ' -f 1`.strip
-      [command, expected_checksum]
-    }
-  checksums = ssh(host, checks.map { |(command, _)| command }).split('\n').reject { |i| i.empty? }
-  raise "unexpected output" unless checks.size == checksums.size
-  failures = checksums.zip(checks.map { |(_, expected_checksum)| expected_checksum }).reject { |a, b| a == b }
-  raise "some checksums failed: #{failures}" unless failures.empty?
-  rsync(local_dir, files, ["--append-verify", "#{host}:/", "."])
+  rsync(local_dir, files, ["#{host}:/", "."])
 end
 
 def add_user_commands(user : String)

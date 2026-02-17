@@ -171,7 +171,7 @@ lang-en-uri: /sponsor/
 
 Типичные «новые» программные продукты на самом деле не новые — это в основном слепое копирование идей сомнительного качества.
 По-настоящему новое ПО должно пытаться привносить инновации, которые
-[двигают](https://dev.nosotros.app/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
+[двигают]({{ site.theme_settings.nostr.naddr_client }}/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
 общество в позитивном направлении!
 
 Когда же компании делают что-то, что *кажется* здоровым и новаторским

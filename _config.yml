@@ -161,6 +161,10 @@ theme_settings:
     relays_overwrite: []
     read_cache_relays_overwrite: []
 
+    naddr_client: https://dev.nosotros.app
+    nevent_client: https://dev.nosotros.app
+    nprofile_client: https://dev.nosotros.app
+
   special_page:
     search:
       icon: search # Assuming page link and icon are the same
