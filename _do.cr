@@ -1449,7 +1449,7 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
     }
   puts("fetched #{mentions.size} mentions")
 
-  parsed_authored_events = parse_nostr_events(`#{nak} -a #{pk} #{input_relays.join(' ')}`)
+  parsed_authored_events = parse_nostr_events(`#{nak} --author #{pk} #{input_relays.join(' ')}`)
   authored_events = parsed_authored_events
     .reject { |i|
       return false unless i["pubkey"].as_s == pk
@@ -1480,7 +1480,7 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
     puts("profile events of commenters = #{comments_profile_events.size}")
 
     request_author_profile_events_command = (
-      [nak, "--since", "0", "-a", pk] + profile_kinds.map { |k| "-k #{k}" } + input_relays
+      [nak, "--since", "0", "--author", pk] + profile_kinds.map { |k| "--kind #{k}" } + input_relays
     ).join(' ')
     trace(request_author_profile_events_command)
     author_profile_events = parse_nostr_events(`#{request_author_profile_events_command}`)
@@ -1497,7 +1497,7 @@ def follow(config, profiles : Set(String), profile_relays : Array(String))
   pk = decode_pk(nostr_config["npub"].as_s)[0]
   puts("requesting follow list")
 
-  tags_and_created_at = `nak req -k 3 -a #{pk} #{relays.join(' ')}`
+  tags_and_created_at = `nak req --kind 3 --author #{pk} #{relays.join(' ')}`
     .split('\n')
     .reject { |i| i.strip.empty? }
     .map { |i| JSON.parse(i) }

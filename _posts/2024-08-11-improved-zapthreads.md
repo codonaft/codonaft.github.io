@@ -74,7 +74,7 @@ auth popup in the corner:
 
 <img src="/assets/img/possible-nostr-login-browser-extension.svg" alt="Possible Nostr Login Browser Extension" style="width: 100%;">
 
-Something similar to what [wnj](https://git.njump.me/wnj) does right now, but without possibility to access input fields from the website (and ideally without affecting page layout).
+Something similar to what [wnj](https://github.com/fiatjaf/window.nostr.js) does right now, but without possibility to access input fields from the website (and ideally without affecting page layout).
 
 Such extension could create various kinds of sessions:
 - one-time/non-persistent/pseudoanonymous

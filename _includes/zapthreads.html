@@ -233,9 +233,9 @@ function sanitizeEvent({ rankable, kind, content, replies, upvotes, downvotes, p
 
 function recommendedExtension() {
  const extensions = {
-  'Google Chrome': ['nos2x', 'https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp'],
-  'Mozilla Firefox': ['nos2x-fox', 'https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/'],
-  'Safari': ['Nostore', 'https://apps.apple.com/us/app/nostore/id1666553677'],
+  'Google Chrome': ['Bunker46', 'https://github.com/dsbaars/bunker46-extension/releases'],
+  'Mozilla Firefox': ['Bunker46', 'https://addons.mozilla.org/en-US/firefox/addon/bunker46/'],
+  //'Safari': ['Nostore', 'https://apps.apple.com/us/app/nostore/id1666553677'],
  };
  return browser && extensions[browser] || extensions['Google Chrome'];
 }
