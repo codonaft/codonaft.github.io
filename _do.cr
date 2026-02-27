@@ -768,8 +768,11 @@ def check_ech(host : URI)
   return if answer.nil? || answer.as_a?.nil?
   has_ech = answer.as_a.any? { |i|
     data = i["data"]?
-    return false if data.nil? || data.as_s?.nil?
-    data.as_s.includes?("ech=")
+    if data.nil? || data.as_s?.nil?
+      false
+    else
+      data.as_s.includes?("ech=")
+    end
   }
   error(" ECH is enabled") if has_ech
 end
@@ -1443,18 +1446,24 @@ def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
 
   mentions = parse_nostr_events(`#{nak} -p #{pk} #{input_relays.join(' ')}`)
     .reject { |i|
-      return false unless i["tags"].as_a.any? { |t| t.size > 1 && t[0] == "p" && t[1] == pk }
-      k = i["kind"].as_i
-      [3, 1984, 4454].includes?(k) || (k >= 5000 && k <= 7000) || (k >= 10000 && k <= 10102) || (k >= 20000 && k < 30000) || (k >= 30000 && k <= 30267)
+      unless i["tags"].as_a.any? { |t| t.size > 1 && t[0] == "p" && t[1] == pk }
+        false
+      else
+        k = i["kind"].as_i
+        [3, 1984, 4454].includes?(k) || (k >= 5000 && k <= 7000) || (k >= 10000 && k <= 10102) || (k >= 20000 && k < 30000) || (k >= 30000 && k <= 30267)
+      end
     }
   puts("fetched #{mentions.size} mentions")
 
   parsed_authored_events = parse_nostr_events(`#{nak} --author #{pk} #{input_relays.join(' ')}`)
   authored_events = parsed_authored_events
     .reject { |i|
-      return false unless i["pubkey"].as_s == pk
-      k = i["kind"].as_i
-      [4454, 10044].includes?(k) || (k >= 20000 && k < 30000)
+      unless i["pubkey"].as_s == pk
+        false
+      else
+        k = i["kind"].as_i
+        [4454, 10044].includes?(k) || (k >= 20000 && k < 30000)
+      end
     }
   puts("fetched #{authored_events.size} authored events")
 
