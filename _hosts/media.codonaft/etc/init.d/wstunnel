@@ -3,7 +3,7 @@
 name="wstunnel"
 
 command="/usr/local/bin/${name}"
-command_user="nobody:nobody"
+command_user="nginx:nginx"
 command_background="true"
 command_args="${wstunnel_args}"
 

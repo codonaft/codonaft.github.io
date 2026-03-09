@@ -9,4 +9,4 @@ date: 2026-03-03 05:05:12 +0000
 tags: [privacy, kyc, captcha]
 ---
 
-KYC in dating apps in particular is a very confusing example. But more generally, what's wrong with various kinds of verifications? How to properly solve this without putting privacy at risk?
+KYC in dating apps in particular is a very confusing example. But more generally, what's wrong with various kinds of verifications? What and how to properly solve without putting privacy at risk?
