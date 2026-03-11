@@ -40,8 +40,11 @@ MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
 MIN_RUST_VERSION         = "1.94.0"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
+QUICSSH_VERSION          = "0.1.5"
 RNOSTR_VERSION           = "0.4.8"
+SHADOWSOCKS_VERSION      = "1.24.0"
 TINYLD_VERSION           = "1.3.4"
+WSTUNNEL_VERSION         = "v10.5.2"
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
 CODEC_H264 = "avc1.64002a"
@@ -259,7 +262,7 @@ def build
     MEDIA_HOST,
     crate: "wstunnel-cli",
     git: URI.parse("https://github.com/erebe/wstunnel"),
-    version: "v10.5.2",
+    version: WSTUNNEL_VERSION,
     executables: ["wstunnel"],
     dependencies: ["gcc", "musl-dev"],
   )
@@ -268,7 +271,15 @@ def build
     build_rust_app(
       host,
       crate: "quicssh-rs",
-      version: "0.1.5",
+      version: QUICSSH_VERSION,
+      dependencies: ["gcc", "musl-dev"],
+    )
+
+    build_rust_app(
+      host,
+      crate: "shadowsocks-rust",
+      version: SHADOWSOCKS_VERSION,
+      executables: ["ssserver"],
       dependencies: ["gcc", "musl-dev"],
     )
   end
@@ -292,8 +303,8 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "tor", "wstunnel"])
+  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "shadowsocks", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "shadowsocks", "tor", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)

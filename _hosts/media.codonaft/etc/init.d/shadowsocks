@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+name="ssserver"
+
+command="/usr/local/bin/${name}"
+command_user="nobody:nobody"
+command_background="true"
+command_args="${shadowsocks_args}"
+
+capabilities="^cap_net_admin,^cap_net_bind_service"
+pidfile="/run/${name}.pid"
+output_logger="logger"
+error_logger="logger"
+
+depend() {
+	need net
+	use logger
+}
