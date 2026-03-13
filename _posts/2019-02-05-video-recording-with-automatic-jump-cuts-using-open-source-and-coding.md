@@ -159,7 +159,7 @@ But it was just the beginning.
 
 Why did I decide to make automatic jump cuts right on the video recording step?
 1. Poor Pitivi's UI responsiveness and bugs during video editing, especially when using
-[Ripple Move/Edit](http://www.pitivi.org/manual/trimming.html#ripple),
+[Ripple Move/Edit](https://www.pitivi.org/manual/trimming.html#ripple),
 which made me restart Pitivi periodically.
 2. For me personally setting jump cuts manually is just one of the most boring things.
 Of course it's not really possible to fully automate this process
@@ -171,7 +171,7 @@ These are the requirements/features I set for a quick hack to solve the problem:
 2. Control camera focus.
 3. Stop recording to save or delete last recorded fragment.
 4. Download video from Android device via USB with
-[retries and resuming](https://gist.github.com/alopatindev/e94ff95ea834500abe2da81ac2a7764f)
+[retries and resuming](https://web.archive.org/web/20250914131509/https://gist.github.com/alopatindev/e94ff95ea834500abe2da81ac2a7764f)
 in case of failures,
 without blocking ability to record the next fragment.
 5. Sound [synchronization](https://web.archive.org/web/20170916044116/https://nerd.mmccoo.com/2017/06/19/automatically-aligning-multiple-videoaudio-clips-in-kdenlive/).

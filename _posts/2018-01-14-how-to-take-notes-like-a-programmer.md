@@ -182,7 +182,7 @@ Now it's a defining moment: if you are able to find the note quickly—you **won
 If you can't—you will interrupt and waste your time on finding this thing anyway.
 Technically it's the same issue as **being interrupted** by somebody.
 
-[![](/assets/img/programmer-interrupted.webp)](http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer/)
+[![](/assets/img/programmer-interrupted.webp)](https://web.archive.org/web/20131030215619if_/http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer)
 
 After that you need to restore your **creative state** of mind again and continue your work.
 Just think how much **energy it takes** from you.
