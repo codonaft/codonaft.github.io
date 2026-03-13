@@ -13,7 +13,7 @@ lang-en-uri: /sponsor/
 Занимался
 {% include span_with_tooltip.html body="разработкой ПО" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
 для [опыта](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}).
-Вернулся в разработку <span class='no-wrap'>[свободного](https://github.com/alopatindev) ПО</span>, чтобы сделать этот мир лучше!
+Вернулся в разработку <span class='no-wrap'>[свободного]({{ site.theme_settings.foss_frontends.github }}/alopatindev) ПО</span>, чтобы сделать этот мир лучше!
 
 Твоя поддержка позволяет мне <span class='no-wrap'>продолжать ❤️</span>
 
@@ -25,10 +25,10 @@ lang-en-uri: /sponsor/
     </ul>
     {% include share_buttons.html no_text=true %}
     <ul>
-      <li>нажать ⭐ на страницах понравившихся <a href="https://github.com/alopatindev">проектов</a>
+      <li>нажать ⭐ на страницах понравившихся <a href="{{ site.theme_settings.foss_frontends.github }}/alopatindev">проектов</a>
         <ul>
           <li>поделиться проектами со своими друзьями/коллегами</li>
-          <li>помочь конкретно мелкому проекту <a href="https://github.com/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
+          <li>помочь конкретно мелкому проекту <a href="{{ site.theme_settings.foss_frontends.github }}/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
         </ul>
       </li>
       <li class="padding-top-small">общими донатами на всё что я {% include span_with_tooltip.html body="произвожу" tooltip="Разработку свободного ПО <span class='no-wrap'>и периодического</span> <span class='no-wrap'>выпуска контента</span>" %}:</li>
@@ -150,22 +150,22 @@ lang-en-uri: /sponsor/
 ## FAQ
 
 ### Зачем спонсировать свободное ПО? Что не так с традиционными бизнесами?
-Традиционные компании активно способствуют [метакризису](https://en.wikipedia.org/wiki/Polycrisis#Metacrisis), в котором мы живем.
+Традиционные компании активно способствуют [метакризису]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Polycrisis#Metacrisis), в котором мы живем.
 
 <details><summary markdown="span">Больше деталей! 👁️</summary>
-Проприетарное ПО, которое они создают, находится на пике [различных](https://youtu.be/NfiIXooD77s)
-[нездоровых](https://github.com/Alexlittle4/Zoom-violates-users-privacy#readme)
-[манипулятивных](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
+Проприетарное ПО, которое они создают, находится на пике [различных]({{ site.theme_settings.youtube }}/NfiIXooD77s)
+[нездоровых]({{ site.theme_settings.foss_frontends.github }}/Alexlittle4/Zoom-violates-users-privacy#readme)
+[манипулятивных]({{ site.theme_settings.foss_frontends.reddit }}/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
 <a href="/ru/ideas-for-foss-projects/?t=975" target="_blank">практик</a>.
 
 Этими «решениями» уже стало невыносимо пользоваться, по крайней
-[мере](https://github.com/jswanner/DontF-WithPaste#readme)
-[без](https://github.com/ungoogled-software/ungoogled-chromium#readme)
-[кучи](https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies#readme)
-[тяжеловесных](https://github.com/dessant/buster#readme)
-[костылей](https://github.com/nang-dev/hover-paywalls-browser-extension#readme)!
+[мере]({{ site.theme_settings.foss_frontends.github }}/jswanner/DontF-WithPaste#readme)
+[без]({{ site.theme_settings.foss_frontends.github }}/ungoogled-software/ungoogled-chromium#readme)
+[кучи]({{ site.theme_settings.foss_frontends.github }}/OhMyGuus/I-Still-Dont-Care-About-Cookies#readme)
+[тяжеловесных]({{ site.theme_settings.foss_frontends.github }}/dessant/buster#readme)
+[костылей]({{ site.theme_settings.foss_frontends.github }}/nang-dev/hover-paywalls-browser-extension#readme)!
 
-[Они](https://youtu.be/7LqaotiGWjQ?t=3426s) слишком зациклились
+[Они]({{ site.theme_settings.youtube }}/7LqaotiGWjQ?t=3426s) слишком зациклились
 на капиталистических [ценностях](https://www.snopes.com/fact-check/sony-patent-mcdonalds) и самозащите,
 едва ли оставляя возможность длительно предоставлять *реальные* инновации и позитивные изменения качества жизни.
 
@@ -175,7 +175,7 @@ lang-en-uri: /sponsor/
 общество в позитивном направлении!
 
 Когда же компании делают что-то, что *кажется* здоровым и новаторским
-— [вероятно](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy)
+— [вероятно]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Contributor_License_Agreement#Relicensing_controversy)
 [это](https://calyxos.org/news/2025/06/11/android-16-plans/)
 [ненадолго](https://cointelegraph.com/news/ton-blockchain-freezes-2-6b-worth-of-inactive-tokens).
 </details>
@@ -183,7 +183,7 @@ lang-en-uri: /sponsor/
 Независимые разработчики свободного ПО могут сделать кое-что получше. Я ориентируюсь на следующие **принципы**:
 
 - **Минимизация отвлечения внимания**
-    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально](https://youtu.be/Iy7i9ru7HB8?t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
+    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально]({{ site.theme_settings.youtube }}/Iy7i9ru7HB8?t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
     - 🚫 больше никаких трат ментальных ресурсов на всплывающие ловушки, [{% include span_with_tooltip.html large="true" body="имитацию" tooltip="Капча бесполезна: боты в основном уже <span class='no-wrap'>неотличимы от людей.</span><br>Время сменить стратегию: потенциально спамную нагрузку нужно превращать в полезные вычисления, не причиняя вред ни пользователям, ни окружающей среде, ни даже бизнесам!" %}](https://futurism.com/ai-model-turing-test) CAPTCHA, внезапные нежелательные туториалы, абсурдно подробные [{% include span_with_tooltip.html large="true" body="руководства" tooltip="Хватит плодить устаревшие и переусложненные UI!<br>Хорошо спроектированное и интуитивно-понятное ПО с ИИ <i>в идеале</i> вообще не нуждается в документации!" %}](https://web.archive.org/web/20250806061741/https://www.facebook.com/help/124895950923762) и так далее!
 - **Суверенитет данных**
     - 🔒 *ты* владеешь своими [данными](https://martin.kleppmann.com/2019/10/23/local-first-at-onward.html), а не третьи лица!

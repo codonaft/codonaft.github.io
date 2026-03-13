@@ -11,7 +11,7 @@ nostr:
   relax_filters: true
 ---
 
-I've been playing with Nostr for a couple of months now and have made [**some improvements**](https://github.com/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/). I'm happy to finally integrate it here!
+I've been playing with Nostr for a couple of months now and have made [**some improvements**]({{ site.theme_settings.foss_frontends.github }}/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/). I'm happy to finally integrate it here!
 
 Feel free to try it in the comments section. It's still experimental, however you can integrate it on your website as well.
 
@@ -20,13 +20,13 @@ Here's what I've learned and how we could improve NIP-07 browser extensions IMO.
 
 ## NIP-11 Relay Info
 It's currently misconfigured on almost all existing public relays 😿
-- there's no way to check whether relay actually receives [{% include span_with_tooltip.html large="true" body="reactions" tooltip="Votes are also reactions in Nostr. Since they are disabled in many relays—votes appear to behave <span class='no-wrap'>buggy to end-users.</span>" %}](https://github.com/rnostr/rnostr/pull/16) or not
-- for now we're damned to [violate](https://github.com/nostr-protocol/nips/issues/1319#issuecomment-2181164676) relay rules in some scenarios.
+- there's no way to check whether relay actually receives [{% include span_with_tooltip.html large="true" body="reactions" tooltip="Votes are also reactions in Nostr. Since they are disabled in many relays—votes appear to behave <span class='no-wrap'>buggy to end-users.</span>" %}]({{ site.theme_settings.foss_frontends.github }}/rnostr/rnostr/pull/16) or not
+- for now we're damned to [violate]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/issues/1319#issuecomment-2181164676) relay rules in some scenarios.
 
 Fetching the info currently forces us to open an additional connection per relay, which affects initial warm-up time.
 
 Currently, I'm finding NIP-11 unusable for my scenarios.
-If you want to integrate my ZapThreads [fork](https://github.com/codonaft/zapthreads-codonaft#readme)—consider disabling `relayInfo` for now.
+If you want to integrate my ZapThreads [fork]({{ site.theme_settings.foss_frontends.github }}/codonaft/zapthreads-codonaft#readme)—consider disabling `relayInfo` for now.
 
 ## NIP-07 Extensions Lack Sessions
 The browser extensions work fine in a simple scenario, but if you want multiple accounts and session persistence—expect surprises.
@@ -43,7 +43,7 @@ Some websites just keep showing previously logged in user even if I changed it.
 That just feels like incorrect behavior.
 As an end-user I would suspect that making actions from such website would mean accidentally signing events by other user.
 
-For now we have a single [active](https://github.com/diegogurpegui/nos2x-fox/tree/v1.14.0#screenshots) [profile](https://github.com/neilck/aka-extension#readme) for all websites and no way to make permissionless check that currently selected profile has authorized session on the given website or not.
+For now we have a single [active]({{ site.theme_settings.foss_frontends.github }}/diegogurpegui/nos2x-fox/tree/v1.14.0#screenshots) [profile]({{ site.theme_settings.foss_frontends.github }}/neilck/aka-extension#readme) for all websites and no way to make permissionless check that currently selected profile has authorized session on the given website or not.
 
 Instead of that, I wish that extension itself could hold all the sessions and assign **user account(s) per website**, so it would be possible to
 - use multiple websites with different user accounts simultaneously
@@ -51,16 +51,16 @@ Instead of that, I wish that extension itself could hold all the sessions and as
 
 ### Browser Extension as External Signer Client
 Auth is still complicated, both for devs and users.
-[Many](https://github.com/nostr-protocol/nips/blob/master/07.md) [{% include span_with_tooltip.html body="ways" tooltip="I believe NIP-26 <span class='no-wrap'>is actually deprecated</span>" %}](https://github.com/nostr-protocol/nips/blob/master/26.md) to [do it](https://github.com/nostr-protocol/nips/blob/master/46.md), but sadly only few of them actually [work](https://github.com/fiatjaf/window.nostr.js/issues/8) [properly](https://github.com/fiatjaf/nak/issues/27) (if [at all](https://github.com/toastr-space/keys-band/issues/35)).
+[Many]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/blob/master/07.md) [{% include span_with_tooltip.html body="ways" tooltip="I believe NIP-26 <span class='no-wrap'>is actually deprecated</span>" %}]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/blob/master/26.md) to [do it]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/blob/master/46.md), but sadly only few of them actually [work]({{ site.theme_settings.foss_frontends.github }}/fiatjaf/window.nostr.js/issues/8) [properly]({{ site.theme_settings.foss_frontends.github }}/fiatjaf/nak/issues/27) (if [at all]({{ site.theme_settings.foss_frontends.github }}/toastr-space/keys-band/issues/35)).
 That's expected, Nostr is still pretty young.
 
-In web apps I'd prefer to deal with a single NIP-07-like spec and stay away from any concrete auth/sign protocols, because [there are](https://github.com/nostr-protocol/nips/issues/1377) [unobvious](https://github.com/fiatjaf/window.nostr.js/issues/8) [implementation dragons](https://github.com/fiatjaf/nak/issues/27) that web app developer is not interested to deal with.
+In web apps I'd prefer to deal with a single NIP-07-like spec and stay away from any concrete auth/sign protocols, because [there are]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/issues/1377) [unobvious]({{ site.theme_settings.foss_frontends.github }}/fiatjaf/window.nostr.js/issues/8) [implementation dragons]({{ site.theme_settings.foss_frontends.github }}/fiatjaf/nak/issues/27) that web app developer is not interested to deal with.
 
 IMO better approach would be isolation of the NIP-46 bunker connection magic in the extension.
 This would also enable possibility to extend/replace existing signer connection protocols seamlessly enough for web app devs and users.
 
 ### Single Standard Auth Popup
-It'd be nice if NIP-07 provided [something like](https://github.com/nostr-protocol/nips/issues/1421) **permissionless** `async getAuthorizedMethods(): { getPublicKey: boolean, getRelays: boolean, ... }` that returns the fact that user has selected account with certain authorized methods on a given website.
+It'd be nice if NIP-07 provided [something like]({{ site.theme_settings.foss_frontends.github }}/nostr-protocol/nips/issues/1421) **permissionless** `async getAuthorizedMethods(): { getPublicKey: boolean, getRelays: boolean, ... }` that returns the fact that user has selected account with certain authorized methods on a given website.
 
 We could call `getAuthorizedMethods` on the page initialization (or poll it periodically):
 - if `getPublicKey` is `false`—we can show that no user currently logged in
@@ -74,7 +74,7 @@ auth popup in the corner:
 
 <img src="/assets/img/possible-nostr-login-browser-extension.svg" alt="Possible Nostr Login Browser Extension" style="width: 100%;">
 
-Something similar to what [wnj](https://github.com/fiatjaf/window.nostr.js) does right now, but without possibility to access input fields from the website (and ideally without affecting page layout).
+Something similar to what [wnj]({{ site.theme_settings.foss_frontends.github }}/fiatjaf/window.nostr.js) does right now, but without possibility to access input fields from the website (and ideally without affecting page layout).
 
 Such extension could create various kinds of sessions:
 - one-time/non-persistent/pseudoanonymous

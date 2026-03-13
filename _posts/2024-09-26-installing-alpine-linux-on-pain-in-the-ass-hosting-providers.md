@@ -9,7 +9,7 @@ nostr:
   comments: note1q99933ynx8kc0va0uwhev9n7puwul0wm8n8ga3rgqp3smnxy75ds50gjvh
 ---
 
-In order to maintain my sanity, I install and configure software on VPS instances in a <span class='no-wrap'>[semi-automated](https://github.com/codonaft/ohmyvps)</span> way.
+In order to maintain my sanity, I install and configure software on VPS instances in a <span class='no-wrap'>[semi-automated]({{ site.theme_settings.foss_frontends.github }}/codonaft/ohmyvps)</span> way.
 
 Recently I figured out how to install <span class='no-wrap'>Alpine Linux</span> on an `x86_64` VPS instance hosted by a company that didn't manage to implement a trivial boot from arbitrary ISO images.
 <!--more-->
@@ -95,7 +95,7 @@ It works. However, I'm personally *very* uneasy about the
 of this approach and have less time to verify it.
 
 ## Booting ISO using ramdisk
-This has [never worked](https://www.reddit.com/r/AlpineLinux/comments/1fm1r4s/comment/loxyheb/) for me, I'd gladly appreciate if anyone share a `grub2` config that *successfully* does that trick with <span class='no-wrap'>Alpine Linux.</span>
+This has [never worked]({{ site.theme_settings.foss_frontends.reddit }}/r/AlpineLinux/comments/1fm1r4s/comment/loxyheb/) for me, I'd gladly appreciate if anyone share a `grub2` config that *successfully* does that trick with <span class='no-wrap'>Alpine Linux.</span>
 
 ## If you are a VPS hosting provider
 Please consider adding a *custom* ISO image boot option to your control panel.
@@ -111,7 +111,7 @@ Please let me know in the comments below if you are aware of any VPS hosting pro
 - control panel with
     - VNC client
     - *custom* ISO image boot support
-- hosted in a [DMCA-ignored](https://en.wikipedia.org/wiki/Censorship_by_copyright) zone
+- hosted in a [DMCA-ignored]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Censorship_by_copyright) zone
 - honest ≈1 Gbps outgoing speed
 - ≥15 GiB SSD/NVMe disk space with a possibility to extend it later
 - ≥1 GiB RAM

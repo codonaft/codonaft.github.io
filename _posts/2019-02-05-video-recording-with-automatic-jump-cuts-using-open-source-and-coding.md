@@ -42,7 +42,7 @@ I was avoiding it for a while, because I don't have systemd and PulseAudio in my
 Eventually I figured out that systemd is [no longer needed](https://flatpak.org/faq/#Is_Flatpak_tied_to_systemd_).
 What about PulseAudio?—<s>I had to install and configure it</s>
 it was easier to
-[modify Flatpak](https://github.com/alopatindev/gentoo-overlay-alopatindev/blob/8f9809869c2877089d1884d483d73c938249bdc5/sys-apps/flatpak/files/flatpak-alsa.patch) instead.
+[modify Flatpak]({{ site.theme_settings.foss_frontends.github }}/alopatindev/gentoo-overlay-alopatindev/blob/8f9809869c2877089d1884d483d73c938249bdc5/sys-apps/flatpak/files/flatpak-alsa.patch) instead.
 Though it's be better to install PulseAudio, it's just a bit boring and it's not clear
 whether it will cause issues with sound recording on my hardware or not.
 
@@ -144,9 +144,9 @@ ffmpeg \
     "${OUTPUT}"
 ```
 In my case `shared_input_loopback`—is a device from
-[asound.conf](https://github.com/alopatindev/dotfiles/blob/ff0eafc95357a7154f408f416a4bde974b63c182/lenlap/etc/asound.conf#L37-L55).
+[asound.conf]({{ site.theme_settings.foss_frontends.github }}/alopatindev/dotfiles/blob/ff0eafc95357a7154f408f416a4bde974b63c182/lenlap/etc/asound.conf#L37-L55).
 
-I also found this [ffmpeg wrapper](https://github.com/transitive-bullshit/ffmpeg-concat#ffmpeg-concat) for
+I also found this [ffmpeg wrapper]({{ site.theme_settings.foss_frontends.github }}/transitive-bullshit/ffmpeg-concat#ffmpeg-concat) for
 clip [transitions](https://gl-transitions.com/gallery) helpful.
 
 ## Video Recording
@@ -171,7 +171,7 @@ These are the requirements/features I set for a quick hack to solve the problem:
 2. Control camera focus.
 3. Stop recording to save or delete last recorded fragment.
 4. Download video from Android device via USB with
-[retries and resuming](https://web.archive.org/web/20250914131509/https://gist.github.com/alopatindev/e94ff95ea834500abe2da81ac2a7764f)
+[retries and resuming]({{ site.theme_settings.foss_frontends.github }}/gist/alopatindev/e94ff95ea834500abe2da81ac2a7764f)
 in case of failures,
 without blocking ability to record the next fragment.
 5. Sound [synchronization](https://web.archive.org/web/20170916044116/https://nerd.mmccoo.com/2017/06/19/automatically-aligning-multiple-videoaudio-clips-in-kdenlive/).
@@ -187,7 +187,7 @@ There are quiet a lot of reasons:
 But I need to control camera focus.
 Also tapping would create additional device vibration.
 4. Poor USB ports power in my laptop cause troubles when downloading large files from my phone.
-In theory it could be solved with [USB-hub](https://android.stackexchange.com/questions/12491/adb-constantly-disconnects-shows-device-offline/82596#82596) with additional power supply.
+In theory it could be solved with [USB-hub]({{ site.theme_settings.foss_frontends.stackexchange_android }}/questions/12491/adb-constantly-disconnects-shows-device-offline/82596#82596) with additional power supply.
 Using network instead is just too slow.
 5. A desire to review last recorded fragments, to make sure that no mistakes were made,
 so I could rerecord the fragment quickly, until the planet turns on the wrong side towards the sun.
@@ -217,7 +217,7 @@ a rough version on the recording stage,
 and more precise one on the rendering stage (with ability to edit too harshly cut fragments).
 The rough version was implemented with {% include span_with_tooltip.html body="VAD" tooltip="Voice Activity Detection" %} from WebRTC.
 The more precise one was implemented with Google Speech
-(specifically by modifying [autosub](https://github.com/agermanidis/autosub),
+(specifically by modifying [autosub]({{ site.theme_settings.foss_frontends.github }}/agermanidis/autosub),
 a project for subtitles generation for videos).
 And I'm sure that there are better solutions, it's just the best one that worked quickly.
 
@@ -226,7 +226,7 @@ don't try to make too much with a single `ffmpeg` call.
 Make intermediate files and control every step, so you won't waste time looking for weird ungoogleble bugs,
 like wrong cuts or unapplied effect.
 
-I run the [**resulting madness**](http://github.com/alopatindev/vlog-toolset/) this way:
+I run the [**resulting madness**]({{ site.theme_settings.foss_frontends.github }}/alopatindev/vlog-toolset/) this way:
 ```
 $ bin/vlog-recorder \
     --project /path/to/project \
@@ -265,7 +265,7 @@ Video will start playing automatically in `mpv` media player.
 You can reorder or drop the remaining bad shots by editing the output file
 `/path/to/project/render.conf`.
 Recognized voice will help you with it, which is
-[not a new idea](https://github.com/OpenNewsLabs/autoEdit_2#background), BTW.
+[not a new idea]({{ site.theme_settings.foss_frontends.github }}/OpenNewsLabs/autoEdit_2#background), BTW.
 You can also speedup individual fragments and edit too harsh cuts, if any of them exist.
 Next time `vlog-render` will reread `render.conf` and apply changes.
 
@@ -311,7 +311,7 @@ A towel can also be put under this construction to decrease vibrations from tabl
 ### Sound Card
 It's [ASUS Xonar U3](https://www.amazon.com/gp/product/B004ZI5E1S/) in my case.
 However it turned out that
-it's incompatible with my mic: the mic has [CTIA](https://en.wikipedia.org/wiki/Phone_connector_(audio)#TRRS_standards)
+it's incompatible with my mic: the mic has [CTIA]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Phone_connector_(audio)#TRRS_standards)
 plug which is designed for phones.
 The problem was solved with CTIA to TRS adapter.
 And it was a bit hard to find it: vendors often don't write any details about such adapters.
@@ -320,7 +320,7 @@ In my case Cablexpert CCA-418W helped me.
 Another problem with sound card is [DC offset](https://manual.audacityteam.org/man/dc_offset.html#Background)
 in the right channel.
 Which is not a big deal because I record in mono.
-I also made a [redirection](https://github.com/alopatindev/dotfiles/blob/7f51f6a4b8ca96b2de88dd16d866ae6d54f78348/lenlap/etc/asound.conf#L57-L67) of good channel to the bad one, for software that doesn't support recording in mono.
+I also made a [redirection]({{ site.theme_settings.foss_frontends.github }}/alopatindev/dotfiles/blob/7f51f6a4b8ca96b2de88dd16d866ae6d54f78348/lenlap/etc/asound.conf#L57-L67) of good channel to the bad one, for software that doesn't support recording in mono.
 
 This card also hates overheating. Keep it away from the cooler or else it will record sound with random lags.
 
@@ -334,14 +334,14 @@ Which is not obvious, it happens only for some videos.
 To avoid this issue—just apply the stretches/squeezes: `ffmpeg -async 1 -i input.mp4 output.flac`
 3. Now import tracks into Audacity. Add background music if you need it.
 4. Set Gain per each track.
-5. Apply effects to the voice track: Noise Reduction (twice in my case), Compressor and Equalization using tips from [this video](https://www.youtube.com/watch?v=O5H7xRzjVkw&t=2m44s).
+5. Apply effects to the voice track: Noise Reduction (twice in my case), Compressor and Equalization using tips from [this video]({{ site.theme_settings.foss_frontends.youtube }}/watch?v=O5H7xRzjVkw&t=2m44s).
 6. Align and amplify volume of the voice track. One of the classical ways to do that is: Normalize, Amplify, Limiter and Normalize again, but I haven't been yet able to get a good sound quality that way. <s>Temporarily I do the next thing: set Gain to the track the way the most loud part doesn't overload and then amplify particular fragments manually.</s> **Update**: another powerful method is RMS Normalize, Limiter and an ordinary Normalize. Here's the [settings](https://wiki.audacityteam.org/wiki/Audiobook_Mastering#Process) for RMS Normalize and Limiter. Though I didn't have any use for it because I'm migrating to a new mic ([Zoom H1n](https://www.amazon.com/gp/product/B078PTM82R/)) with embedded Limiter, which seems to work great for me (so with a new mic, I will likely use ordinary Normalize only, instead of all of these things).
 7. Sometimes mic records strange clicking sounds. They can be removed with "Spectral edit multi tool" effect. I usually apply it multiple times for a selected area, with Ctrl+R. **Update**: I figured out that these clicking sounds is not a mic issue, it's something external instead. Most likely it's a combination of [mouth noise](https://www.gravyforthebrain.com/secrets-preventing-mouth-clicks/) and some other room noises.
 8. Export from Audacity to FLAC and combine everything to a single file: `ffmpeg -i sound.flac -an -i video.mp4 -c copy output.mkv`
 9. It was important to test at least the first video on various sound volumes and devices.
 
 ## Result
-If you are Russian speaker—check out my [**YouTube channel**](https://www.youtube.com/@codonaft)
+If you are Russian speaker—check out my [**YouTube channel**]({{ site.theme_settings.foss_frontends.youtube }}/@codonaft)
 where I share my insights on effective ways to learn programming and closely related subjects.
 
 Good luck with software development and vlogging!

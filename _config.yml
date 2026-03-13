@@ -183,6 +183,32 @@ theme_settings:
       interval_sec: 8
       tile_width: 400
 
+  foss_frontends:
+    github: https://gothub.r4fo.com
+    #github: https://g.opnxng.com
+
+    reddit: https://red.artemislena.eu
+    #reddit: https://redlib.pussthecat.org
+    #reddit: https://redlib.privadency.com
+    #reddit: https://safereddit.com
+    #reddit: https://redlib.catsarch.com
+
+    youtube: https://inv.nadeko.net
+    #youtube: https://yewtu.be
+    #youtube: https://redirect.invidious.io
+    #youtube: https://poketube.fun
+    #youtube: https://tube.cadence.moe
+
+    stackoverflow: https://overflow.einfachzocken.eu
+    #stackoverflow: https://overflow.hostux.net
+    #stackoverflow: https://o.iii.st
+
+    stackexchange_android: https://overflow.einfachzocken.eu/exchange/android
+    stackexchange_stats: https://overflow.einfachzocken.eu/exchange/stats
+
+    wikipedia_en: https://wikimore.private.coffee/wiki/en
+    wikipedia_ru: https://wikimore.private.coffee/wiki/ru
+
 exclude:
   - .backup
   - .build

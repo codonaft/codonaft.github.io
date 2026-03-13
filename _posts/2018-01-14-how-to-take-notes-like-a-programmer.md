@@ -10,7 +10,7 @@ lang-ru-uri: "/ru/how-to-take-notes-like-a-programmer/"
 
 When I was a kid I used to make pretty awful notes: dirty hand-written copybooks with poor structure. Almost unusable.
 
-Later, when I discovered [MOOC](https://en.wikipedia.org/wiki/Massive_open_online_course) video courses, I kept using the same antipatterns I used in classrooms but in a clearer way, with [VimWiki](https://vimwiki.github.io) and later with [**Jupyter**](https://jupyter.org).
+Later, when I discovered [MOOC]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Massive_open_online_course) video courses, I kept using the same antipatterns I used in classrooms but in a clearer way, with [VimWiki](https://vimwiki.github.io) and later with [**Jupyter**](https://jupyter.org).
 
 The notes were still poorly structured. Take a look at this—I'm **not even motivated** to open and figure out what's in it:
 
@@ -35,7 +35,7 @@ or from [A Mind for Numbers](https://www.amazon.com/Mind-Numbers-Science-Flunked
 
 ## Make It Easier to Read
 We, software developers, are very serious about code quality.
-We don't like when [**code smells**](https://en.wikipedia.org/wiki/Code_smell#Common_code_smells).
+We don't like when [**code smells**]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Code_smell#Common_code_smells).
 
 We communicate with code and **invest extra time** and energy **in writing** elegant code,
 so it could be read effectively in the future by **other developers**.
@@ -133,7 +133,7 @@ Possible solution is to **add misspelled** words as **keywords** so next time yo
 Another approach could be a use of some tricky **fuzzy search** engine.
 
 **UPDATE**: Actually the problem was my confusion about
-the [terminology](https://en.wikipedia.org/wiki/Quantile#Specialized_quantiles).
+the [terminology]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Quantile#Specialized_quantiles).
 So in *this* case the right solution is to add "quantile" keyword.
 
 ### Update Structure According to Your Mind Image
@@ -172,7 +172,7 @@ You may say I didn't convince you that investing extra time in writing quality n
 doing that way is **too boring**, or it's **not applicable** to an area of your work/study.
 This might be true, might be not.
 
-Remember the time you've been doing a creative work, being ["in the zone"](https://en.wikipedia.org/wiki/Flow_(psychology)).
+Remember the time you've been doing a creative work, being ["in the zone"]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Flow_(psychology)).
 Sometimes you need to grab some information and **continue** your work, without losing a focus.
 You may grab this information via Google but sometimes it's very specific,
 like your own conclusions about a particular topic or maybe project-specific stuff.
@@ -216,4 +216,4 @@ Anyway it's just a strategy: that's true it **could** be inapplicable for some a
 
 It's not that hard, right?
 
-**UPDATE:** Instead of **`git grep` + copy-paste + find on page**, I now use **[ngp](https://github.com/jonathanklee/ngp#demo) + [script](https://github.com/alopatindev/dotfiles/blob/caabfb381d369b63ef62557ff128cd4283cc80d4/common/home/.bin/ngp-view.rb)** (+ change in [ngprc](https://github.com/alopatindev/dotfiles/blob/caabfb381d369b63ef62557ff128cd4283cc80d4/common/home/.config/ngp/ngprc#L16)) that opens Jupyter files in browser and even **navigates to a particular anchor**. Unfortunately this project doesn't support [Unicode](https://github.com/jonathanklee/ngp/issues/37), but there's a workaround for that.
+**UPDATE:** Instead of **`git grep` + copy-paste + find on page**, I now use **[ngp]({{ site.theme_settings.foss_frontends.github }}/jonathanklee/ngp#demo) + [script]({{ site.theme_settings.foss_frontends.github }}/alopatindev/dotfiles/blob/caabfb381d369b63ef62557ff128cd4283cc80d4/common/home/.bin/ngp-view.rb)** (+ change in [ngprc]({{ site.theme_settings.foss_frontends.github }}/alopatindev/dotfiles/blob/caabfb381d369b63ef62557ff128cd4283cc80d4/common/home/.config/ngp/ngprc#L16)) that opens Jupyter files in browser and even **navigates to a particular anchor**. Unfortunately this project doesn't support [Unicode]({{ site.theme_settings.foss_frontends.github }}/jonathanklee/ngp/issues/37), but there's a workaround for that.

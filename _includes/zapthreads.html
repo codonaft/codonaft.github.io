@@ -9,7 +9,7 @@
     <h3>&nbsp;Nostr Login</h3>
    </div>
    <div class="modal-body">
-    Please login using <a href="https://github.com/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">NIP-07 compatible extension</a> (such as <span class="extension-example">Bunker46</span>) that {% include span_with_tooltip.html large="true" body="securely enough" tooltip="This website doesn't store your private key (and doesn't recommend entering it on <i>any</i> website as well, otherwise it'd be easy to steal it by some malicious browser extension <span class='no-wrap'>or user script).</span>" %} isolates your private key.
+    Please login using <a href="{{ site.theme_settings.foss_frontends.github }}/aljazceru/awesome-nostr#nip-07-browser-extensions" rel="noopener noreferrer" target="_blank">NIP-07 compatible extension</a> (such as <span class="extension-example">Bunker46</span>) that {% include span_with_tooltip.html large="true" body="securely enough" tooltip="This website doesn't store your private key (and doesn't recommend entering it on <i>any</i> website as well, otherwise it'd be easy to steal it by some malicious browser extension <span class='no-wrap'>or user script).</span>" %} isolates your private key.
    </div>
    <div class="modal-footer justify-content-center">
     <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="installNostrExtension">Install Bunker46</button>
@@ -51,7 +51,7 @@
     <h3>Relays not found 🤷</h3>
    </div>
    <div class="modal-body">
-    <p>Please <a href="https://github.com/aljazceru/awesome-nostr#relay-lists">choose</a> and set them in your NIP-07 compatible browser extension or in your <a href="https://metadata.nostr.com/" rel="noopener noreferrer" target="_blank">👤 profile</a>.</p>
+    <p>Please <a href="{{ site.theme_settings.foss_frontends.github }}/aljazceru/awesome-nostr#relay-lists">choose</a> and set them in your NIP-07 compatible browser extension or in your <a href="https://metadata.nostr.com/" rel="noopener noreferrer" target="_blank">👤 profile</a>.</p>
     <p>Here's the list of recommended relays:</p>
     <p><ul>
     {% for i in site.theme_settings.nostr.relays %}
@@ -422,4 +422,4 @@ ZapThreads
 
 <div class="comments-section" />
 
-<noscript><div style="text-align: center">This <a href="https://github.com/codonaft/codonaft.github.io#readme" rel="noopener noreferrer" target="_blank">website</a> uses <a href="https://github.com/codonaft/zapthreads-codonaft#readme" rel="noopener noreferrer" target="_blank">zapthreads</a>—a FOSS commenting system built on Nostr. {{ page.str.javascript_required_comments }}</div></noscript>
+<noscript><div style="text-align: center">This <a href="{{ site.theme_settings.foss_frontends.github }}/codonaft/codonaft.github.io#readme" rel="noopener noreferrer" target="_blank">website</a> uses <a href="{{ site.theme_settings.foss_frontends.github }}/codonaft/zapthreads-codonaft#readme" rel="noopener noreferrer" target="_blank">zapthreads</a>—a FOSS commenting system built on Nostr. {{ page.str.javascript_required_comments }}</div></noscript>

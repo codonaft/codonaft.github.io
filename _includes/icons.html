@@ -1,9 +1,9 @@
 {% if site.theme_settings.youtube and page.lang == 'en' %}
-<li><a href="https://www.youtube.com/{{ site.theme_settings.youtube }}" title="YouTube channel is coming soon, be first to subscribe!" target="_blank">{% include icons/youtube.svg %}</a></li>
+<li><a href="{{ site.theme_settings.foss_frontends.youtube }}/{{ site.theme_settings.youtube }}" title="YouTube channel is coming soon, be first to subscribe!" target="_blank">{% include icons/youtube.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.youtube_ru and page.lang == 'ru' %}
-<li><a href="https://www.youtube.com/{{ site.theme_settings.youtube_ru }}" title="YouTube" target="_blank">{% include icons/youtube.svg %}</a></li>
+<li><a href="{{ site.theme_settings.foss_frontends.youtube }}/{{ site.theme_settings.youtube_ru }}" title="YouTube" target="_blank">{% include icons/youtube.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.telegram_ru and page.lang == 'ru' %}
@@ -79,7 +79,7 @@
 
 {% if site.theme_settings.github %}
 <li>
- <a href="https://github.com/{{ site.theme_settings.github }}" title="GitHub" target="_blank">{% include icons/github.svg %}</a>
+ <a href="{{ site.theme_settings.foss_frontends.github }}/{{ site.theme_settings.github }}" title="GitHub" target="_blank">{% include icons/github.svg %}</a>
 </li>
 {% endif %}
 
@@ -176,7 +176,7 @@
 {% endif %}
 
 {% if site.theme_settings.reddit and page.lang != 'ru' %}
-<li><a href="https://www.reddit.com/user/{{ site.theme_settings.reddit }}" title="Reddit" target="_blank">{% include icons/reddit.svg %}</a></li>
+<li><a href="{{ site.theme_settings.foss_frontends.reddit }}/user/{{ site.theme_settings.reddit }}" title="Reddit" target="_blank">{% include icons/reddit.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.vimeo %}

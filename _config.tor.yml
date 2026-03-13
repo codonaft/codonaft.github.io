@@ -16,3 +16,20 @@ theme_settings:
     read_cache_relays_overwrite:
     - ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr
     - ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr/relay.primal.net
+
+  foss_frontends:
+    github: https://gothub.r4fo.com
+
+    reddit: https://red.artemislena.eu
+
+    youtube: http://inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion
+    #youtube: http://nerdvpneaggggfdiurknszkbmhvjndks5z5k3g5yp4nhphflh3n3boad.onion
+
+    stackoverflow: http://anonymousoverflow.catsarchywsyuss6jdxlypsw5dc7owd5u5tr6bujxb7o6xw2hipqehyd.onion
+    #stackoverflow: http://ao.vernccvbvyi5qhfzyqengccj7lkove6bjot2xhh5kajhwvidqafczrad.onion
+
+    stackexchange_android: http://anonymousoverflow.catsarchywsyuss6jdxlypsw5dc7owd5u5tr6bujxb7o6xw2hipqehyd.onion/exchange/android
+    stackexchange_stats: http://anonymousoverflow.catsarchywsyuss6jdxlypsw5dc7owd5u5tr6bujxb7o6xw2hipqehyd.onion/exchange/stats
+
+    wikipedia_en: https://wikimore.private.coffee/wiki/en
+    wikipedia_ru: https://wikimore.private.coffee/wiki/ru

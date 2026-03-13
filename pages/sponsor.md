@@ -13,7 +13,7 @@ lang-ru-uri: /ru/sponsor/
 I've been doing
 {% include span_with_tooltip.html body="Software Development" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
 for [experience](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}).
-Now I'm back to Free and Open Source [development](https://github.com/alopatindev) to make this world better!
+Now I'm back to Free and Open Source [development]({{ site.theme_settings.foss_frontends.github }}/alopatindev) to make this world better!
 
 Your support keeps me going ❤️
 
@@ -25,10 +25,10 @@ Your support keeps me going ❤️
     </ul>
     {% include share_buttons.html no_text=true %}
     <ul>
-      <li>press ⭐ in the <a href="https://github.com/alopatindev">repos you like</a>
+      <li>press ⭐ in the <a href="{{ site.theme_settings.foss_frontends.github }}/alopatindev">repos you like</a>
         <ul>
           <li>share them with your friends/colleges</li>
-          <li>help specifically a tiny project <a href="https://github.com/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
+          <li>help specifically a tiny project <a href="{{ site.theme_settings.foss_frontends.github }}/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
         </ul>
       </li>
       <li class="padding-top-small">make general donations for {% include span_with_tooltip.html body="everything" tooltip="FOSS development <span class='no-wrap'>and occasional Blogging / Vlogging</span>" %} I produce:</li>
@@ -152,23 +152,23 @@ Your support keeps me going ❤️
 ## FAQ
 
 ### Why sponsoring independent FOSS developers? What's wrong with traditional businesses?
-Traditional companies are actively contributing to the [metacrisis](https://en.wikipedia.org/wiki/Polycrisis#Metacrisis) we're living in right now.
+Traditional companies are actively contributing to the [metacrisis]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Polycrisis#Metacrisis) we're living in right now.
 
 <details><summary markdown="span">More explanations! 👁️</summary>
 Proprietary software they make is currently at its peak of
-[various](https://youtu.be/NfiIXooD77s)
-[unhealthy](https://github.com/Alexlittle4/Zoom-violates-users-privacy#readme)
-[manipulative](https://www.reddit.com/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
-[practices](https://youtu.be/citnomJHr6I).
+[various]({{ site.theme_settings.youtube }}/NfiIXooD77s)
+[unhealthy]({{ site.theme_settings.foss_frontends.github }}/Alexlittle4/Zoom-violates-users-privacy#readme)
+[manipulative]({{ site.theme_settings.foss_frontends.reddit }}/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
+[practices]({{ site.theme_settings.youtube }}/citnomJHr6I).
 
 These "solutions" are no longer usable, at least not
-[without](https://github.com/ungoogled-software/ungoogled-chromium#readme)
-[tons](https://github.com/OhMyGuus/I-Still-Dont-Care-About-Cookies#readme)
-[of](https://github.com/dessant/buster#readme)
-[heavy](https://github.com/nang-dev/hover-paywalls-browser-extension#readme)
-[workarounds](https://github.com/jswanner/DontF-WithPaste#readme)!
+[without]({{ site.theme_settings.foss_frontends.github }}/ungoogled-software/ungoogled-chromium#readme)
+[tons]({{ site.theme_settings.foss_frontends.github }}/OhMyGuus/I-Still-Dont-Care-About-Cookies#readme)
+[of]({{ site.theme_settings.foss_frontends.github }}/dessant/buster#readme)
+[heavy]({{ site.theme_settings.foss_frontends.github }}/nang-dev/hover-paywalls-browser-extension#readme)
+[workarounds]({{ site.theme_settings.foss_frontends.github }}/jswanner/DontF-WithPaste#readme)!
 
-[They](https://youtu.be/7LqaotiGWjQ?t=3426s) are so stuck
+[They]({{ site.theme_settings.youtube }}/7LqaotiGWjQ?t=3426s) are so stuck
 in capitalistic [values](https://www.snopes.com/fact-check/sony-patent-mcdonalds)
 and self-defense that they barely leave room for long-term delivery of *real* innovations and positive life quality changes.
 
@@ -177,14 +177,14 @@ Truly new software should attempt to introduce innovations that
 [shape society]({{ site.theme_settings.nostr.naddr_client }}/naddr1qq2njmtfduekvan3wey4zdmjv4n4x4txxdkkjqgcwaehxw309ahx7um5wghxxmmydahxzen59e3k7mgpzemhxue69uhhyetvv9ujumn0wd68ytnzv9hxgqg5waehxw309aex2mrp0yhxgctdw4eju6t0qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgrqsqqqa28dkzfll)
 in a positive way!
 
-When these companies make something that *seems* to be healthy and innovative—[it's](https://en.wikipedia.org/wiki/Contributor_License_Agreement#Relicensing_controversy)
+When these companies make something that *seems* to be healthy and innovative—[it's]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Contributor_License_Agreement#Relicensing_controversy)
 [probably](https://calyxos.org/news/2025/06/11/android-16-plans/)
 [temporary](https://cointelegraph.com/news/ton-blockchain-freezes-2-6b-worth-of-inactive-tokens).
 </details>
 
 Independent FOSS developers can do something better. I'm targeting the following **principles**:
 - **Distraction Minimization**
-    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological](https://youtu.be/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
+    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological]({{ site.theme_settings.youtube }}/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
     - 🚫 no more mental resource-wasting on popup traps, CAPTCHA [{% include span_with_tooltip.html large="true" body="imitation" tooltip="CAPTCHA is useless: bots basically became indistinguishable from humans.<br>Time to change strategy: unexpected spammy load should be transformed into useful computations, with no harm to users, environment, or even businesses!" %}](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, absurdly <span class='no-wrap'>over-detailed</span> [{% include span_with_tooltip.html large="true" body="manuals" tooltip="Stop building the outdated and overcomplicated UI!<br>Well-designed, intuitive, AI-driven software <i>ideally</i> doesn't require any documentation!" %}](https://web.archive.org/web/20250806061741/https://www.facebook.com/help/124895950923762) and so on!
 - **Data Sovereignty**
     - 🔒 *you* own your [data](https://martin.kleppmann.com/2019/10/23/local-first-at-onward.html), not third parties!
