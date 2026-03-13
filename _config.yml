@@ -72,39 +72,19 @@ theme_settings:
   site_repo_branch: master
 
   avatar: assets/img/avatar.webp
-  gravatar:
 
   header_text_feature_image: assets/img/pexels/motherboard.jpg
 
   date_format: "%Y-%m-%d"
 
   email_address:
-  behance:
   bitbucket:
-  dribbble:
-  facebook: codonaft
-  flickr:
   gitlab:
   github: codonaft
   i2p: http://codonftbnpdkjwyflssto3iklawhuthbe37l6swigegqkyyfmiqa.b32.i2p
-  instagram:
-  telegram_ru:
-  keybase:
   linkedin: AlexanderLopatin
   patreon: alopatindev
-  pinterest:
-  reddit:
-  soundcloud:
-  stack_exchange:
-  steam:
   tor: http://codonaftbvv4j5k7nsrdivbdblycqrng5ls2qkng6lm77svepqjyxgid.onion
-  tumblr:
-  twitter:
-  vimeo:
-  vk: codonaft
-  wordpress:
-  youtube:
-  youtube_ru:
 
   btc: "1MpA1jqkTJTPcFNwrWghQZ7nRWS5gjBKNe"
   eth: "0xe7c5549246a7eb2a8398b947c2175e5b34bb3fcc"
@@ -127,8 +107,6 @@ theme_settings:
     linkedin: true
     wordpress:
 
-  google_analytics:
-  disqus_shortname:
   typed: false
   katex: false
   zapthreads: true
@@ -208,6 +186,7 @@ theme_settings:
 exclude:
   - .backup
   - .build
+exclude: [vendor]
 
 excerpt_separator: <!--more-->
 markdown: kramdown
@@ -225,5 +204,4 @@ compress_html:
   blanklines: true
   ignore:
     envs: []
-exclude: [vendor]
 include: [.well-known]
