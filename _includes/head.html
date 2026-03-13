@@ -14,11 +14,6 @@
 
 {% include lazy_load_css.html href="/assets/css/vendor/iosevka.min.css" %}
 
-{% if page.content contains '"ytdefer"' or page.content contains 'include youtube_player.html' %}
-<script src="/assets/js/vendor/ytdefer.min.js" defer></script>
-{% endif %}
-
-
 <script src="/assets/js/vendor/bootstrap.bundle.min.js" defer></script>
 {% include lazy_load_css.html href="/assets/css/vendor/bootstrap.min.css" %}
 <script>

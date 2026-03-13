@@ -5,7 +5,6 @@ Powered by
 - [Type-on-Strap](https://github.com/Sylhare/Type-on-Strap) ([license](licenses/LICENSE-Type-on-Strap.txt))
 - [P2P Media Loader](https://github.com/Novage/p2p-media-loader) ([license](https://github.com/Novage/p2p-media-loader/blob/main/LICENSE))
 - [Vidstack Player](https://github.com/codonaft/vidstack-player) ([license](https://github.com/codonaft/vidstack-player/blob/codonaft/LICENSE))
-- [ytdefer](https://github.com/groupboard/ytdefer) ([license](licenses/LICENSE-ytdefer.txt))
 - [ZapThreads](https://github.com/codonaft/zapthreads-codonaft) ([license](https://github.com/franzaps/zapthreads/blob/master/LICENSE))
 - [tinyld](https://github.com/komodojp/tinyld#readme) ([license](https://github.com/komodojp/tinyld/blob/develop/license))
 - [browser-dtector](https://github.com/sibiraj-s/browser-dtector#readme) ([license](https://github.com/sibiraj-s/browser-dtector/blob/master/LICENSE))
