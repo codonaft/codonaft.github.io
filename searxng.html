@@ -241,7 +241,7 @@ const main = async _ => {
   document.body.appendChild(form);
   input.focus();
 
-  const pageUrl = window.location.toString();
+  const pageUrl = window.location.origin + window.location.pathname;
   const div = document.createElement('div');
   div.innerHTML = `
 <p>This page redirects to a <a rel="noopener noreferrer nofollow" href="${pageUrl}#q=" onclick="window.location.replace('${pageUrl}#q=')">random SearXNG</a> instance.</p>
