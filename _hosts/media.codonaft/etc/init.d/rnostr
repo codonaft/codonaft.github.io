@@ -9,8 +9,8 @@ command_args="relay -c /etc/${name}/${name}.toml"
 retry="60"
 
 pidfile="/run/${name}.pid"
-output_logger="logger"
-error_logger="logger"
+output_logger="logger -t ${name}"
+error_logger="logger -t ${name}"
 
 depend() {
 	need net
