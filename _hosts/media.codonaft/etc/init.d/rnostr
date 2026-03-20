@@ -1,12 +1,20 @@
 #!/sbin/openrc-run
 
-RC_APP="${RC_SVCNAME%%.*}"
-RC_USER="${RC_SVCNAME#*.}"
+rc_app="${RC_SVCNAME%%.*}"
 
-command="/usr/local/bin/${RC_APP}"
-command_user="${RC_USER}:${RC_USER}"
+case "${RC_SVCNAME}" in
+	*.*)
+		rc_user="${rc_app}-${RC_SVCNAME#*.}"
+		;;
+	*)
+		rc_user="${rc_app}"
+		;;
+esac
+
+command="/usr/local/bin/${rc_app}"
+command_user="${rc_user}:${rc_user}"
 command_background="true"
-command_args="relay -c /etc/${RC_APP}/${RC_SVCNAME}.toml"
+command_args="relay -c /etc/${rc_app}/${RC_SVCNAME}.toml"
 retry="60"
 
 pidfile="/run/${RC_SVCNAME}.pid"
@@ -18,8 +26,9 @@ depend() {
 	use logger
 }
 
-pre_start() {
-	home_dir=$(getent passwd ${RC_USER} | cut -d: -f6)
+start_pre() {
+	home_dir=$(getent passwd ${rc_user} | cut -d: -f6)
 	mkdir -p "${home_dir}"
-	chown 00700 "${home_dir}"
+	chmod 00700 "${home_dir}"
+	chown "${rc_user}:${rc_user}" "${home_dir}"
 }

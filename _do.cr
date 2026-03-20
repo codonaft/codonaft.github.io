@@ -304,7 +304,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor", "wstunnel"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "rnostr.temp", "i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -478,8 +478,8 @@ def download(host : String, local_dir : Path, files : Enumerable(Path))
   rsync(local_dir, files, ["#{host}:/", "."])
 end
 
-def add_user_commands(user : String)
-  home_dir = Path["/var/lib"].join(user)
+def add_user_commands(user : String, home_dir_prefix : Path = Path["/var/lib"])
+  home_dir = home_dir_prefix.join(user)
   [
     "sudo useradd --system --create-home --home-dir #{home_dir} --user-group --shell /sbin/nologin #{user} 2>>/dev/null",
     "sudo chmod 00700 #{home_dir}",
@@ -522,6 +522,15 @@ def health(config, hosts : Array(String))
     return
   end
   step("health")
+
+  system("shellcheck --severity=error --exclude=SC2148 **/*.sh")
+  raise "shellcheck failed" unless $?.success?
+
+  hosts.each { |host|
+    step("gixy #{host}")
+    conf_dir = "/etc/nginx"
+    system("podman run --replace --rm --network=none --name gixy --volume #{Dir.current}/_ohmyvps/alpine/alpine-root#{conf_dir}:#{conf_dir} --volume #{Dir.current}/_hosts/#{host}#{conf_dir}/http.d:#{conf_dir}/http.d getpagespeed/gixy #{conf_dir}/nginx.conf")
+  }
 
   hosts.each { |host|
     step(host)
@@ -696,7 +705,7 @@ def with_socks_proxy(country, f : URI ->)
 end
 
 def configure_rnostr(host, config)
-  ssh(host, add_user_commands("rnostr"))
+  ssh(host, add_user_commands("rnostr") + add_user_commands("rnostr-temp", Path["/tmp"]))
 end
 
 def generate_certbot_script(host)
@@ -1017,7 +1026,7 @@ def check(config, ps : Array(Tuple(Int64, String)))
                                             .any? { |(pid, _)| pid != Process.ppid }
 
   system("which bsdtar bundle css-minify git nak node pnpm podman rsync scour svgcleaner svgo uglifyjs wget >>/dev/null")
-  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/uglifyjs-3.16.1' '=dev-vcs/git-2.49.0-r2' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0' && go install github.com/fiatjaf/nak@latest" unless $?.success?
+  raise "missing deps, run: cd && npm install 'css-minify@2.0.0' 'svgo@3.3.2' && USE='lz4 xxhash zstd' emerge '=app-arch/libarchive-3.7.9' '=app-arch/unzip-6.0_p27-r1' '=app-containers/podman-5.3.2' '=dev-ruby/bundler-2.4.22' '=dev-lang/crystal-1.16.1' '=dev-util/shellcheck-0.11.0' '=dev-util/uglifyjs-3.16.1' '=dev-vcs/git-2.49.0-r2' '=media-gfx/scour-0.38.2-r1' '=media-sound/opus-tools-0.2-r1' '=media-libs/libwebp-1.4.0' '=media-video/mediainfo-24.11' '=net-dns/bind-tools-9.18.0-r1' '=net-libs/nodejs-22.13.1' '=net-misc/rsync-3.4.1' '=net-misc/wget-1.25.0' '=sys-apps/pnpm-bin-9.6.0' && cargo install --locked 'svgcleaner@0.9.5' 'websocat@1.13.0' && go install github.com/fiatjaf/nak@latest" unless $?.success?
   system("podman ps >>/dev/null")
   raise "podman failed" unless $?.success?
 
@@ -1387,7 +1396,7 @@ def check_ssh_hosts(ps : Array(Tuple(Int64, String)), hosts : Array(String))
           now = Time.utc
           raise "#{i}: time is out of sync" if (remote_now - now).abs > 2.seconds
 
-          last_reboot = ssh(i, ["grep 'received a new kernel' /var/log/messages | tail -n1"])
+          last_reboot = ssh(i, ["grep 'received a new kernel' /tmp/messages | tail -n1"])
           unless last_reboot.empty?
             reboot_time = Time.parse_utc("#{Time.utc.year} #{last_reboot}", "%Y %b %e %T")
             raise "#{i}: possibly rebooting right now" if (reboot_time - now).abs < 10.seconds

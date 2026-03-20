@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-get () {
+get() {
   sudo -u nobody curl --silent "$@" >>/dev/null
 }
 

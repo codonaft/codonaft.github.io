@@ -1,0 +1,26 @@
+[data]
+path = "/tmp/rnostr-temp"
+
+[network]
+host = "localhost"
+port = 7778
+real_ip_header = "x-forwarded-for"
+
+[thread]
+http = 1
+reader = 1
+
+[metrics]
+enabled = false
+
+[auth]
+enabled = false
+
+[rate_limiter]
+enabled = false
+
+[count]
+enabled = false
+
+[search]
+enabled = false
