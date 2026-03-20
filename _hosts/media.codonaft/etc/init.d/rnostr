@@ -1,18 +1,25 @@
 #!/sbin/openrc-run
 
-name="rnostr"
+RC_APP="${RC_SVCNAME%%.*}"
+RC_USER="${RC_SVCNAME#*.}"
 
-command="/usr/local/bin/${name}"
-command_user="${name}:${name}"
+command="/usr/local/bin/${RC_APP}"
+command_user="${RC_USER}:${RC_USER}"
 command_background="true"
-command_args="relay -c /etc/${name}/${name}.toml"
+command_args="relay -c /etc/${RC_APP}/${RC_SVCNAME}.toml"
 retry="60"
 
-pidfile="/run/${name}.pid"
-output_logger="logger -t ${name}"
-error_logger="logger -t ${name}"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_logger="logger -t ${RC_SVCNAME}"
+error_logger="logger -t ${RC_SVCNAME}"
 
 depend() {
 	need net
 	use logger
+}
+
+pre_start() {
+	home_dir=$(getent passwd ${RC_USER} | cut -d: -f6)
+	mkdir -p "${home_dir}"
+	chown 00700 "${home_dir}"
 }

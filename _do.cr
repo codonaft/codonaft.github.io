@@ -303,8 +303,8 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "shadowsocks", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "shadowsocks", "tor", "wstunnel"])
+  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)

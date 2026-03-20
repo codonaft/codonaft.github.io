@@ -1,16 +1,14 @@
 #!/sbin/openrc-run
 
-name="ssserver"
-
-command="/usr/local/bin/${name}"
+command="/usr/local/bin/${RC_SVCNAME}"
 command_user="nobody:nobody"
 command_background="true"
 command_args="${shadowsocks_args}"
 
 capabilities="^cap_net_admin,^cap_net_bind_service"
-pidfile="/run/${name}.pid"
-output_logger="logger -t ${name}"
-error_logger="logger -t ${name}"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_logger="logger -t ${RC_SVCNAME}"
+error_logger="logger -t ${RC_SVCNAME}"
 
 depend() {
 	need net

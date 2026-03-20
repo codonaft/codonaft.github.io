@@ -1,18 +1,16 @@
 #!/sbin/openrc-run
 
-name="aquatic_ws"
+CONFIG_FILE="/etc/aquatic/${RC_SVCNAME}.conf"
 
-CONFIG_FILE="/etc/aquatic/${name}.conf"
-
-command="/usr/local/bin/${name}"
+command="/usr/local/bin/${RC_SVCNAME}"
 command_args="--config-file ${CONFIG_FILE}"
 command_user="nobody:nobody"
 command_background="true"
 
-pidfile="/run/${name}.pid"
+pidfile="/run/${RC_SVCNAME}.pid"
 extra_started_commands="reload"
-output_logger="logger -t ${name}"
-error_logger="logger -t ${name}"
+output_logger="logger -t ${RC_SVCNAME}"
+error_logger="logger -t ${RC_SVCNAME}"
 
 rc_ulimit="-l 131072" # required by io_uring
 
@@ -22,10 +20,10 @@ depend() {
 }
 
 reload() {
-	ebegin "Refreshing ${name}'s configuration"
+	ebegin "Refreshing ${RC_SVCNAME}'s configuration"
 	update_access_list
 	start-stop-daemon --signal SIGUSR1 --pidfile "${pidfile}"
-	eend $? "Failed to reload ${name}"
+	eend $? "Failed to reload ${RC_SVCNAME}"
 }
 
 start_pre() {
@@ -44,7 +42,7 @@ location = '/var/www/'
 config = tomllib.load(open('${CONFIG_FILE}', 'rb'))
 output = config['access_list']['path']
 
-syslog('${name}: generating info hashes')
+syslog('${RC_SVCNAME}: generating info hashes')
 with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode='wt') as temp:
 	for i in glob('%s/*/*/main.m3u8' % location):
 		def write_hashes(n, stream_type):
@@ -52,7 +50,7 @@ with tempfile.NamedTemporaryFile(delete=False, dir=os.path.dirname(output), mode
 				stream_swarm_id = b'v2-https://%s-%s-%d' % (i.replace(location, '').encode('utf-8'), stream_type, index)
 				raw_item = base64.b64encode(hashlib.md5(stream_swarm_id).digest()[1:])
 				item = raw_item.hex()
-				syslog('${name}: %s %s %s' % (stream_swarm_id, raw_item, item))
+				syslog('${RC_SVCNAME}: %s %s %s' % (stream_swarm_id, raw_item, item))
 				temp.write(item + '\\n')
 		with open(i) as p:
 			playlist = p.readlines()

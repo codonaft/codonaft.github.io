@@ -1,13 +1,11 @@
 #!/sbin/openrc-run
 
-name="metasearch"
-
-command="/usr/local/bin/${name}"
+command="/usr/local/bin/${RC_SVCNAME}"
 command_user="nobody:nobody"
 command_background="true"
-command_args="/etc/${name}/${name}.toml"
+command_args="/etc/${RC_SVCNAME}/${RC_SVCNAME}.toml"
 
-pidfile="/run/${name}.pid"
+pidfile="/run/${RC_SVCNAME}.pid"
 
 depend() {
 	need net
