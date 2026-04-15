@@ -129,6 +129,7 @@ theme_settings:
     - wss://nostr.data.haus
     - wss://nostr.azzamo.net
     #- wss://wotr.relatr.xyz
+    #- wss://subnet.relays.land
     read_cache_relays:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
