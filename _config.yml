@@ -121,8 +121,8 @@ theme_settings:
 
     spam_api: https://spam.nostr.band/spam_api
     profile_relays:
+    - wss://profiles.nostr1.com
     - wss://user.kindpag.es
-    - wss://hist.nostr.land
     - wss://relay.vertexlab.io
     relays:
     - wss://nos.lol
