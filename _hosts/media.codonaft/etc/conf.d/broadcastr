@@ -8,5 +8,5 @@ broadcastr_args="
   --relays https://codonaft.com/relays_broadcasters.json,file:///etc/broadcastr/allowed.json,https://codonaft.com/relays.json
   --read-relays wss://monitorlizard.nostr1.com,wss://relay.nostr.watch,wss://relaypag.es
   --block-relays file:///etc/broadcastr/blocked.json
-  --max-relays 1500
+  --max-relays 1800
 "

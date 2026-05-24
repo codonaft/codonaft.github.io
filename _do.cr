@@ -40,7 +40,7 @@ MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
 MIN_RUST_VERSION         = "1.95.0"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
-QUICSSH_VERSION          = "0.1.5"
+QUICSSH_ROBUST_VERSION   = "0.1.6"
 RNOSTR_VERSION           = "0.4.8"
 SHADOWSOCKS_VERSION      = "1.24.0"
 TINYLD_VERSION           = "1.3.4"
@@ -270,8 +270,8 @@ def build
   [MIRROR_HOST, MEDIA_HOST].each do |host|
     build_rust_app(
       host,
-      crate: "quicssh-rs",
-      version: QUICSSH_VERSION,
+      crate: "quicssh-rs-robust",
+      version: QUICSSH_ROBUST_VERSION,
       dependencies: ["gcc", "musl-dev"],
     )
 
@@ -303,8 +303,8 @@ def start
     return
   end
   step("start")
-  start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "rnostr.temp", "i2pd", "local", "nginx", "quicssh-rs", "ssserver", "tor", "wstunnel"])
+  start_openrc(MIRROR_HOST, services: ["dnscrypt-proxy", "i2pd", "local", "nginx", "quicssh-rs-robust", "ssserver", "tor"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "dnscrypt-proxy", "metasearch", "rnostr", "rnostr.temp", "i2pd", "local", "nginx", "quicssh-rs-robust", "ssserver", "tor", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)

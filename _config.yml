@@ -126,9 +126,9 @@ theme_settings:
     - wss://relay.vertexlab.io
     relays:
     - wss://nos.lol
-    - wss://nostr.data.haus
+    - wss://relay.mostr.pub
     - wss://nostr.azzamo.net
-    #- wss://wotr.relatr.xyz
+    #- wss://nostr.data.haus
     #- wss://subnet.relays.land
     read_cache_relays:
     - wss://relay.primal.net
@@ -140,9 +140,9 @@ theme_settings:
     relays_overwrite: []
     read_cache_relays_overwrite: []
 
-    naddr_client: https://dev.nosotros.app
-    nevent_client: https://dev.nosotros.app
-    nprofile_client: https://dev.nosotros.app
+    naddr_client: https://primal.net/a
+    nevent_client: https://primal.net/e
+    nprofile_client: https://primal.net/p
 
   special_page:
     search:
@@ -185,8 +185,7 @@ theme_settings:
       tile_width: 400
 
   foss_frontends:
-    github: https://gothub.r4fo.com
-    #github: https://g.opnxng.com
+    github: https://gothub.lunar.icu
 
     reddit: https://red.artemislena.eu
     #reddit: https://redlib.pussthecat.org
@@ -194,7 +193,8 @@ theme_settings:
     #reddit: https://safereddit.com
     #reddit: https://redlib.catsarch.com
 
-    youtube: https://inv.nadeko.net
+    youtube: https://invidious.smesh.lol
+    #youtube: https://inv.nadeko.net
     #youtube: https://yewtu.be
     #youtube: https://redirect.invidious.io
     #youtube: https://poketube.fun

@@ -10,6 +10,8 @@ pidfile="/run/${RC_SVCNAME}.pid"
 output_logger="logger -t ${RC_SVCNAME}"
 error_logger="logger -t ${RC_SVCNAME}"
 
+rc_ulimit="-n 65536"
+
 depend() {
 	need net
 	use logger

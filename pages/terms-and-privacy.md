@@ -16,7 +16,8 @@ hide: true
 
 3. If you've found that any content users published on this website is not compatible with your local regulations
 - you are free to send complaints directly to the third-party server owners that currently store the illegal content
-- you are free to block servers that contain illegal content or the entire website in your parental control system or ISP/governmental firewall without notice.
+- you are free to block servers that contain illegal content or the entire website in your parental control system or ISP/governmental firewall without notice
+  - it's very welcome: not only due to the satisfactory illusion that users are limited to information will be established, but they will probably have even more motivation to learn how to bypass censorship as soon as possible, which is an important skill for survival in the broken internet today; that's irony obviously
 
 4. For any questions considering this website that are not related to the data stored by third-party services—please <a rel="nofollow" href="mailto:feedback&#64;codonaft&#46;com">use email</a>.
 
