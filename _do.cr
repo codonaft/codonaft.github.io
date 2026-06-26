@@ -1104,8 +1104,11 @@ def build_rust_app(
 
     apk add --update --no-cache git #{dependencies.join(" ")}
 
-    export CFLAGS=\\"-march=#{target_cpu} -O3 -mno-rdrnd #{cflags}\\"
+    export CFLAGS=\\"-march=#{target_cpu} -O3 -mno-rdrnd -fstack-protector-all -fstack-clash-protection #{cflags}\\"
     export CXXFLAGS=\\"\\${CFLAGS}\\"
+    export FCFLAGS=\\"\\${CFLAGS}\\"
+    export FFLAGS=\\"\\${CFLAGS}\\"
+    export LDFLAGS=\\"-Wl,-z,now -Wl,-z,relro\\"
     export RUSTFLAGS=\\"-C target-cpu=#{target_cpu} -C force-frame-pointers=y #{allow_dynamic_linking ? "-C target-feature=-crt-static" : ""} #{rustflags}\\"
 
     cargo install --force --locked #{cargo_args}
