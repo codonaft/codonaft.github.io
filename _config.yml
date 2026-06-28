@@ -185,7 +185,10 @@ theme_settings:
       tile_width: 400
 
   foss_frontends:
-    github: https://gothub.lunar.icu
+    github: https://gothub.r4fo.com
+    #github: https://gothub.libre.tw
+    #github: https://gothub.lunar.icu
+    #github: https://gothub.wuemeli.com
 
     reddit: https://red.artemislena.eu
     #reddit: https://redlib.pussthecat.org
