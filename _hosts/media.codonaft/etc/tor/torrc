@@ -8,6 +8,7 @@ ExcludeExitNodes {am}, {az}, {by}, {ee}, {ge}, {kg}, {kz}, {lt}, {ly}, {md}, {ru
 #ExcludeExitNodes * # disable all exit nodes
 
 AvoidDiskWrites 1
+Sandbox 1
 
 # https://github.com/jmcorgan/fips/blob/0f24333c0d02d6cceaaaff58301d6e556abd2094/packaging/torrc.fips
 SocksPort 127.0.0.1:9050 IsolateSOCKSAuth NoDNSRequest
