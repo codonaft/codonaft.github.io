@@ -101,7 +101,7 @@ def main
     sync(hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
-    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
+    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://directory.yabu.me", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
     follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.vertexlab.io"])
   elsif ARGV.size >= 1 && ARGV[0] == "health"
@@ -285,7 +285,7 @@ def build
   end
 
   generate_certbot_script(MEDIA_HOST)
-  maybe_generate_relays
+  # maybe_generate_relays # FIXME
 end
 
 def configure(config)
@@ -529,13 +529,13 @@ def health(config, hosts : Array(String))
   hosts.each { |host|
     step("gixy #{host}")
     conf_dir = "/etc/nginx"
-    system("podman run --replace --rm --network=none --name gixy --volume #{Dir.current}/_ohmyvps/alpine/alpine-root#{conf_dir}:#{conf_dir} --volume #{Dir.current}/_hosts/#{host}#{conf_dir}/http.d:#{conf_dir}/http.d getpagespeed/gixy #{conf_dir}/nginx.conf")
+    system("podman run --replace --rm --network=none --name gixy --volume #{Dir.current}/#{COMMON_ROOT}#{conf_dir}:#{conf_dir} --volume #{Dir.current}/_hosts/#{host}#{conf_dir}/http.d:#{conf_dir}/http.d getpagespeed/gixy #{conf_dir}/nginx.conf")
   }
 
   hosts.each { |host|
     step(host)
 
-    ssh(host, ["sudo /etc/init.d/nginx checkconfig", "sudo hdparm -t /dev/sd[a-z] | sed \"s!.*= !!\""], tty: true)
+    ssh(host, ["sudo /etc/init.d/nginx checkconfig", "for i in /dev/disk/by-uuid/* ; do sudo hdparm -t $i | sed \"s!.*= !!\" ; done"], tty: true)
 
     distro_version = alpine_version(host)
     latest_distro_version = YAML.parse(HTTP::Client.get("https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml").body)[0]["version"].as_s

@@ -8,10 +8,25 @@ ExcludeExitNodes {am}, {az}, {by}, {ee}, {ge}, {kg}, {kz}, {lt}, {ly}, {md}, {ru
 #ExcludeExitNodes * # disable all exit nodes
 
 AvoidDiskWrites 1
-Sandbox 1
+#Sandbox 1
+
+LongLivedPorts 21,22,53,80,706,1863,5050,5190,5222,5223,6523,6667,6697,8300
+
+HTTPTunnelPort 127.0.0.1:8050 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth OnionTrafficOnly
+SocksPort 127.0.0.1:9050 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth OnionTrafficOnly
+
+HTTPTunnelPort 127.0.0.1:8051 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth
+SocksPort 127.0.0.1:9051 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth
+
+TransPort 127.0.0.1:9052 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth OnionTrafficOnly
+TransPort [::1]:9052 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth OnionTrafficOnly
+DNSPort 127.0.0.1:9053 IsolateClientAddr IsolateSOCKSAuth IsolateClientProtocol IsolateDestAddr KeepAliveIsolateSOCKSAuth NoIPv4Traffic NoIPv6Traffic
+VirtualAddrNetworkIPv4 127.193.0.0/16
+VirtualAddrNetworkIPv6 [FE81::]/16
+AutomapHostsOnResolve 1
+AutomapHostsSuffixes .onion
 
 # https://github.com/jmcorgan/fips/blob/0f24333c0d02d6cceaaaff58301d6e556abd2094/packaging/torrc.fips
-SocksPort 127.0.0.1:9050 IsolateSOCKSAuth NoDNSRequest
 CookieAuthentication 1
 CookieAuthFileGroupReadable 1
 CookieAuthFile /run/tor/control.authcookie
