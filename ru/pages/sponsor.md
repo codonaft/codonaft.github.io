@@ -13,28 +13,9 @@ lang-en-uri: /sponsor/
 Занимался
 {% include span_with_tooltip.html body="разработкой ПО" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
 для [опыта](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}).
-Вернулся в разработку <span class='no-wrap'>[свободного]({{ site.theme_settings.foss_frontends.github }}/alopatindev) ПО</span>, чтобы сделать этот мир лучше!
+Вернулся в разработку <span class='no-wrap'>[свободного]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}) ПО</span>, чтобы сделать этот мир лучше!
 
 Твоя поддержка позволяет мне <span class='no-wrap'>продолжать ❤️</span>
-
-<!-- div style="display: flex; justify-content: center; padding-bottom: 2rem; margin-top: 0">
-  <div class="example" style="max-width: 40rem">
-    <h3 style="text-align: center">Как поддержать:</h3>
-    <ul style="margin-bottom: 0">
-      <li>поделиться этой страницей в соцсетях:</li>
-    </ul>
-    {% include share_buttons.html no_text=true %}
-    <ul>
-      <li>нажать ⭐ на страницах понравившихся <a href="{{ site.theme_settings.foss_frontends.github }}/alopatindev">проектов</a>
-        <ul>
-          <li>поделиться проектами со своими друзьями/коллегами</li>
-          <li>помочь конкретно мелкому проекту <a href="{{ site.theme_settings.foss_frontends.github }}/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
-        </ul>
-      </li>
-      <li class="padding-top-small">общими донатами на всё что я {% include span_with_tooltip.html body="произвожу" tooltip="Разработку свободного ПО <span class='no-wrap'>и периодического</span> <span class='no-wrap'>выпуска контента</span>" %}:</li>
-    </ul>
-  </div>
-</div -->
 
 <div class="donation-container" style="margin-top: 4rem">
   <div class="grid-container">
@@ -74,27 +55,6 @@ lang-en-uri: /sponsor/
       <p><code class="language-plaintext highlighter-rouge">{{ site.theme_settings.ltc }}</code></p>
     </div>
 
-    <!-- div class="grid-item">
-      <a href="https://www.patreon.com/{{ site.theme_settings.patreon }}" alt="Стать патроном" title="Стать патроном" rel="noopener noreferrer" target="_blank"><img style="width: 170pt; height: 40pt" src="/assets/img/donate-with-patreon.svg"></a>
-    </div>
-
-    <div class="grid-item">
-      <a href="https://opencollective.com/alopatindev" alt="Donate with OpenCollective" rel="noopener noreferrer" target="_blank">{% include icons/opencollective.svg %}</a>
-      <p><strong>Open Collective</strong></p>
-    </div>
-
-    <div class="grid-item">
-      <a href="https://ko-fi.com/P5P3R40NX" alt="Support me on Ko-fi" rel="noopener noreferrer" target="_blank">{% include icons/donate-with-kofi.svg %}</a>
-    </div>
-
-    <div class="grid-item">
-      <a href="https://paypal.me/alopatindev" alt="Поддержать с помощью PayPal" title="Поддержать с помощью PayPal" rel="noopener noreferrer" target="_blank">{% include icons/donate-with-paypal.svg %}</a>
-    </div>
-
-    <div class="grid-item">
-      <a href="https://liberapay.com/alopatindev" alt="Поддержать с помощью Liberapay" title="Поддержать с помощью Liberapay" rel="noopener noreferrer" target="_blank">{% include icons/liberapay.svg %}</a>
-      <p><strong>Liberapay</strong></p>
-    </div -->
   </div>
 </div>
 

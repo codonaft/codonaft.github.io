@@ -226,7 +226,7 @@ don't try to make too much with a single `ffmpeg` call.
 Make intermediate files and control every step, so you won't waste time looking for weird ungoogleble bugs,
 like wrong cuts or unapplied effect.
 
-I run the [**resulting madness**]({{ site.theme_settings.foss_frontends.github }}/alopatindev/vlog-toolset/) this way:
+I run the [**resulting madness**]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}/vlog-toolset) this way:
 ```
 $ bin/vlog-recorder \
     --project /path/to/project \

@@ -143,6 +143,7 @@ theme_settings:
     naddr_client: https://primal.net/a
     nevent_client: https://primal.net/e
     nprofile_client: https://primal.net/p
+    git_client: https://gittr.space
 
   special_page:
     search:

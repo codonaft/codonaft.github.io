@@ -13,28 +13,9 @@ lang-ru-uri: /ru/sponsor/
 I've been doing
 {% include span_with_tooltip.html body="Software Development" tooltip="<span class='no-wrap'>C++ / GameDev</span> → <span class='no-wrap'>🦀 Rust / Highly-Loaded Backend</span>" %}
 for [experience](https://www.linkedin.com/in/{{ site.theme_settings.linkedin }}).
-Now I'm back to Free and Open Source [development]({{ site.theme_settings.foss_frontends.github }}/alopatindev) to make this world better!
+Now I'm back to Free and Open Source [development]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}) to make this world better!
 
 Your support keeps me going ❤️
-
-<!-- div style="display: flex; justify-content: center; padding-bottom: 2rem; margin-top: 0">
-  <div class="example" style="max-width: 40rem">
-    <h3 style="text-align: center">How to support:</h3>
-    <ul style="margin-bottom: 0">
-      <li>share this page:</li>
-    </ul>
-    {% include share_buttons.html no_text=true %}
-    <ul>
-      <li>press ⭐ in the <a href="{{ site.theme_settings.foss_frontends.github }}/alopatindev">repos you like</a>
-        <ul>
-          <li>share them with your friends/colleges</li>
-          <li>help specifically a tiny project <a href="{{ site.theme_settings.foss_frontends.github }}/cargo-limit/cargo-limit#support"><img style="display: inline-block; vertical-align: middle; width: 1.4rem; height: 1.4rem" src="/assets/img/cargo-limit.svg">cargo-limit</a></li>
-        </ul>
-      </li>
-      <li class="padding-top-small">make general donations for {% include span_with_tooltip.html body="everything" tooltip="FOSS development <span class='no-wrap'>and occasional Blogging / Vlogging</span>" %} I produce:</li>
-    </ul>
-  </div>
-</div -->
 
 <div class="donation-container" style="margin-top: 4rem">
   <div class="grid-container">

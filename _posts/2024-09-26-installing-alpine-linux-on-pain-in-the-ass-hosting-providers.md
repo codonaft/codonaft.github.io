@@ -9,7 +9,7 @@ nostr:
   comments: note1q99933ynx8kc0va0uwhev9n7puwul0wm8n8ga3rgqp3smnxy75ds50gjvh
 ---
 
-In order to maintain my sanity, I install and configure software on VPS instances in a <span class='no-wrap'>[semi-automated]({{ site.theme_settings.foss_frontends.github }}/codonaft/ohmyvps)</span> way.
+In order to maintain my sanity, I install and configure software on VPS instances in a <span class='no-wrap'>[semi-automated]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}/ohmyvps)</span> way.
 
 Recently I figured out how to install <span class='no-wrap'>Alpine Linux</span> on an `x86_64` VPS instance hosted by a company that didn't manage to implement a trivial boot from arbitrary ISO images.
 <!--more-->

@@ -75,12 +75,7 @@
 
 {% if site.theme_settings.nostr %}
 <li><a href="{{ site.theme_settings.nostr.nprofile_client }}/{{ site.theme_settings.nostr.nprofile }}" title="Nostr" target="_blank">{% include icons/nostr.svg %}</a></li>
-{% endif %}
-
-{% if site.theme_settings.github %}
-<li>
- <a href="{{ site.theme_settings.foss_frontends.github }}/{{ site.theme_settings.github }}" title="GitHub" target="_blank">{% include icons/github.svg %}</a>
-</li>
+<li><a href="{{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}" title="Git" target="_blank">{% include icons/git.svg %}</a></li>
 {% endif %}
 
 {% if site.theme_settings.instagram %}

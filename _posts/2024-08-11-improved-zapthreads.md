@@ -11,7 +11,7 @@ nostr:
   relax_filters: true
 ---
 
-I've been playing with Nostr for a couple of months now and have made [**some improvements**]({{ site.theme_settings.foss_frontends.github }}/codonaft/zapthreads-codonaft#readme) in [ZapThreads](https://zapthreads.dev/). I'm happy to finally integrate it here!
+I've been playing with Nostr for a couple of months now and have made [**some improvements**]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}/zapthreads-codonaft#readme) in [ZapThreads]({{ site.theme_settings.foss_frontends.github }}/franzaps/zapthreads). I'm happy to finally integrate it here!
 
 Feel free to try it in the comments section. It's still experimental, however you can integrate it on your website as well.
 
@@ -26,7 +26,7 @@ It's currently misconfigured on almost all existing public relays 😿
 Fetching the info currently forces us to open an additional connection per relay, which affects initial warm-up time.
 
 Currently, I'm finding NIP-11 unusable for my scenarios.
-If you want to integrate my ZapThreads [fork]({{ site.theme_settings.foss_frontends.github }}/codonaft/zapthreads-codonaft#readme)—consider disabling `relayInfo` for now.
+If you want to integrate my ZapThreads [fork]({{ site.theme_settings.nostr.git_client }}/{{ site.theme_settings.nostr.npub }}/zapthreads-codonaft#readme)—consider disabling `relayInfo` for now.
 
 ## NIP-07 Extensions Lack Sessions
 The browser extensions work fine in a simple scenario, but if you want multiple accounts and session persistence—expect surprises.
