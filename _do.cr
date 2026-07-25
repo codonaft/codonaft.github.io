@@ -865,7 +865,7 @@ end
 def update_banlists
   puts("updating banlists")
 
-  sbc = `wget -qO - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts || wget -qO - http://sbc.io/hosts/hosts`
+  sbc = `wget -qO - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts`
     .split('\n')
     .select { |i| i.starts_with?("#{WILDCARD_HOST} ") }
     .reject { |i| i == "#{WILDCARD_HOST} #{WILDCARD_HOST}" }
