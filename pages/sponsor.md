@@ -137,10 +137,10 @@ Traditional companies are actively contributing to the [metacrisis]({{ site.them
 
 <details><summary markdown="span">More explanations! 👁️</summary>
 Proprietary software they make is currently at its peak of
-[various]({{ site.theme_settings.youtube }}/NfiIXooD77s)
+[various]({{ site.theme_settings.foss_frontends.youtube }}/NfiIXooD77s)
 [unhealthy]({{ site.theme_settings.foss_frontends.github }}/Alexlittle4/Zoom-violates-users-privacy#readme)
 [manipulative]({{ site.theme_settings.foss_frontends.reddit }}/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
-[practices]({{ site.theme_settings.youtube }}/citnomJHr6I).
+[practices]({{ site.theme_settings.foss_frontends.youtube }}/citnomJHr6I).
 
 These "solutions" are no longer usable, at least not
 [without]({{ site.theme_settings.foss_frontends.github }}/ungoogled-software/ungoogled-chromium#readme)
@@ -149,7 +149,7 @@ These "solutions" are no longer usable, at least not
 [heavy]({{ site.theme_settings.foss_frontends.github }}/nang-dev/hover-paywalls-browser-extension#readme)
 [workarounds]({{ site.theme_settings.foss_frontends.github }}/jswanner/DontF-WithPaste#readme)!
 
-[They]({{ site.theme_settings.youtube }}/7LqaotiGWjQ?t=3426s) are so stuck
+[They]({{ site.theme_settings.foss_frontends.youtube }}/7LqaotiGWjQ?t=3426s) are so stuck
 in capitalistic [values](https://www.snopes.com/fact-check/sony-patent-mcdonalds)
 and self-defense that they barely leave room for long-term delivery of *real* innovations and positive life quality changes.
 
@@ -165,7 +165,7 @@ When these companies make something that *seems* to be healthy and innovative—
 
 Independent FOSS developers can do something better. I'm targeting the following **principles**:
 - **Distraction Minimization**
-    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological]({{ site.theme_settings.youtube }}/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
+    - 🧠 software must be [mentally](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ecological]({{ site.theme_settings.foss_frontends.youtube }}/Iy7i9ru7HB8?t=15s) and intuitive; it should never intentionally <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">interrupt</a> the creative process!
     - 🚫 no more mental resource-wasting on popup traps, CAPTCHA [{% include span_with_tooltip.html large="true" body="imitation" tooltip="CAPTCHA is useless: bots basically became indistinguishable from humans.<br>Time to change strategy: unexpected spammy load should be transformed into useful computations, with no harm to users, environment, or even businesses!" %}](https://futurism.com/ai-model-turing-test), sudden unwanted tutorials, absurdly <span class='no-wrap'>over-detailed</span> [{% include span_with_tooltip.html large="true" body="manuals" tooltip="Stop building the outdated and overcomplicated UI!<br>Well-designed, intuitive, AI-driven software <i>ideally</i> doesn't require any documentation!" %}](https://web.archive.org/web/20250806061741/https://www.facebook.com/help/124895950923762) and so on!
 - **Data Sovereignty**
     - 🔒 *you* own your [data](https://martin.kleppmann.com/2019/10/23/local-first-at-onward.html), not third parties!

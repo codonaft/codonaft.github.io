@@ -101,9 +101,9 @@ def main
     sync(hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
-    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://directory.yabu.me", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
+    sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://profiles.nostr1.com", "wss://relay.nos.social", "wss://directory.yabu.me", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
   elsif ARGV[0] == "follow"
-    follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.vertexlab.io"])
+    follow(config, ARGV[1..].to_set, ["wss://purplepag.es", "wss://user.kindpag.es", "wss://relay.nos.social", "wss://relay.vertexlab.io"])
   elsif ARGV.size >= 1 && ARGV[0] == "health"
     hosts = ARGV.skip(1) if ARGV.size > 1
     check_ssh_hosts(ps, hosts)
