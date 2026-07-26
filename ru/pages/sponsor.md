@@ -113,7 +113,7 @@ lang-en-uri: /sponsor/
 Традиционные компании активно способствуют [метакризису]({{ site.theme_settings.foss_frontends.wikipedia_en }}/wiki/Polycrisis#Metacrisis), в котором мы живем.
 
 <details><summary markdown="span">Больше деталей! 👁️</summary>
-Проприетарное ПО, которое они создают, находится на пике [различных]({{ site.theme_settings.youtube }}/NfiIXooD77s)
+Проприетарное ПО, которое они создают, находится на пике [различных]({{ site.theme_settings.foss_frontends.youtube }}/NfiIXooD77s)
 [нездоровых]({{ site.theme_settings.foss_frontends.github }}/Alexlittle4/Zoom-violates-users-privacy#readme)
 [манипулятивных]({{ site.theme_settings.foss_frontends.reddit }}/r/paypal/comments/1hfg3jr/paypal_refuses_to_change_to_local_currency_at/)
 <a href="/ru/ideas-for-foss-projects/?t=975" target="_blank">практик</a>.
@@ -125,7 +125,7 @@ lang-en-uri: /sponsor/
 [тяжеловесных]({{ site.theme_settings.foss_frontends.github }}/dessant/buster#readme)
 [костылей]({{ site.theme_settings.foss_frontends.github }}/nang-dev/hover-paywalls-browser-extension#readme)!
 
-[Они]({{ site.theme_settings.youtube }}/7LqaotiGWjQ?t=3426s) слишком зациклились
+[Они]({{ site.theme_settings.foss_frontends.youtube }}/7LqaotiGWjQ?t=3426s) слишком зациклились
 на капиталистических [ценностях](https://www.snopes.com/fact-check/sony-patent-mcdonalds) и самозащите,
 едва ли оставляя возможность длительно предоставлять *реальные* инновации и позитивные изменения качества жизни.
 
@@ -143,7 +143,7 @@ lang-en-uri: /sponsor/
 Независимые разработчики свободного ПО могут сделать кое-что получше. Я ориентируюсь на следующие **принципы**:
 
 - **Минимизация отвлечения внимания**
-    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально]({{ site.theme_settings.youtube }}/Iy7i9ru7HB8?t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
+    - 🧠 ПО должно быть [экологичным](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4183915/) [ментально]({{ site.theme_settings.foss_frontends.youtube }}/Iy7i9ru7HB8?t=15s) и понятным интуитивно; оно никогда не должно намеренно <a href="/how-to-take-notes-like-a-programmer/#whats-the-point" target="_blank">прерывать</a> творческий процесс!
     - 🚫 больше никаких трат ментальных ресурсов на всплывающие ловушки, [{% include span_with_tooltip.html large="true" body="имитацию" tooltip="Капча бесполезна: боты в основном уже <span class='no-wrap'>неотличимы от людей.</span><br>Время сменить стратегию: потенциально спамную нагрузку нужно превращать в полезные вычисления, не причиняя вред ни пользователям, ни окружающей среде, ни даже бизнесам!" %}](https://futurism.com/ai-model-turing-test) CAPTCHA, внезапные нежелательные туториалы, абсурдно подробные [{% include span_with_tooltip.html large="true" body="руководства" tooltip="Хватит плодить устаревшие и переусложненные UI!<br>Хорошо спроектированное и интуитивно-понятное ПО с ИИ <i>в идеале</i> вообще не нуждается в документации!" %}](https://web.archive.org/web/20250806061741/https://www.facebook.com/help/124895950923762) и так далее!
 - **Суверенитет данных**
     - 🔒 *ты* владеешь своими [данными](https://martin.kleppmann.com/2019/10/23/local-first-at-onward.html), а не третьи лица!
