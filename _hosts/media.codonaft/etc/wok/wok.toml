@@ -1,0 +1,110 @@
+[admin]
+enabled = true
+public_url = "https://nostr.codonaft.com"
+pubkeys = ["efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"]
+auth_window_secs = 300
+allow_config_writes = false
+
+[database]
+path = "/var/lib/wok/"
+max_readers = 256
+map_size = 68719476736
+no_read_ahead = false
+min_free_disk_bytes = 1073741824
+
+[events]
+max_event_size = 524288
+reject_newer_than_secs = 900
+reject_older_than_secs = 1135296000
+reject_ephemeral_older_than_secs = 60
+ephemeral_lifetime_secs = 300
+ephemeral_persistence = "live_only"
+max_num_tags = 5000
+max_tag_val_size = 1024
+
+[observability]
+log_format = "pretty"
+log_filter = "wok=error"
+history_enabled = true
+history_interval_secs = 15
+history_max_points = 5760
+
+[relay]
+bind = "127.0.0.1" # FIXME: "localhost"?
+port = 7777
+nofiles = 65536
+real_ip_header = "x-forwarded-for"
+max_websocket_payload_size = 131072
+max_req_filter_size = 65536
+max_filters_per_req = 200
+auto_ping_seconds = 55
+enable_tcp_keepalive = false
+query_timeslice_budget_us = 10000
+max_filter_limit = 500
+max_tags_per_filter = 3
+max_filter_limit_count = 1000000
+max_total_events_per_req = 2000
+max_subs_per_connection = 200
+max_pending_outbound_bytes = 33554432
+write_policy_plugin = "/etc/wok/policy.py"
+write_policy_timeout_secs = 10
+compression_enabled = true
+compression_sliding_window = true
+dump_in_all = false
+dump_in_events = false
+dump_in_reqs = false
+db_scan_perf = false
+invalid_events = true
+ingester_threads = 3
+req_worker_threads = 3
+req_monitor_threads = 3
+negentropy_threads = 2
+negentropy_enabled = true
+max_sync_events = 1000000
+
+[relay.auth]
+enabled = true
+service_url = "wss://nostr.codonaft.com"
+restricted_read_kinds = [4, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 21059, 24133, 27235, 30024, 30078, 30403, 30443, 31234, 31990]
+restrict_read_to_involved_pubkey = true
+
+[relay.info]
+name = "codonaft.com"
+description = "Allow-list only nostr relay for friends and exceptional authors (and replies to them). It's also available here: ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr and here ws://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr"
+pubkey = "efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"
+self_pk = ""
+contact = ""
+icon = "https://codonaft.com/assets/img/avatar.webp"
+banner = ""
+privacy = ""
+terms = ""
+
+[relay.nip62]
+enabled = true
+deletion_batch_size = 1000
+
+[relay.filter_validation]
+enabled = true
+max_filters_per_req = 10
+min_filters_per_req = 1
+max_kinds_per_filter = 3
+allowed_kinds = ""
+require_author_or_tag = false
+
+[relay.abuse]
+enabled = true
+connection_rate_per_second = 10
+connection_burst = 50
+event_rate_per_second = 50
+event_burst = 100
+pubkey_event_rate_per_second = 25
+pubkey_event_burst = 50
+req_rate_per_second = 20
+req_burst = 40
+count_rate_per_second = 5
+count_burst = 10
+max_concurrent_historical_queries = 8
+max_query_cost = 1000
+max_stored_events = 0
+max_stored_events_per_pubkey = 0
+min_pow_difficulty = 0

@@ -32,18 +32,18 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.23.4"
+ALPINE_VERSION           = "3.24.1"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
-MIN_RUST_VERSION         = "1.95.0"
+MIN_RUST_VERSION         = "1.96.1"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 QUICSSH_ROBUST_VERSION   = "0.1.6"
-RNOSTR_VERSION           = "0.4.8"
 SHADOWSOCKS_VERSION      = "1.24.0"
 TINYLD_VERSION           = "1.3.4"
+WOK_VERSION              = "v0.4.0"
 WSTUNNEL_VERSION         = "v10.5.2"
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
@@ -242,11 +242,11 @@ def build
 
   build_rust_app(
     MEDIA_HOST,
-    crate: "rnostr",
-    # branch: "codonaft",
-    # git: URI.parse("https://github.com/codonaft/rnostr"),
-    version: RNOSTR_VERSION,
-    dependencies: ["g++", "openssl-dev", "openssl-libs-static"],
+    crate: "wok-cli",
+    git: URI.parse("https://github.com/erskingardner/wok"),
+    version: WOK_VERSION,
+    dependencies: ["gcc", "musl-dev"],
+    executables: ["wok"],
   )
 
   build_rust_app(
@@ -294,7 +294,7 @@ def configure(config)
     return
   end
   step("configure")
-  configure_rnostr(MEDIA_HOST, config)
+  ssh(MEDIA_HOST, add_user_commands("wok"))
 end
 
 def start
@@ -304,7 +304,7 @@ def start
   end
   step("start")
   start_openrc(MIRROR_HOST, services: ["i2pd", "local", "nginx", "quicssh-rs-robust", "ssserver", "tor"])
-  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "rnostr", "rnostr.temp", "i2pd", "local", "nginx", "quicssh-rs-robust", "ssserver", "tor", "wstunnel"])
+  start_openrc(MEDIA_HOST, services: ["aquatic_ws", "broadcastr", "metasearch", "i2pd", "local", "nginx", "quicssh-rs-robust", "ssserver", "tor", "wok", "wstunnel"])
 end
 
 def encode_media(input : String, config : YAML::Any, language : String)
@@ -704,10 +704,6 @@ def with_socks_proxy(country, f : URI ->)
   f.call(proxy)
 end
 
-def configure_rnostr(host, config)
-  ssh(host, add_user_commands("rnostr") + add_user_commands("rnostr-temp", Path["/tmp"]))
-end
-
 def generate_certbot_script(host)
   domains = CERTBOT_DOMAINS.join(',')
   user = ssh(host, ["echo -n ${USER}"])
@@ -1085,7 +1081,7 @@ def build_rust_app(
           branch.nil? ? " --tag #{version}" : " --rev #{version}"
         end
       branch = branch.nil? ? "" : " --branch #{branch}"
-      "--git #{git}#{version}#{branch}"
+      "--git #{git}#{version}#{branch} #{crate}"
     end
 
   install_executables_commands = executables

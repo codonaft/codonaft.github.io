@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+rc_conf="/etc/${RC_SVCNAME}/${RC_SVCNAME}.toml"
+
+command="/usr/local/bin/${RC_SVCNAME}"
+command_user="${RC_SVCNAME}:${RC_SVCNAME}"
+command_background="true"
+command_args="relay -c ${rc_conf}"
+retry="60"
+
+pidfile="/run/${RC_SVCNAME}.pid"
+output_logger="logger -t ${RC_SVCNAME}"
+error_logger="logger -t ${RC_SVCNAME}"
+
+rc_ulimit="-n $(grep nofiles ${rc_conf} | sed 's!.*=!!;s!#.*!!')"
+
+depend() {
+	need net
+	use logger
+}
+
+start_pre() {
+	home_dir=$(getent passwd ${RC_SVCNAME} | cut -d: -f6)
+	mkdir -p "${home_dir}"
+	chmod 00700 "${home_dir}"
+	chown "${command_user}" "${home_dir}"
+}
