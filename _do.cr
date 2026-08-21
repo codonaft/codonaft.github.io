@@ -110,7 +110,7 @@ def main
     health(config, hosts)
   elsif ARGV.size >= 1 && ARGV[0] == "build"
     update
-    build
+    build(config)
     if ARGV.size == 2 && ARGV[1] == "run"
       serve(DEBUG_HOST)
     end
@@ -124,7 +124,7 @@ def main
     generate_cloudflare_banlist(hosts)
   elsif ARGV.empty? || ARGV[0] == "debug"
     update
-    build
+    build(config)
     serve(DEBUG_HOST)
   end
 end
@@ -180,14 +180,14 @@ end
 
 def deploy(config, hosts : Array(String))
   update
-  build
+  build(config)
   sync(hosts)
   configure(config)
   start
   health(config, hosts)
 end
 
-def build
+def build(config)
   step("build")
 
   if DEBUG
@@ -285,6 +285,7 @@ def build
   end
 
   generate_certbot_script(MEDIA_HOST)
+  maybe_generate_muted_npubs(config)
   # maybe_generate_relays # FIXME
 end
 
@@ -725,6 +726,31 @@ def generate_certbot_script(host)
        STRING
   )
   File.chmod(output, 0o755)
+end
+
+def maybe_generate_muted_npubs(config)
+  nostr_config = config["theme_settings"]["nostr"]
+  npub = nostr_config["npub"].as_s
+  nak = `nak req -k 10000 -a #{decode_pk(npub)[0]} --limit 1 wss://nostr.codonaft.com wss://purplepag.es wss://profiles.nostr1.com wss://relay.nos.social wss://nostr.oxtr.dev wss://nostr.girino.org`.strip
+  muted = nak
+    .split("\n")
+    .map { |i| JSON.parse(i) }
+    .sort_by { |i| i["created_at"].as_i }[-1]["tags"]
+    .as_a
+    .map { |i| i.as_a }
+    .select { |i| i.size > 1 && i[0] == "p" }
+    .map { |i| i[1].as_s }
+    .to_set
+    .to_a
+    .sort
+  unless muted.empty?
+    file = BUILD_DIR.join(MEDIA_HOST).join("var/tmp/muted-pks.txt")
+    value = muted.join("\n")
+    unless File.read(file) == value
+      puts("generating relays muted pks")
+      File.write(file, value)
+    end
+  end
 end
 
 def maybe_generate_relays
