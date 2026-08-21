@@ -744,7 +744,7 @@ def maybe_generate_muted_npubs(config)
     .to_a
     .sort
   unless muted.empty?
-    file = BUILD_DIR.join(MEDIA_HOST).join("var/tmp/muted-pks.txt")
+    file = BUILD_DIR.join(MEDIA_HOST).join("etc/wok/muted-pks.txt")
     value = muted.join("\n")
     unless File.read(file) == value
       puts("generating relays muted pks")

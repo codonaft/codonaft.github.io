@@ -5,7 +5,7 @@ rc_conf="/etc/${RC_SVCNAME}/${RC_SVCNAME}.toml"
 command="/usr/local/bin/${RC_SVCNAME}"
 command_user="${RC_SVCNAME}:${RC_SVCNAME}"
 command_background="true"
-command_args="relay -c ${rc_conf}"
+command_args="relay --config ${rc_conf}"
 retry="60"
 
 pidfile="/run/${RC_SVCNAME}.pid"

@@ -13,9 +13,9 @@ no_read_ahead = false
 min_free_disk_bytes = 1073741824
 
 [events]
-max_event_size = 524288
+max_event_size = 65536
 reject_newer_than_secs = 900
-reject_older_than_secs = 1135296000
+reject_older_than_secs = 3153600000
 reject_ephemeral_older_than_secs = 60
 ephemeral_lifetime_secs = 300
 ephemeral_persistence = "live_only"
@@ -65,12 +65,12 @@ max_sync_events = 1000000
 [relay.auth]
 enabled = true
 service_url = "wss://nostr.codonaft.com"
-restricted_read_kinds = [4, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 21059, 24133, 27235, 30024, 30078, 30403, 30443, 31234, 31990]
+restricted_read_kinds = [4, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 1234, 21059, 24133, 27235, 25742, 30024, 30078, 30403, 30443, 31234] # TODO: 22242?
 restrict_read_to_involved_pubkey = true
 
 [relay.info]
 name = "codonaft.com"
-description = "Allow-list only nostr relay for friends and exceptional authors (and replies to them). It's also available here: ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr and here ws://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr"
+description = "Allow-list only nostr relay for friends and exceptional authors (as well as replies to them and threads they've interacted with). It's also available here: ws://codonaftct3jsouvfyrjq4yumyngzv3el2msndf5oddccktgghnw7eyd.onion/nostr and here ws://codnaft43k7ncna2hfsxrzi2nqoxieu22vbyjkmhkwdrrta2ghlq.b32.i2p/nostr"
 pubkey = "efc2b6e59480f0e55cc87c69af06b6d1a11fa25e4ea95a439878c41799c53c19"
 self_pk = ""
 contact = ""
@@ -87,7 +87,7 @@ deletion_batch_size = 1000
 enabled = true
 max_filters_per_req = 10
 min_filters_per_req = 1
-max_kinds_per_filter = 3
+max_kinds_per_filter = 10
 allowed_kinds = ""
 require_author_or_tag = false
 
