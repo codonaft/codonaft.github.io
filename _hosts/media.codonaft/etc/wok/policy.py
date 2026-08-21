@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import OrderedDict
 import json
 import sys
 import tomllib
@@ -20,6 +21,8 @@ MAX_MENTIONS = 20
 
 NO_MENTION_KINDS = [0, 3, 17, 20, 40, 41, 43, 44, 54, 62, 443, 1984, 1985, 2003, 2004, 5128, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10011, 10012, 10013, 10015, 10020, 10030, 10050, 10051, 10054, 10063, 10064, 10096, 10154, 10312, 13194, 13534, 15128, 17375, 23194, 23195, 24242, 28935, 28936, 30000, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30015, 30017, 30018, 30019, 30020, 30023, 34550, 30000, 30003, 30030, 30040, 30041, 30063, 30267, 30311, 30312, 30313, 30402, 30617, 30618, 30818, 30819, 31922, 31923, 31924, 31925, 34235, 34236, 35128, 38383, 39089, 39092, 39701]
 
+MAX_PARENT_EVENTS = 1024
+
 print('starting wok write policy filter', file=sys.stderr)
 
 restricted_read_kinds = []
@@ -34,6 +37,14 @@ with open('/var/tmp/muted-pks.txt', 'r') as f:
 
 print('currently muted', len(muted_pks), 'npubs', file=sys.stderr)
 
+parent_events = OrderedDict()
+
+def allow(event_ref):
+    print('allow parent event', event_ref, file=sys.stderr)
+    parent_events[event_ref] = None
+    if len(parent_events) > MAX_PARENT_EVENTS:
+        parent_events.popitem(last=False)
+
 for line in sys.stdin:
     try:
         request = json.loads(line)
@@ -47,13 +58,15 @@ for line in sys.stdin:
 
     try:
         ev = request['event']
-        response = {'id': ev['id']}
         k = ev['kind']
         pk = ev['pubkey']
+        tags = ev['tags']
 
         allowed_pk = (pk in ALLOWED_PKS) or (len(ALLOWED_PKS) == 0)
-        mentions = set(t[1] for t in ev['tags'] if len(t) > 1 and t[0] == 'p')
+        mentions = set(t[1] for t in tags if len(t) > 1 and t[0] == 'p')
         mentioned = bool(ALLOWED_PKS & mentions)
+
+        response = {'id': ev['id']}
 
         def reject(reason):
             response['action'] = 'reject'
@@ -62,10 +75,17 @@ for line in sys.stdin:
         def accept():
             response['action'] = 'accept'
 
+        known_parent_event = (ev['id'] in parent_events) or bool(set(t[1] for t in tags if len(t) > 1 and t[0] == 'a') & parent_events.keys())
+
         if pk in muted_pks:
             reject('muted by admin')
-        elif (k in restricted_read_kinds) or allowed_pk:
+        elif k in restricted_read_kinds:
             accept()
+        elif allowed_pk or known_parent_event:
+            accept()
+            if not known_parent_event:
+                for event_ref in set(t[1] for t in tags if len(t) > 1 and t[0] in ['a', 'e', 'q']):
+                    allow(event_ref)
         elif (k not in NO_MENTION_KINDS) and mentioned:
             if len(mentions) > MAX_MENTIONS:
                 reject('too many mentions')
