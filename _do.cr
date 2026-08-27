@@ -1636,6 +1636,7 @@ def sign(unsigned_event : String, nostr)
   puts("signing")
   nak([
     "event",
+    "--auth",
     "--pow", nostr["min_read_pow"].to_s,
   ], unsigned_event)
 end

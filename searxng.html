@@ -20,7 +20,8 @@ code { background-color: rgba(128, 128, 128, 0.4); padding: 0.1rem 0.25rem 0.1re
 import { detectAll } from '{{ site.url }}/assets/js/vendor/tinyld.min.js';
 
 const INSTANCES_URL = 'https://searx.space/data/instances.json';
-const INSTANCES = ['s.bloat.cat', 'search.data.haus', 'search.einfachzocken.eu', 'search.im-in.space', 'search.mdosch.de', 'search.rowie.at', 'search.url4irl.com', 'searx.bndkt.io', 'searx.dresden.network', 'searx.namejeff.xyz', 'searx.oloke.xyz', 'searx.party', 'searx.perennialte.ch', 'searx.redgarden.cv', 'searx.tiekoetter.com', 'searxng.gdebest.net', 'searxng.site', 'searxng.website'];
+const INSTANCES = ['s.bloat.cat', 'search.data.haus', 'search.einfachzocken.eu', 'search.im-in.space', 'search.mdosch.de', 'search.rowie.at', 'search.url4irl.com', 'searx.bndkt.io', 'searx.dresden.network', 'searx.namejeff.xyz', 'searx.oloke.xyz', 'searx.party', 'searx.perennialte.ch', 'searx.tiekoetter.com', 'searxng.gdebest.net', 'searxng.site', 'searxng.website'];
+const IGNORED_INSTANCES = new Set(['libresearch.space', 'searx.redgarden.cv', 'search.serpensin.com', 'searx.linxx.net', 'searx.ononoki.org', 'searxng.shreven.org', 'searxng.website', 'xka.cz']);
 const LANGUAGES = ['en'];
 const GET = '0';
 const TIMEOUT = 5000;
@@ -68,7 +69,7 @@ const loadAndShuffleInstances = async params => {
     if (onion) {
      if (i?.network_type !== 'tor') return false;
     } else {
-     if (i?.network_type !== 'normal' || url.protocol !== 'https:' || i?.tls?.grade !== 'A+' || i?.http?.status_code !== 200 || (i.timing?.search?.success_percentage || 0) < 80 || i?.html?.grade !== 'V') return false;
+     if (i?.network_type !== 'normal' || url.protocol !== 'https:' || i?.tls?.grade !== 'A+' || i?.http?.status_code !== 200 || (i.timing?.search?.success_percentage || 0) < 80 || i?.html?.grade !== 'V' || IGNORED_INSTANCES.has(url.hostname)) return false;
     }
     return !i?.analytics;
    } catch(e) {

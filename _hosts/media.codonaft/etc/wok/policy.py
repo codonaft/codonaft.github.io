@@ -16,6 +16,7 @@ MAX_MENTIONS = 20
 NO_MENTION_KINDS = set([0, 3, 17, 20, 40, 41, 43, 44, 54, 62, 443, 1984, 1985, 2003, 2004, 5128, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10011, 10012, 10013, 10015, 10020, 10030, 10050, 10051, 10054, 10063, 10064, 10096, 10154, 10312, 13194, 13534, 15128, 17375, 23194, 23195, 24242, 28935, 28936, 30000, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30015, 30017, 30018, 30019, 30020, 30023, 34550, 30000, 30003, 30030, 30040, 30041, 30063, 30267, 30311, 30312, 30313, 30402, 30617, 30618, 30818, 30819, 31922, 31923, 31924, 31925, 34235, 34236, 35128, 38383, 39089, 39092, 39701])
 MAX_PARENT_EVENTS = 1024
 RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY = set([1234, 30024, 30078, 30403, 31234])
+ALLOWED_KINDS_FOR_EVERYONE = set([5])
 UPDATE_INTERVAL_MIN = 5
 
 restricted_read_kinds = set()
@@ -71,7 +72,9 @@ def main():
 
             known_parent_event = (eid in parent_events) or bool(set(t[1] for t in tags if len(t) > 1 and t[0] == 'a') & parent_events.keys())
 
-            if (k in (restricted_read_kinds | RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY)) and len(mentions) == 0: # FIXME
+            if k in ALLOWED_KINDS_FOR_EVERYONE:
+                accept()
+            elif (k in (restricted_read_kinds | RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY)) and len(mentions) == 0: # FIXME
                 reject('restricted event read kinds without p-tags are not supported')
             elif pk in muted_pks:
                 reject('muted by admin')
@@ -83,7 +86,7 @@ def main():
                 accept()
             elif allowed_pk or known_parent_event:
                 accept()
-                if not known_parent_event:
+                if not known_parent_event and k != 5:
                     for ref in set(t[1] for t in tags if len(t) > 1 and t[0] in ['a', 'e', 'q']):
                         allow_event(ref)
                     # TODO: spawn req + event? use possible existing t[2] as priority relay?

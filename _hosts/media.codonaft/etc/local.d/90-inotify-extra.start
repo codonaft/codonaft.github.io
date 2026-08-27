@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
 
-# disallow some of the legacy unencrypted protocols
-for i in 20 21 23 25 49 69 80 109 110 119 143 161 162 194 389 513 514 5060 6667 ; do
-  iptables -A OUTPUT -p tcp --dport "$i" -j REJECT
-  ip6tables -A OUTPUT -p tcp --dport "$i" -j REJECT
-done
-for i in 69 194 389 513 514 5060 ; do
-  iptables -A OUTPUT -p udp --dport "$i" -j REJECT
-  ip6tables -A OUTPUT -p udp --dport "$i" -j REJECT
-done
-
 [ -f /etc/init.d/aquatic_ws ] && [ -d /var/www ] && \
   inotifywait --event close_write,moved_to,create --monitor --recursive /etc/aquatic/ /var/www/ |
     while read -r directory events filename ; do
