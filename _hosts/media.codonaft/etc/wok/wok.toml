@@ -65,7 +65,7 @@ max_sync_events = 1000000
 [relay.auth]
 enabled = true
 service_url = "wss://nostr.codonaft.com"
-restricted_read_kinds = [4, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 1234, 21059, 24133, 27235, 25742, 30024, 30078, 30403, 30443, 31234] # TODO: 22242?
+restricted_read_kinds = [4, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 1234, 21059, 22242, 24133, 24135, 27235, 25742, 30024, 30078, 30403, 30443, 31234]
 restrict_read_to_involved_pubkey = true
 
 [relay.info]
