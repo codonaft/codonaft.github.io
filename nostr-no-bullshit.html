@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>No Bullshit Nostr Starter/Signup Tool/Guide for Desktop/Laptop + Android</title>
+<style>
+* { font-family: monospace; font-size: 16pt; }
+body { padding-left: 6rem; padding-right: 6rem; padding-top: 1rem; padding-bottom: 5rem; }
+textarea { width: 50%; min-height: 8rem; }
+</style>
+<script>
+const $ = id => document.getElementById(id)
+const lines = el => [...new Set($(el).value.split("\n").map(i => i.trim()).filter(Boolean))]
+const out = i => $("status").textContent += `${i}\n`
+
+function request(url, message) {
+  return new Promise(resolve => {
+    const ws = new WebSocket(url), result = []
+    const timer = setTimeout(() => { ws.close(); resolve(result) }, 4000)
+    ws.onopen = () => ws.send(JSON.stringify(message))
+    ws.onmessage = e => {
+      const x = JSON.parse(e.data)
+      if (x[0] === "EVENT") result.push(x[2])
+      if (x[0] === "EOSE") {
+        clearTimeout(timer)
+        ws.close()
+        resolve(result)
+      }
+    }
+    ws.onerror = () => {
+      clearTimeout(timer)
+      ws.close()
+      resolve(result)
+    }
+  })
+}
+
+function send(url, event) {
+  return new Promise(resolve => {
+    const ws = new WebSocket(url)
+    const timer = setTimeout(() => { ws.close(); resolve(false) }, 4000)
+    ws.onopen = () => ws.send(JSON.stringify(["EVENT", event]))
+    ws.onmessage = e => {
+      const x = JSON.parse(e.data)
+      if (x[0] === "OK") {
+        clearTimeout(timer)
+        ws.close()
+        resolve(x[2])
+      }
+    }
+    ws.onerror = () => {
+      clearTimeout(timer)
+      ws.close()
+      resolve(false)
+    }
+  })
+}
+
+function values(event, key) {
+  return event.tags.filter(i => i[0] === key && i[1]).map(i => i[1])
+}
+
+async function existing(relays, pubkey, kind, tags) {
+  const wanted = new Set(tags.map(i => i[1]))
+  for (const relay of relays) {
+    const events = await request(relay, [
+      "REQ", crypto.randomUUID(),
+      { authors: [pubkey], kinds: [kind], limit: 100 }
+    ])
+    for (const event of events) {
+      const got = values(event, kind === 10002 ? "r" : "relay")
+      if (got.length === wanted.size && got.every(i => wanted.has(i)))
+        return event
+    }
+  }
+}
+
+async function publish(kind, key, tags, relays, pubkey) {
+  let event = await existing(relays, pubkey, kind, tags)
+
+  if (!event) {
+    event = await window.nostr.signEvent({
+      kind,
+      created_at: Math.floor(Date.now() / 1000),
+      tags,
+      content: ""
+    })
+    out(`Signed kind ${kind}`)
+  } else {
+    out(`Reusing existing kind ${kind} event`)
+  }
+
+  const results = await Promise.allSettled(relays.map(relay => send(relay, event)))
+  out(`Event kind ${kind}: ${results.filter(Boolean).length}/${relays.length} relays accepted`)
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  $("publish").onclick = async () => {
+    $("status").textContent = ""
+    $("publish").disabled = true
+
+    const content = lines("content")
+    const dm = lines("dm")
+    const profile = lines("profile")
+
+    if (!content.length || !dm.length || !profile.length) {
+      out("Fill all inputs")
+      return
+    }
+
+    try {
+      const pubkey = await window.nostr.getPublicKey()
+      await publish(
+        10002,
+        "r",
+        content.map(i => ["r", i]),
+        profile,
+        pubkey
+      )
+      await publish(
+        10050,
+        "relay",
+        dm.map(i => ["relay", i]),
+        profile,
+        pubkey
+      )
+      out(`${pubkey} is now ready to use 🎉`)
+    } catch (e) {
+      out(e.message || String(e))
+    }
+  }
+
+  const example = new URL(window.location.href);
+  example.hash = "#content=wss://theforest.nostr1.com,wss://relay.primal.net&blossom=https://blossom.primal.net&append=0";
+  $("example").href = example;
+
+  setTimeout(() => {
+    if (window.nostr) {
+      $("publish").disabled = false
+      $("refresh").disabled = true
+    }
+  }, 500)
+})
+</script>
+</head>
+
+<body>
+<h1>No bullshit <i>safe</i> and <i>reliable</i> <a href="https://en.wikipedia.org/wiki/Nostr" target="_blank">Nostr</a> signup for normies and hackers</h1><hr><br>
+
+1. Android: create a profile with <a href="https://github.com/greenart7c3/Amber#download-and-install" target="_blank">Amber</a><br><br>
+
+2. Backup your password-protected <i>ncryptsec</i> (not the unprotected <i>nsec</i>!) to paper or/and a password manager you trust (for instance <a href="https://f-droid.org/packages/com.kunzisoft.keepass.libre" target="_blank">this one</a>). From Amber: Settings → Backup keys → enter your encryption password → Encrypt and copy to clipboard → paste to your password manager → Ensure you've cleared up your clipboard when you're done<br><br>
+
+<details>
+<summary>Safety</summary>
+❌ never ever paste <i>ncryptsec/nsec</i> to anything but Amber<br>
+⚰️ if you leaked your <i>ncryptsec/nsec</i>—your profile (with all your private communications) is now irreversibly compromised; delete it (with <a href="https://armada.buzz" target="_blank">Armada</a>: Settings → Delete Account) and start all over again<br>
+</details><br>
+
+3. Generate a one-time Bunker URI from Amber with <b>+ → Add nsecbunker</b><br><br>
+
+<details>
+<summary>Safety</summary>
+✔️ it's relatively okay to copy-paste the one-time <i>Bunker URI</i> over a message to yourself in whatever messenger (you can reject all Amber requests and revoke the URI if you accidentally leaked it to a malicious actor)<br>
+</details><br>
+
+4. Open <i>this</i> page on Desktop/Laptop and install <a href="https://github.com/dsbaars/bunker46-extension#readme" target="_blank">Bunker46</a>, click on the extension icon, connect using the Bunker URI copied from Amber, <button id="refresh" onclick="location.reload()">Refresh</button> this page<br><br>
+
+5. <button id="publish" disabled>Publish</button> your relay/server lists
+<details>
+<summary>(or select them manually first, if you know what you're doing)</summary>
+
+Content Relays:<br>
+<textarea id="content">
+wss://relay.ditto.pub
+wss://relay.mostr.pub
+wss://nostr.data.haus
+wss://relay.momostr.pink
+wss://nos.lol
+wss://nostr-01.yakihonne.com
+wss://relay.nmail.li
+wss://relay.dreamith.to</textarea><br>
+
+DM Relays:<br>
+<textarea id="dm">
+wss://relay.ditto.pub
+wss://auth.nostr1.com
+wss://chat.wisp.talk
+wss://relay.dreamith.to
+wss://relay.nmail.li</textarea><br>
+
+Marmot Key Package Relays:<br>
+<textarea id="keypackage">
+wss://nos.lol
+wss://relay.0xchat.com
+wss://relay.ditto.pub
+wss://relay.primal.net
+wss://relay.nmail.li</textarea><br>
+
+Search Relays:<br>
+<textarea id="search">
+wss://search.nos.today
+wss://nostr.polyserv.xyz
+wss://relay.ditto.pub
+wss://relay.noswhere.com
+wss://nostr.wine</textarea><br>
+
+Blossom Servers:<br>
+<textarea id="blossom">
+https://blossom.ditto.pub
+https://blossom.data.haus</textarea><br>
+
+Publish Relay Lists to:<br>
+<textarea id="profile">
+wss://sendit.nosflare.com
+wss://relay.ditto.pub
+wss://relay.dreamith.to
+wss://purplepag.es
+wss://user.kindpag.es
+wss://profiles.nostr1.com
+wss://relay.nos.social
+wss://directory.yabu.me
+wss://indexer.coracle.social</textarea><br>
+</details>
+<pre id="status"></pre>
+6. Use <a href="https://armada.buzz" target="_blank">Armada</a> client (also available as <a href="http://armadahvhvaj57ojv7mavkqaecdajzejansfiksp5mdscczyh5g7stid.onion" target="_blank">onion service</a>) for private/group chats<br><br>
+- use "login with Amber" in the Android app<br>
+- use "login with the browser extension" on a Desktop/Laptop browser page<br><br>
+7. For everything else (but chats!) use <a href="https://yakihonne.com" target="_blank">YakiHonne</a> or <a href="https://ditto.pub" target="_blank">Ditto</a> or <a href="https://primal.net" target="_bank">Primal</a> or <a href="https://nostrudel.ninja" target="_bank">noStrudel</a> or <a href="https://nostrapps.com" target="_blank">whatever</a> works. Login the same ways (using Amber on an app or browser extension on a web page).<br>
+
+<br>
+<details>
+<summary>Privacy</summary>
+Not all Nostr chat clients currently support file encryption. Armada supports it, but, for instance, YakiHonne currently doesn't: if you send a file in a private chat using YakiHonne—it will be available unencrypted to everyone unrelated to your chat, who has a link to an uploaded file (a media file server owner in particular).
+</details>
+
+<br><hr><br>
+
+<details>
+<summary>FAQ</summary>
+Q: Why not just scan the nostrconnect QR, generated by Bunker46? That would be more privacy and user-friendly.<br>
+A: Currently <a href="https://github.com/dsbaars/bunker46-extension/issues/9" target="_blank">broken</a>.<br><br>
+
+A: iOS?<br>
+Q: Currently <a href="https://primal.net/a/nevent1qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgpzemhxue69uhhyetvv9ujuerfw36x7tnsw43z7qg4waehxw309aex2mrp0yhxumtpd9kzumrf9uqzq82paj724qsrnn68esh4sqglgm3pj9drx8pt0l27k7gyegxau8s6e3l3ec" target="_blank">broken</a>.<br><br>
+<hr><br>
+
+For paranoid nerds:<br><br>
+Q: Desktop/Laptop setup only?<br>
+A: Only if you know what you are doing. Possible, for instance, with <a href="https://github.com/fiatjaf/nak#readme" target="_blank">nak bunker</a>, running on a hardened enough OS. I don't recommend storing your nsec/ncryptsec directly in NIP-07 browser extensions (like nos2x) because currently every browser is a critical vulnerabilities honeypot fractal.<br><br>
+
+Q: I'm scared to carry my private key on my phone and my mobile client doesn't support Bunker URI.<br>
+A: You can connect Amber to an <a href="https://github.com/greenart7c3/Amber/pull/418" target="_blank">external bunker</a> (it's slow but works for me) or try <a href="https://github.com/privkeyio/keep-android#readme" target="_blank">FROST</a> (I didn't test it).<br><br>
+
+Q: Armada/Concord vs <a href="https://whitenoise.chat" target="_blank">White Noise</a>/Marmot vs <a href="https://cordn.net" target="_blank">Cordn</a>?<br>
+A: I wish somebody could independently investigate and contribute it <a href="https://eylenburg.github.io/im_comparison.htm" target="_blank">here</a>. Don't take my word; verify. At least this could be outdated already.<br>
+In short:<br>
+- Armada/Concord is reliable, non-secret, and decentralized (it will load all chats from relays after logging in from a new device and decrypt them)<br>
+- White Noise is experimental, secret, and decentralized (it won't load and decrypt old chats on a new device, because relays don't store chat data after transmission)<br>
+- Cordn is a reliable, secret<a href="https://primal.net/e/nevent1qqsy6qpnwuwwg8jgvxc4dju4xvhrp9tryusm9vs83q2htmuhf4cll8g99wmzr" target="_blank"><sup>*</sup></a>, with centralized coordination (will possibly be improved with automatic coordinator <a href="https://primal.net/e/nevent1qqs9fd4zlghayf5rqakjt6zwzlxz0ew7d60f90zye7rkpf9498ftzsscv0l67" target="_blank">leader selection</a> in the future, but will still rely on the center(s) reliability; you can run your <a href="https://primal.net/e/nevent1qqsrmxp7a0r8ej3emrh2rufndz9ftz9umaj4uzmfk9zvp5qk8p3ac3snrgnnx" target="_blank">own</a> center on your phone), supports multi-device <a href="https://primal.net/e/nevent1qqs8wmqa6y56kl52masejghxd3mv4s2lty50hxdgrunmac84ydkaujswfs2tl">sync</a>.<br>
+All of them (even <a href="https://github.com/keychat-io/keychat-app#readme" target="_blank">KeyChat</a>, AFAIK) leak metadata (who/whom wrote when, but not what exactly was written) to relay operators. Avoid using your real IP if you can.<br>
+</details>
+<br>
+
+<details>
+<summary>Preconfigure relays/servers for your friend</summary>
+If you want to give this page with allowlist/location-based preconfigured relays/servers to somebody—use hash parameters: <b>content, dm, keypackage, search, blossom, profile, append</b>. <a id="example">Example</a>.
+</details>
+<br>
+<hr>
+<div style="font-size: 12pt; text-align: right">Public domain</tiny>
+</body>
+</html>
