@@ -122,12 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const pubkey = await window.nostr.getPublicKey()
-      await Promise.allSettled([
-        publish(10002, "r", content, profile, pubkey),
-        publish(10050, "relay", dm, profile, pubkey),
-        publish(10051, "relay", keypackage, profile, pubkey),
-        publish(10063, "server", blossom, profile, pubkey),
-      ])
+      await publish(10002, "r", content, profile, pubkey)
+      await publish(10050, "relay", dm, profile, pubkey)
+      await publish(10051, "relay", keypackage, profile, pubkey)
+      await publish(10063, "server", blossom, profile, pubkey)
       out(`https://nostria.app/p/${pubkey} is now ready to use 🎉`)
     } catch (e) {
       out(e.message || String(e))
@@ -138,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
  const append = params.get("append") !== "0"
  params.delete("append")
  for (const [k, v] of params.entries()) {
-   let value = $(k).value;
+   let value = $(k).value
    if (!append) {
      value = ""
    }
