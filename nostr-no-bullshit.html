@@ -10,166 +10,22 @@ textarea { width: 50%; min-height: 8rem; }
 details { border: 0.1rem dashed #222; padding: 0.5rem; }
 pre { padding-left: 1rem; font-size: 8pt; }
 </style>
-<script>
-const TIMEOUT = 7000
+<script type="module">
+import { SimplePool } from "https://esm.sh/nostr-tools/pool"
+
+const pool = new SimplePool({ maxWaitForConnection: 7000 })
 
 const $ = id => document.getElementById(id)
-const lines = el => [...new Set($(el).value
-  .split("\n")
-  .map(i => i.trim())
-  .filter(Boolean)
+
+const lines = el => [...new Set(
+  $(el).value
+    .split("\n")
+    .map(i => i.trim())
+    .filter(Boolean)
 )]
-const out = i => $("status").textContent += `${i}\n`
 
-const connections = new Map()
-
-function connect(url) {
-  const existing = connections.get(url)
-
-  if (existing?.ws?.readyState === WebSocket.OPEN) {
-    return Promise.resolve(existing)
-  }
-
-  if (existing?.connecting) {
-    return existing.connecting
-  }
-
-  const state = {
-    ws: null,
-    connecting: null,
-    requests: new Map(),
-    events: new Map()
-  }
-
-  state.connecting = new Promise((resolve, reject) => {
-    const ws = new WebSocket(url)
-    state.ws = ws
-
-    const fail = error => {
-      for (const request of state.requests.values()) {
-        clearTimeout(request.timer)
-        request.resolve([])
-      }
-
-      for (const request of state.events.values()) {
-        clearTimeout(request.timer)
-        request.resolve(false)
-      }
-
-      state.requests.clear()
-      state.events.clear()
-
-      if (connections.get(url) === state) {
-        connections.delete(url)
-      }
-
-      state.connecting = null
-      reject(error)
-    }
-
-    ws.onopen = () => {
-      state.connecting = null
-      resolve(state)
-    }
-
-    ws.onmessage = e => {
-      let message
-
-      try {
-        message = JSON.parse(e.data)
-      } catch {
-        return
-      }
-
-      const type = message[0]
-
-      if (type === "EVENT") {
-        const subscriptionId = message[1]
-        const request = state.requests.get(subscriptionId)
-
-        if (request) {
-          request.result.push(message[2])
-        }
-
-        return
-      }
-
-      if (type === "EOSE") {
-        const subscriptionId = message[1]
-        const request = state.requests.get(subscriptionId)
-
-        if (!request) return
-
-        clearTimeout(request.timer)
-        state.requests.delete(subscriptionId)
-        request.resolve(request.result)
-
-        ws.send(JSON.stringify(["CLOSE", subscriptionId]))
-        return
-      }
-
-      if (type === "OK") {
-        const eventId = message[1]
-        const request = state.events.get(eventId)
-
-        if (!request) return
-
-        clearTimeout(request.timer)
-        state.events.delete(eventId)
-        request.resolve(Boolean(message[2]))
-      }
-    }
-
-    ws.onerror = fail
-    ws.onclose = () => fail(new Error("Relay connection closed"))
-  })
-
-  connections.set(url, state)
-  return state.connecting
-}
-
-async function request(url, filters) {
-  const connection = await connect(url)
-  const { ws } = connection
-  const subscriptionId = crypto.randomUUID()
-
-  return new Promise(resolve => {
-    const timer = setTimeout(() => {
-      connection.requests.delete(subscriptionId)
-      resolve([])
-    }, TIMEOUT)
-
-    connection.requests.set(subscriptionId, {
-      timer,
-      result: [],
-      resolve
-    })
-
-    ws.send(JSON.stringify([
-      "REQ",
-      subscriptionId,
-      ...filters
-    ]))
-  })
-}
-
-async function send(url, event) {
-  const connection = await connect(url)
-  const { ws } = connection
-
-  return new Promise(resolve => {
-    const timer = setTimeout(() => {
-      connection.events.delete(event.id)
-      resolve(false)
-    }, TIMEOUT)
-
-    connection.events.set(event.id, {
-      timer,
-      resolve
-    })
-
-    ws.send(JSON.stringify(["EVENT", event]))
-  })
+const out = message => {
+  $("status").textContent += `${message}\n`
 }
 
 function values(event, key) {
@@ -182,19 +38,23 @@ async function existing(relays, pubkey, kind, tags) {
   const wanted = new Set(tags.map(tag => tag[1]))
   const key = tags[0][0]
 
-  for (const relay of relays) {
-    const events = await request(relay, [{
+  let events
+
+  try {
+    events = await pool.querySync(relays, {
       authors: [pubkey],
       kinds: [kind],
-      limit: 100
-    }])
+      limit: 1,
+    })
+  } catch (e) {
+    out(error.message || String(error))
+    return null
+  }
 
-    for (const event of events) {
-      const got = values(event, key)
-
-      if (got.length === wanted.size && got.every(i => wanted.has(i))) {
-        return event
-      }
+  for (const event of events) {
+    const got = values(event, key)
+    if (got.length === wanted.size && got.every(i => wanted.has(i))) {
+      return event
     }
   }
 
@@ -218,31 +78,35 @@ async function publish(kind, key, relays, profileRelays, pubkey) {
     out(`Reusing existing event kind ${kind}`)
   }
 
-  const results = await Promise.all(
-    profileRelays.map(relay => send(relay, event))
-  )
+  let results
 
-  const accepted = results.filter(Boolean).length
+  try {
+    results = await Promise.allSettled(pool.publish(profileRelays, event))
+  } catch {
+    results = []
+  }
 
+  const accepted = results.filter(result => result.status === "fulfilled").length
   out(`Event kind ${kind}: ${accepted}/${profileRelays.length} relays accepted`)
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   $("publish").onclick = async () => {
-    $("status").textContent = "Wait for success...\n"
+    $("status").textContent = "⏳ Please wait for success...\n"
     $("publish").disabled = true
 
-    const content = lines("content")
-    const dm = lines("dm")
-    const profile = lines("profile")
-
-    if (!content.length || !dm.length || !profile.length) {
-      out("Fill all inputs")
-      $("publish").disabled = false
-      return
-    }
-
     try {
+      const content = lines("content")
+      const dm = lines("dm")
+      const profile = lines("profile")
+      const keypackage = lines("keypackage")
+      const blossom = lines("blossom")
+
+      if (!content.length || !dm.length || !keypackage.length || !blossom.length || !profile.length) {
+        out("Fill all inputs")
+        return
+      }
+
       const pubkey = await window.nostr.getPublicKey()
 
       await publish(10002, "r", content, profile, pubkey)
@@ -251,8 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
       await publish(10063, "server", blossom, profile, pubkey)
 
       out(`🎉 Success! https://nostria.app/p/${pubkey} is now ready to use`)
-    } catch (e) {
-      out(e.message || String(e))
+    } catch (error) {
+      out(error.message || String(error))
     } finally {
       $("publish").disabled = false
     }
@@ -266,8 +130,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!append) {
       value = ""
     }
-    const items = [...new Set([...value.split("\n"), ...v.split(",")])]
-    $(k).value = items.join("\n").trim()
+    const items = [
+      ...new Set([...value.split("\n"),
+      ...v.split(",")])
+    ].map(i => i.trim()).filter(Boolean)
+    $(k).value = items.join("\n")
   }
 
   const example = new URL(window.location.href)
@@ -294,9 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <b>1.</b> Create a profile with <a href="https://github.com/greenart7c3/Amber#download-and-install" target="_blank">Amber</a>.<br><br>
 
-<b>2.</b> [Settings] → [Backup keys] → enter your encryption password → [Encrypt and copy to clipboard] → paste the ncryptsec to a password manager you trust (like <a href="https://f-droid.org/packages/com.kunzisoft.keepass.libre" target="_blank">this one</a>) → copy the ncryptsec on paper → ensure you've cleared up your clipboard when you're done.<br><br>
+<b>2.</b> <b>[Settings] → [Backup keys] → enter your encryption password → [Encrypt and copy to clipboard] → paste the ncryptsec to a password manager you trust (like <a href="https://f-droid.org/packages/com.kunzisoft.keepass.libre" target="_blank">this one</a>) → copy the ncryptsec on paper → ensure you've cleared up your clipboard when you're done.</b><br><br>
 
-☠️ <b>Never</b> paste your ncryptsec/nsec to Telegram/WA/Protonmail/Google Docs/whatever (<b>even</b> to send it as a private message yourself!)—that's a fatal mistake, total profile control loss by leaking your private key to a third-party (see "Safety and Responsibility" below).<br><br>
+☠️ <b>Never</b> paste your ncryptsec/nsec to Telegram/WA/ProtonMail/Google Docs/whatever (<b>even</b> to send it as a private message yourself!)—that's a fatal mistake, total profile control loss by leaking your private key to a third-party (see "Safety and Responsibility" below).<br><br>
 
 ☠️ <b>Never</b> paste your ncryptsec/nsec to any <i>Nostr Login</i> screen even (same reason, see "Safety and Responsibility").<br><br>
 
@@ -313,12 +180,12 @@ Password ≠ key: password is changeable, key is not. A key is much more powerfu
 ⚰️ if you've already leaked your private key to something different from Amber or a password manager, that means your profile is probably irreversibly compromised: somebody or something may access it, may read your private messages, may publish posts on your behalf, etc.; don't fuck with it, delete it (login whatever way into <a href="https://armada.buzz" target="_blank">Armada</a> → [Settings] → [Delete Account]), and start all over again.<br>
 </details><br>
 
-<b>3.</b> Generate a one-time Bunker URI from Amber with <b>+ → [Add nsecbunker] → enter name → [Create]</b>. Copy the URI to your Desktop/Laptop whatever preferable way.<br><br>
+<b>3.</b> Generate a one-time Bunker URI from Amber with <b>[+] → [Add nsecbunker] → enter name → [Create]</b>. Copy the URI to your Desktop/Laptop whatever preferable way.<br><br>
 
 <details>
 <summary>Safety</summary>
 <br>
-✔️ it's acceptable to copy-paste the one-time Bunker URI over a message to yourself in whatever private messenger (you can reject all Amber requests and revoke the URI if you've accidentally leaked it to somebody malicious).<br>
+✔️ it's not perfect, but still acceptable to copy-paste the one-time Bunker URI over a message to yourself in whatever private messenger (you can reject all Amber requests and revoke the URI if you've accidentally leaked it to somebody malicious).<br>
 </details><br>
 
 <b>4.</b> Open <i>this</i> page on Desktop/Laptop → install <a href="https://github.com/dsbaars/bunker46-extension#readme" target="_blank">Bunker46</a> → click on the extension icon → paste the Bunker URI copied from Amber → [Connect] → allow and keep allowing whatever needed on both devices → <button id="refresh" onclick="location.reload()">Refresh</button> this page.<br><br>
@@ -329,7 +196,7 @@ Password ≠ key: password is changeable, key is not. A key is much more powerfu
 <summary>Or select them manually first if you know what you're doing.</summary>
 <br>
 Content Relays:<br>
-<textarea id="content">
+<textarea id="content" translate="no">
 wss://nos.lol
 wss://nostr-01.yakihonne.com
 wss://nostr.data.haus
@@ -341,7 +208,7 @@ wss://relay.nmail.li
 </textarea><br>
 
 DM Relays:<br>
-<textarea id="dm">
+<textarea id="dm" translate="no">
 wss://auth.nostr1.com
 wss://chat.wisp.talk
 wss://relay.ditto.pub
@@ -350,7 +217,7 @@ wss://relay.nmail.li
 </textarea><br>
 
 Marmot Key Package Relays:<br>
-<textarea id="keypackage">
+<textarea id="keypackage" translate="no">
 wss://nos.lol
 wss://relay.0xchat.com
 wss://relay.ditto.pub
@@ -359,7 +226,7 @@ wss://relay.primal.net
 </textarea><br>
 
 Search Relays:<br>
-<textarea id="search">
+<textarea id="search" translate="no">
 wss://nostr.polyserv.xyz
 wss://nostr.wine
 wss://relay.ditto.pub
@@ -368,13 +235,13 @@ wss://search.nos.today
 </textarea><br>
 
 Blossom Servers:<br>
-<textarea id="blossom">
+<textarea id="blossom" translate="no">
 https://blossom.data.haus
 https://blossom.ditto.pub
 </textarea><br>
 
 Publish Relay Lists to:<br>
-<textarea id="profile">
+<textarea id="profile" translate="no">
 wss://directory.yabu.me
 wss://indexer.coracle.social
 wss://profiles.nostr1.com
@@ -386,13 +253,17 @@ wss://sendit.nosflare.com
 wss://user.kindpag.es
 </textarea><br>
 </details>
+
+<br>
+⚠️ Retry the "Publish" button in case of failure. Don't continue if this step hasn't succeeded. Check your <b>phone notifications</b> if something has failed.<br>
+
 <br>
 <b>6.</b> Use <a href="https://armada.buzz" target="_blank">Armada</a> Nostr client (also available as an <a href="http://armadahvhvaj57ojv7mavkqaecdajzejansfiksp5mdscczyh5g7stid.onion" target="_blank">onion service</a>) for private/group chats:<br><br>
-- use "Log in with Extension" in the Armada <i>browser</i> page<br>
-- use "login with Amber" button in the Armada <i>Android</i> app<br>
+- use <b>[Log in with Extension]</b> in the Armada <i>browser</i> page<br>
+- use <b>[Open signer app]</b> button in the Armada <i>Android</i> app<br>
 - use a new Bunker URI (step 3) in the Armada Desktop/Laptop <i>app</i><br>
 - never paste your nsec1 in the login screens (see step 2).<br><br>
-<b>7.</b> For everything else (but chats!) use <a href="https://yakihonne.com" target="_blank">YakiHonne</a> or <a href="https://ditto.pub" target="_blank">Ditto</a> or <a href="https://primal.net" target="_bank">Primal</a> or <a href="https://nostria.app" target="_bank">Nostria</a> or <a href="https://nostrudel.ninja" target="_bank">noStrudel</a> or <a href="https://nostrapps.com" target="_blank">whatever</a> Nostr client works for you. Login the same ways (using Amber, extension, or a new Bunker URI), never with raw ncryptsec/nsec.<br>
+<b>7.</b> For everything else (but chats!) use <a href="https://yakihonne.com" target="_blank">YakiHonne</a> or <a href="https://ditto.pub" target="_blank">Ditto</a> or <a href="https://primal.net" target="_bank">Primal</a> or <a href="https://nostria.app" target="_bank">Nostria</a> or <a href="https://nostrudel.ninja" target="_bank">noStrudel</a> or <a href="https://nostrapps.com" target="_blank">whatever</a> Nostr client works for you. Login the same ways (using signer/Amber, extension, or a new Bunker URI), never with your raw ncryptsec/nsec.<br>
 
 <br>
 <details>
