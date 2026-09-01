@@ -14,76 +14,191 @@ pre { padding-left: 1rem; font-size: 8pt; }
 const TIMEOUT = 7000
 
 const $ = id => document.getElementById(id)
-const lines = el => [...new Set($(el).value.split("\n").map(i => i.trim()).filter(Boolean))]
+const lines = el => [...new Set($(el).value
+  .split("\n")
+  .map(i => i.trim())
+  .filter(Boolean)
+)]
 const out = i => $("status").textContent += `${i}\n`
 
-function request(url, message) {
-  return new Promise(resolve => {
-    const ws = new WebSocket(url), result = []
-    const timer = setTimeout(() => {
-      ws.close()
-      resolve(result)
-    }, TIMEOUT)
-    ws.onopen = () => ws.send(JSON.stringify(message))
+const connections = new Map()
+
+function connect(url) {
+  const existing = connections.get(url)
+
+  if (existing?.ws?.readyState === WebSocket.OPEN) {
+    return Promise.resolve(existing)
+  }
+
+  if (existing?.connecting) {
+    return existing.connecting
+  }
+
+  const state = {
+    ws: null,
+    connecting: null,
+    requests: new Map(),
+    events: new Map()
+  }
+
+  state.connecting = new Promise((resolve, reject) => {
+    const ws = new WebSocket(url)
+    state.ws = ws
+
+    const fail = error => {
+      for (const request of state.requests.values()) {
+        clearTimeout(request.timer)
+        request.resolve([])
+      }
+
+      for (const request of state.events.values()) {
+        clearTimeout(request.timer)
+        request.resolve(false)
+      }
+
+      state.requests.clear()
+      state.events.clear()
+
+      if (connections.get(url) === state) {
+        connections.delete(url)
+      }
+
+      state.connecting = null
+      reject(error)
+    }
+
+    ws.onopen = () => {
+      state.connecting = null
+      resolve(state)
+    }
+
     ws.onmessage = e => {
-      const message = JSON.parse(e.data)
-      if (message[0] === "EVENT") result.push(message[2])
-      if (message[0] === "EOSE") {
-        clearTimeout(timer)
-        ws.close()
-        resolve(result)
+      let message
+
+      try {
+        message = JSON.parse(e.data)
+      } catch {
+        return
+      }
+
+      const type = message[0]
+
+      if (type === "EVENT") {
+        const subscriptionId = message[1]
+        const request = state.requests.get(subscriptionId)
+
+        if (request) {
+          request.result.push(message[2])
+        }
+
+        return
+      }
+
+      if (type === "EOSE") {
+        const subscriptionId = message[1]
+        const request = state.requests.get(subscriptionId)
+
+        if (!request) return
+
+        clearTimeout(request.timer)
+        state.requests.delete(subscriptionId)
+        request.resolve(request.result)
+
+        ws.send(JSON.stringify(["CLOSE", subscriptionId]))
+        return
+      }
+
+      if (type === "OK") {
+        const eventId = message[1]
+        const request = state.events.get(eventId)
+
+        if (!request) return
+
+        clearTimeout(request.timer)
+        state.events.delete(eventId)
+        request.resolve(Boolean(message[2]))
       }
     }
-    ws.onerror = () => {
-      clearTimeout(timer)
-      ws.close()
-      resolve(result)
-    }
+
+    ws.onerror = fail
+    ws.onclose = () => fail(new Error("Relay connection closed"))
+  })
+
+  connections.set(url, state)
+  return state.connecting
+}
+
+async function request(url, filters) {
+  const connection = await connect(url)
+  const { ws } = connection
+  const subscriptionId = crypto.randomUUID()
+
+  return new Promise(resolve => {
+    const timer = setTimeout(() => {
+      connection.requests.delete(subscriptionId)
+      resolve([])
+    }, TIMEOUT)
+
+    connection.requests.set(subscriptionId, {
+      timer,
+      result: [],
+      resolve
+    })
+
+    ws.send(JSON.stringify([
+      "REQ",
+      subscriptionId,
+      ...filters
+    ]))
   })
 }
 
-function send(url, event) {
+async function send(url, event) {
+  const connection = await connect(url)
+  const { ws } = connection
+
   return new Promise(resolve => {
-    const ws = new WebSocket(url)
     const timer = setTimeout(() => {
-      ws.close()
+      connection.events.delete(event.id)
       resolve(false)
     }, TIMEOUT)
-    ws.onopen = () => ws.send(JSON.stringify(["EVENT", event]))
-    ws.onmessage = e => {
-      const message = JSON.parse(e.data)
-      if (message[0] === "OK") {
-        clearTimeout(timer)
-        ws.close()
-        resolve(message[2])
-      }
-    }
-    ws.onerror = () => {
-      clearTimeout(timer)
-      ws.close()
-      resolve(false)
-    }
+
+    connection.events.set(event.id, {
+      timer,
+      resolve
+    })
+
+    ws.send(JSON.stringify(["EVENT", event]))
   })
 }
 
 function values(event, key) {
-  return event.tags.filter(i => i[0] === key && i[1]).map(i => i[1])
+  return event.tags
+    .filter(tag => tag[0] === key && tag[1])
+    .map(tag => tag[1])
 }
 
 async function existing(relays, pubkey, kind, tags) {
-  const wanted = new Set(tags.map(i => i[1]))
+  const wanted = new Set(tags.map(tag => tag[1]))
+  const key = tags[0][0]
+
   for (const relay of relays) {
-    const events = await request(relay, [
-      "REQ", crypto.randomUUID(),
-      { authors: [pubkey], kinds: [kind], limit: 100 }
-    ])
+    const events = await request(relay, [{
+      authors: [pubkey],
+      kinds: [kind],
+      limit: 100
+    }])
+
     for (const event of events) {
-      const got = values(event, tags[0][0])
+      const got = values(event, key)
+
       if (got.length === wanted.size && got.every(i => wanted.has(i))) {
         return event
       }
     }
   }
+
+  return null
 }
 
 async function publish(kind, key, relays, profileRelays, pubkey) {
@@ -97,18 +212,24 @@ async function publish(kind, key, relays, profileRelays, pubkey) {
       tags,
       content: ""
     })
+
     out(`Signed new event kind ${kind}`)
   } else {
     out(`Reusing existing event kind ${kind}`)
   }
 
-  const results = await Promise.allSettled(profileRelays.map(relay => send(relay, event)))
-  out(`Event kind ${kind}: ${results.filter(Boolean).length}/${profileRelays.length} relays accepted`)
+  const results = await Promise.all(
+    profileRelays.map(relay => send(relay, event))
+  )
+
+  const accepted = results.filter(Boolean).length
+
+  out(`Event kind ${kind}: ${accepted}/${profileRelays.length} relays accepted`)
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   $("publish").onclick = async () => {
-    $("status").textContent = ""
+    $("status").textContent = "Wait for success...\n"
     $("publish").disabled = true
 
     const content = lines("content")
@@ -117,32 +238,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!content.length || !dm.length || !profile.length) {
       out("Fill all inputs")
+      $("publish").disabled = false
       return
     }
 
     try {
       const pubkey = await window.nostr.getPublicKey()
+
       await publish(10002, "r", content, profile, pubkey)
       await publish(10050, "relay", dm, profile, pubkey)
       await publish(10051, "relay", keypackage, profile, pubkey)
       await publish(10063, "server", blossom, profile, pubkey)
-      out(`https://nostria.app/p/${pubkey} is now ready to use 🎉`)
+
+      out(`🎉 Success! https://nostria.app/p/${pubkey} is now ready to use`)
     } catch (e) {
       out(e.message || String(e))
+    } finally {
+      $("publish").disabled = false
     }
   }
 
- const params = new URLSearchParams(window.location.hash.split("#")[1])
- const append = params.get("append") !== "0"
- params.delete("append")
- for (const [k, v] of params.entries()) {
-   let value = $(k).value
-   if (!append) {
-     value = ""
-   }
-   const items = [...new Set([...value.split("\n"), ...v.split(",")])]
-   $(k).value = items.join("\n").trim()
- }
+  const params = new URLSearchParams(window.location.hash.split("#")[1])
+  const append = params.get("append") !== "0"
+  params.delete("append")
+  for (const [k, v] of params.entries()) {
+    let value = $(k).value
+    if (!append) {
+      value = ""
+    }
+    const items = [...new Set([...value.split("\n"), ...v.split(",")])]
+    $(k).value = items.join("\n").trim()
+  }
 
   const example = new URL(window.location.href)
   example.hash = "#content=wss://theforest.nostr1.com,wss://relay.primal.net&blossom=https://blossom.primal.net&append=0"
@@ -158,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(e.message || String(e))
       }
     }
-  }, 500)
+  }, 300)
 })
 </script>
 </head>
