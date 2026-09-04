@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>No Bullshit Nostr Starter/Signup Tool/Guide for Desktop/Laptop + Android</title>
+<title>No Bullshit Nostr Starter/Signup Tool/Guide for Desktop/Laptop + Android. Break off the repressive legacy social media matrix. Enter something that actually works.</title>
 <style>
 * { font-family: monospace; font-size: 14pt; }
 body { padding-left: 6rem; padding-right: 6rem; padding-top: 1rem; padding-bottom: 5rem; }
@@ -97,12 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const content = lines("content")
+      const search = lines("search")
       const dm = lines("dm")
-      const profile = lines("profile")
       const keypackage = lines("keypackage")
       const blossom = lines("blossom")
+      const profile = lines("profile")
 
-      if (!content.length || !dm.length || !keypackage.length || !blossom.length || !profile.length) {
+      if (!content.length || !search.length || !dm.length || !keypackage.length || !blossom.length || !profile.length) {
         out("Fill all inputs")
         return
       }
@@ -110,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pubkey = await window.nostr.getPublicKey()
 
       await publish(10002, "r", content, profile, pubkey)
+      await publish(10007, "relay", search, profile, pubkey)
       await publish(10050, "relay", dm, profile, pubkey)
       await publish(10051, "relay", keypackage, profile, pubkey)
       await publish(10063, "server", blossom, profile, pubkey)
@@ -159,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <body>
 <h1>No bullshit, <i>safe</i>, and <i>reliable</i> <a href="https://en.wikipedia.org/wiki/Nostr" target="_blank">Nostr</a> signup for normies and hackers</h1><hr><br>
 
-<b>1.</b> Create a profile with <a href="https://github.com/greenart7c3/Amber#download-and-install" target="_blank">Amber</a>.<br><br>
+<b>1.</b> Create a profile with <a href="https://github.com/greenart7c3/Amber#download-and-install" target="_blank">Amber</a> (installation from Zapstore is recommended).<br><br>
 
 <b>2.</b> <b>[Settings] → [Backup keys] → enter your encryption password → [Encrypt and copy to clipboard] → paste the ncryptsec to a password manager you trust (like <a href="https://f-droid.org/packages/com.kunzisoft.keepass.libre" target="_blank">this one</a>) → copy the ncryptsec on paper → ensure you've cleared up your clipboard when you're done.</b><br><br>
 
@@ -180,7 +182,7 @@ Password ≠ key: password is changeable, key is not. A key is much more powerfu
 ⚰️ if you've already leaked your private key to something different from Amber or a password manager, that means your profile is probably irreversibly compromised: somebody or something may access it, may read your private messages, may publish posts on your behalf, etc.; don't fuck with it, delete it (login whatever way into <a href="https://armada.buzz" target="_blank">Armada</a> → [Settings] → [Delete Account]), and start all over again.<br>
 </details><br>
 
-<b>3.</b> Generate a one-time <b>bunker:// URI</b> from Amber with <b>[+] → [Add nsecbunker] → enter name → [Create]</b>. Copy the URI to your Desktop/Laptop whatever preferable way.<br><br>
+<b>3.</b> Generate a one-time <b>bunker:// URI</b> from Amber with <b>[+] → [Add nsecbunker] → enter name → [Create] → scroll down → [Copy to clipboard]</b>. Copy the URI in whatever preferable way to your Desktop/Laptop machine (will be referred to as Laptop here).<br><br>
 
 <details>
 <summary>Safety</summary>
@@ -188,7 +190,7 @@ Password ≠ key: password is changeable, key is not. A key is much more powerfu
 ✔️ it's not perfect, but still acceptable to copy-paste the one-time bunker:// URI over a message to yourself in whatever private messenger (you can reject all Amber requests and revoke the URI if you've accidentally leaked it to somebody malicious).<br>
 </details><br>
 
-<b>4.</b> Open <i>this</i> page on Desktop/Laptop → install <a href="https://github.com/dsbaars/bunker46-extension#readme" target="_blank">Bunker46</a> → click on the extension icon → paste the bunker:// URI copied from Amber → [Connect] → allow and keep allowing whatever needed on both devices → <button id="refresh" onclick="location.reload()">Refresh</button> this page.<br><br>
+<b>4.</b> Open <i>this</i> page on your Laptop → install <a href="https://github.com/dsbaars/bunker46-extension#readme" target="_blank">Bunker46</a> → click on the extension icon → paste the bunker:// URI copied from Amber → [Connect] → allow and keep allowing whatever is needed on both devices (on each permission request on your phone in particular, depending on the screen you see, <i>manually</i> select <b>[I fully trust this application]</b> or <b>[Automatically sign this for] → [Always]</b>) → <button id="refresh" onclick="location.reload()">Refresh</button> this page.<br><br>
 
 <b>5.</b> <button id="publish" disabled>Publish</button> your relay/server lists.
 <pre id="status"></pre>
@@ -255,23 +257,36 @@ wss://user.kindpag.es
 </details>
 
 <br>
-⚠️ Retry the "Publish" button in case of failure. Don't continue if this step hasn't succeeded. Check your <b>phone notifications</b> if something has failed.<br>
+⚠️ Check your <b>phone notifications</b> if something has failed. Retry the "Publish" button in case of failure; don't continue if this step hasn't succeeded.<br>
 
 <br>
 <b>6.</b> Use <a href="https://armada.buzz" target="_blank">Armada</a> Nostr client (also available as an <a href="http://armadahvhvaj57ojv7mavkqaecdajzejansfiksp5mdscczyh5g7stid.onion" target="_blank">onion service</a>) for private/group chats:<br><br>
-- use <b>[Log in with Extension]</b> in the Armada <i>browser</i> page<br>
-- use <b>[Log in with Amber]</b> or <b>[Open signer app]</b> button in the Armada <i>Android</i> app<br>
-- use a <i>new</i> bunker:// URI (step 3) in the Armada Desktop/Laptop <i>app</i><br>
+- Armada <b>browser page</b> on Laptop → <b>[Log in with Extension]</b><br>
+- Armada <b>Android app → [Log in with Amber]</b> (see the troubleshooting below if you don't see the button)<br>
 - never paste your nsec1 in the login screens (see step 2)<br>
 - check your phone notifications if something fails—perhaps you've missed a new permission request.<br>
 <br>
-<b>7.</b> For everything else (but chats!) use <a href="https://yakihonne.com" target="_blank">YakiHonne</a> or <a href="https://ditto.pub" target="_blank">Ditto</a> or <a href="https://primal.net" target="_bank">Primal</a> or <a href="https://nostria.app" target="_bank">Nostria</a> or <a href="https://nostrudel.ninja" target="_bank">noStrudel</a> or <a href="https://nostrapps.com" target="_blank">whatever</a> Nostr client works for you. Login the same ways (using Amber signer, browser extension, or a new bunker:// URI), never with your raw ncryptsec/nsec.<br>
+<b>7.</b> For everything else (but chats!) use <a href="https://yakihonne.com" target="_blank">YakiHonne</a> or <a href="https://ditto.pub" target="_blank">Ditto</a> or <a href="https://primal.net" target="_bank">Primal</a> or <a href="https://nostria.app" target="_bank">Nostria</a> or <a href="https://nostrudel.ninja" target="_bank">noStrudel</a> or <a href="https://nostrapps.com" target="_blank">whatever</a> Nostr client works for you. Login the same ways (using Amber signer, browser extension, or a new bunker:// URI), never with your raw ncryptsec/nsec. nostrconnect:// is <i>not</i> recommended; use bunker:// URI when possible.<br>
 
 <br>
 <details>
 <summary>Messengers Privacy</summary>
 <br>
 ☝️Not all Nostr private chat clients currently support file encryption. Armada supports it, but, for instance, YakiHonne currently doesn't: if you send a file in a private chat using YakiHonne—at least a server owner will have access to your file without any encryption.
+</details>
+
+<br>
+
+<details>
+<summary>Troubleshooting</summary>
+<br>
+If you don't see <b>[Log in with Amber]</b> in Armada Android app—use a <i>new</i> <b>bunker:// URI</b> (step 3). <i>Don't</i> use <b>[Open signer app]</b>.<br><br>
+
+If conversations don't load or load partially in Armada Android app (perhaps you're running into <a href="https://gitworkshop.dev/soapbox.pub/armada/issues/nevent1qqsrpzl9t49xfv7eyvfgqxrclqjs9j4e5dv78u3yn5nh7f09z4c3u8qpz3mhxue69uhhyetvv9ujumn8d96zuer9wcq3samnwvaz7tmwdaehgu3wvdhkgmmwv9n8gtnrdaks6q4j5h" target="_blank">"AbortSignal.any is not a function"</a> in particular)—either use <b><a href="https://github.com/psic4t/nospeak/releases/latest" target="_blank">Nospeak app</a> → [Login with Amber]</b> or/and use <b>Armada browser page</b> in your Mobile browser + <i>new</i> <b>bunker:// URI</b> (step 3). Note that group chats created in Armada won't work in Nospeak; media sent between Armada and Nospeak may fail to decrypt.<br><br>
+
+Laptop browser clients stopped working—check your phone connection and check Bunker46 extension icon.
+If the extension shows a red button "Remove this profile"—<b>don't</b> press it; the easiest workaround would be restart your browser entirely:
+(Chromium-based browsers) [⋮] → [More Options] → [Exit], (in Firefox-based) [☰] → [Exit].<br>
 </details>
 
 <br><br><hr><br>
@@ -281,19 +296,25 @@ wss://user.kindpag.es
 <details>
 <summary>FAQ</summary>
 <br>
+Q: Many Nostr starter guides exist. What's so special about the new one?<br>
+A: Two issues it hopefully addresses: reliability and security. People keep complaining that <a href="https://github.com/nostr-protocol/nips/blob/master/17.md" target="_blank">NIP-17</a> DMs in particular don't reliably work for them. In my experience the main reason has to do with relays: different DM clients (+signers) set up different (usually inadequate) relay lists and/or fail to connect and publish to them. And for security—too many guides (and apps) motivate users to practice dangerous stuff that leads to private key compromise.<br><br>
+
 Q: Why not scan the nostrconnect QR generated by Bunker46 (instead of transmitting a bunker:// URI to desktop)?<br>
-A: Indeed, that would be both more privacy-friendly and user-friendly. Unfortunately it's currently <a href="https://github.com/dsbaars/bunker46-extension/issues/9" target="_blank">broken</a>. You might want to check out an Amber-specific <a href="https://gitworkshop.dev/npub1gkp4cdh5rktehjqjnqc09awey4302dpadlka6mes4fu5spes7fhqfsppqk/relay.ngit.dev/remote-nip07" target="_blank">Remote NIP-07</a> browser extension as an alternative to Bunker46 (I didn't test it).<br><br>
+A: Indeed, that would be both more privacy-friendly and user-friendly. Unfortunately it's currently <a href="https://github.com/dsbaars/bunker46-extension/issues/9" target="_blank">broken</a>. You might want to check out an Amber-specific <a href="https://gitworkshop.dev/npub1gkp4cdh5rktehjqjnqc09awey4302dpadlka6mes4fu5spes7fhqfsppqk/relay.ngit.dev/remote-nip07" target="_blank">Remote NIP-07</a> browser extension as an alternative to Bunker46 (untested).<br><br>
+
+Q: Armada Laptop <i>app</i> (rather than the browser page)?<br>
+A: Untested, possibly works; use a <i>new</i> <b>bunker:// URI</b> (step 3).<br><br>
 
 A: iOS?<br>
-Q: Currently <a href="https://primal.net/a/nevent1qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgpzemhxue69uhhyetvv9ujuerfw36x7tnsw43z7qg4waehxw309aex2mrp0yhxumtpd9kzumrf9uqzq82paj724qsrnn68esh4sqglgm3pj9drx8pt0l27k7gyegxau8s6e3l3ec" target="_blank">broken</a>.<br><br>
+Q: Currently <a href="https://primal.net/a/nevent1qgswls4kuk2gpu89tny8c6d0q6mdrggl5f0ya226gwv833qhn8zncxgpzemhxue69uhhyetvv9ujuerfw36x7tnsw43z7qg4waehxw309aex2mrp0yhxumtpd9kzumrf9uqzq82paj724qsrnn68esh4sqglgm3pj9drx8pt0l27k7gyegxau8s6e3l3ec" target="_blank">broken</a>. You can still use Armada from Mobile browser connected over Amber signer using a <i>new</i> <b>bunker:// URI</b> (step 3).<br><br>
 <hr><br>
 
 For paranoid nerds:<br><br>
-Q: Desktop/Laptop setup only?<br>
+Q: Laptop setup only?<br>
 A: Only if you know what you are doing. Possible, for instance, with <a href="https://github.com/fiatjaf/nak#readme" target="_blank">nak bunker</a>, running on a hardened enough OS. I don't recommend storing your nsec/ncryptsec directly in NIP-07 browser extensions (like nos2x) because currently every browser is a critical vulnerabilities honeypot fractal.<br><br>
 
 Q: I'm scared to carry my private key on my phone, and my mobile client doesn't support bunker:// URI.<br>
-A: You can connect Amber to an <a href="https://github.com/greenart7c3/Amber/pull/418" target="_blank">external bunker</a> (it's slow but works for me) or try <a href="https://github.com/privkeyio/keep-android#readme" target="_blank">FROST</a> (I didn't test it).<br><br>
+A: You can connect Amber to an <a href="https://github.com/greenart7c3/Amber/pull/418" target="_blank">external bunker</a> (it's slow but works for me) or try <a href="https://github.com/privkeyio/keep-android#readme" target="_blank">FROST</a> (untested).<br><br>
 
 Q: Armada/Concord vs <a href="https://whitenoise.chat" target="_blank">White Noise</a>/Marmot vs <a href="https://cordn.net" target="_blank">Cordn</a>?<br>
 A: I wish somebody could independently investigate and contribute it <a href="https://eylenburg.github.io/im_comparison.htm" target="_blank">here</a>. Don't take my word without verifying it; at least something could be outdated already. In short:<br><br>
