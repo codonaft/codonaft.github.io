@@ -88,11 +88,6 @@ def main():
                 accept()
             elif k in restricted_read_kinds:
                 accept()
-            elif known_parent_event:
-                if blocked_hostnames_pattern.search(content):
-                    reject('no abuse pls')
-                else:
-                    accept()
             elif allowed_pk:
                 accept()
                 for ref in set(t[1] for t in tags if len(t) > 1 and t[0] in ['a', 'e', 'q']):
@@ -100,8 +95,10 @@ def main():
                 # TODO: spawn req + event? use possible existing t[2] as priority relay?
                 # proc.stdin.write('{...}')
                 # proc.stdin.close()
-            elif (k not in NO_MENTION_KINDS) and mentioned:
-                if len(mentions) > MAX_MENTIONS:
+            elif known_parent_event or ((k not in NO_MENTION_KINDS) and mentioned):
+                if blocked_hostnames_pattern.search(content):
+                    reject('no abuse pls')
+                elif len(mentions) > MAX_MENTIONS:
                     reject('too many mentions')
                 else:
                     accept()
