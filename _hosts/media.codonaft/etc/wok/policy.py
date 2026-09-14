@@ -17,7 +17,7 @@ MUTED_PKS = f'{CONFIG_DIR}/muted-pks.txt' # TODO: use wok scan + subscribe to ki
 BLOCKED_HOSTNAMES = f'{CONFIG_DIR}/blocked-hostnames.txt'
 MAX_MENTIONS = 20
 NO_MENTION_KINDS = set([0, 3, 17, 20, 40, 41, 43, 44, 54, 443, 1984, 1985, 2003, 2004, 5128, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10011, 10012, 10013, 10015, 10020, 10030, 10050, 10051, 10054, 10063, 10064, 10096, 10154, 10312, 13194, 13534, 15128, 17375, 23194, 23195, 24242, 28935, 28936, 30000, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30015, 30017, 30018, 30019, 30020, 30023, 34550, 30000, 30003, 30030, 30040, 30041, 30063, 30267, 30311, 30312, 30313, 30402, 30617, 30618, 30818, 30819, 31922, 31923, 31924, 31925, 34235, 34236, 35128, 38383, 39089, 39092, 39701])
-MAX_PARENT_EVENTS = 128
+MAX_REFERENCED_EVENTS = 127
 RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY = set([1234, 30024, 30078, 30403, 31234])
 ALLOWED_KINDS_FOR_EVERYONE = set([5, 62])
 UPDATE_INTERVAL_MIN = 5
@@ -26,7 +26,7 @@ restricted_read_kinds = set()
 allowed_pks = set()
 muted_pks = set()
 blocked_hostnames_pattern = None
-parent_events = OrderedDict()
+referenced_events = OrderedDict()
 
 
 def main():
@@ -71,10 +71,12 @@ def main():
             def accept():
                 print('accept event', eid, 'kind', k, file=sys.stderr)
                 response['action'] = 'accept'
-                if eid in parent_events:
-                    del parent_events[eid]
+                if eid in referenced_events:
+                    del referenced_events[eid]
 
-            known_parent_event = (eid in parent_events) or bool(set(t[1] for t in tags if len(t) > 1 and t[0] == 'a') & parent_events.keys())
+            known_referenced_event = (eid in referenced_events) or bool(set(t[1] for t in tags if len(t) > 1 and t[0] == 'a') & referenced_events.keys())
+
+            # TODO: detect allowed by d-tag
 
             if k in ALLOWED_KINDS_FOR_EVERYONE:
                 accept()
@@ -90,12 +92,12 @@ def main():
                 accept()
             elif allowed_pk:
                 accept()
-                for ref in set(t[1] for t in tags if len(t) > 1 and t[0] in ['a', 'e', 'q']):
+                for ref in set(t[1] for t in tags if len(t) > 1 and t[0] in ['a', 'e', 'E', 'q']):
                     allow_event(ref)
                 # TODO: spawn req + event? use possible existing t[2] as priority relay?
                 # proc.stdin.write('{...}')
                 # proc.stdin.close()
-            elif known_parent_event or ((k not in NO_MENTION_KINDS) and mentioned):
+            elif known_referenced_event or ((k not in NO_MENTION_KINDS) and mentioned):
                 if blocked_hostnames_pattern.search(content):
                     reject('no abuse pls')
                 elif len(mentions) > MAX_MENTIONS:
@@ -142,10 +144,10 @@ def update(last_update, wok_path, config_path):
 
 
 def allow_event(ref):
-    print('allow parent event', ref, file=sys.stderr)
-    if len(parent_events) >= MAX_PARENT_EVENTS:
-        parent_events.popitem(last=False)
-    parent_events[ref] = None
+    print('allow referenced event', ref, file=sys.stderr)
+    if len(referenced_events) >= MAX_REFERENCED_EVENTS:
+        referenced_events.popitem(last=False)
+    referenced_events[ref] = None
 
 
 def parse_pks(output, path):
