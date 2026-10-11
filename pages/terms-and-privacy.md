@@ -14,12 +14,12 @@ hide: true
 
 2. You are fully responsible for the {% include span_with_tooltip.html body="legal status" tooltip="Your data should comply with regulations of all relevant jurisdictions." %} of your data. This website may apply {% include span_with_tooltip.html large="true" body="moderation" tooltip="This website may stop showing some or all of your data." %} towards users that fail to comply with the [Terms of Use](#terms-of-use) or with this policy.
 
-3. If you've found that any content users published on this website is not compatible with your local regulations
+3. If you've found that any content published on this website is not compatible with your local regulations
 - you are free to send complaints directly to the third-party server owners that currently store the illegal content
 - you are free to block servers that contain illegal content or the entire website in your parental control system or ISP/governmental firewall without notice
-  - it's very welcome: not only due to the satisfactory illusion that users are limited to information will be established, but they will probably have even more motivation to learn how to bypass censorship as soon as possible, which is an important skill for survival in the broken internet today; that's irony obviously
+- by doing any of these, you agree that you're actually contributing to the opposite of what you're trying to achieve, so the real outcome will backfire as an additional motivation for users to learn how to bypass censorship and build better censorship-resistant technologies.
 
-4. For any questions considering this website that are not related to the data stored by third-party services—please <a rel="nofollow" href="mailto:feedback&#64;codonaft&#46;com">use email</a>.
+4. For any questions about this website that are not related to the data stored by third-party services—please <a rel="nofollow" href="mailto:feedback&#64;codonaft&#46;com">use email</a>. By using it, you agree that your letter, regardless of its label or any protective narrative, may be published on this page in full, uncensored, and without warning, as well as be mirrored to public archives. Specifically, before sending any threats—including those that labeled "confidential" or framed as legal notices—you confirm you've already consulted a licensed mental health professional about any of your possible mental health concerns, and they confirmed that you're capable of understanding the irreversibility of your actions.
 
 5. This policy may change in the future.
 
