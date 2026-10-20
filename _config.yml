@@ -134,6 +134,8 @@ theme_settings:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
     #- wss://archive.orly.dev
+    blossom_urls:
+    - https://nostr.download
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []

@@ -13,7 +13,7 @@ require "socket"
 require "uri"
 require "yaml"
 
-DEBUG = ARGV.empty? || !["sync", "sync-nostr", "follow", "build", "deploy", "health"].includes?(ARGV[0])
+DEBUG = ARGV.empty? || !["sync", "sync-nostr", "sync-blossom", "follow", "build", "deploy", "health"].includes?(ARGV[0])
 TRACE = ENV["TRACE"]? == "1"
 
 WILDCARD_HOST = "0.0.0.0"
@@ -72,6 +72,13 @@ COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
 
 SERVER_MEDIA_DIR = Path["var/www"].join(PUBLIC_MEDIA_HOST)
 MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, SERVER_MEDIA_DIR)
+BLOSSOM_URLS     = ["https://nostr.download"] # TODO: read from config
+
+# https://24242.io: unsupported content type: audio/x-mpegurl
+# https://blossom.ditto.pub upload stucks on the ~340th file
+# https://blossom.primal.net upload stucks on the ~40th file
+# https://blossom.yakihonne.com: Upload rejected: storage quota exceeded or unavailable
+# for i in $(ls -1 *.{m3u8,mp4,ts,webp} | sed 's!^!https://nostr.download/!') ; do wget -O /dev/null $i ; done
 
 MIRROR_FROM_TO = [
   {MEDIA_HOST, [{MIRROR_HOST, SERVER_MEDIA_DIR}]},
@@ -99,6 +106,8 @@ def main
     hosts = ARGV.skip(1) if ARGV.size > 1
     check_ssh_hosts(ps, hosts)
     sync(hosts)
+  elsif ARGV.size >= 1 && ARGV[0] == "sync-blossom"
+    sync_blossom
   elsif ARGV.size >= 1 && ARGV[0] == "sync-nostr"
     profiles = ARGV.size > 1 && ARGV[1] == "profiles"
     sync_nostr(config, profiles: profiles, output_relays: ["ws://localhost:7777", RELAY_URI, "wss://purplepag.es", "wss://user.kindpag.es", "wss://profiles.nostr1.com", "wss://relay.nos.social", "wss://directory.yabu.me", "wss://nostr.oxtr.dev", "wss://nostr.girino.org"])
@@ -154,6 +163,9 @@ def usage
          sync to PROD
            download newest non-conflicting versioned files to _ohmyvps and _hosts
            upload newest files from _ohmyvps, _hosts and .build
+
+       #{script} sync-blossom
+         upload missing files to blossom servers
 
        #{script} sync-nostr [profile]
          fetch nostr events, push them to my relays
@@ -1464,6 +1476,47 @@ def check_manual_upload(host : String, *, owner : String, group : String, mode :
   raise "#{path}: unexpected group" unless stat[1] == group
   raise "#{path}: unexpected mode" unless stat[2].to_i == mode
   raise "#{path}: unexpected data" unless data.nil? || output[1] == data
+end
+
+def sync_blossom
+  step("sync_blossom")
+  files = Dir.glob(MEDIA_BUILD_DIR.join("*.{m3u8,mp4,ts,webp}"))
+    .select { |i| File.file?(i) }
+    .sort_by { |i| File.info(i).modification_time }
+    .reverse
+
+  all_hashes = files.map { |i| File.basename(i, File.extname(i)) }.to_set
+
+  failed : Array({URI, Set(String)}) = BLOSSOM_URLS
+    .map { |i| URI.parse(i) }
+    .map { |url|
+      ch = Channel({URI, Set(String)}).new
+      spawn do
+        args = ["blossom", "upload", "--auth", "--force-pre-auth", "--server", url.to_s] + files
+        output = Process.run(
+          "nak",
+          args: args,
+          env: {"NOSTR_SECRET_KEY" => File.read(".secrets/media.key").strip},
+          input: Process::Redirect::Close,
+        ) do |p|
+          succeed : Set(String) = p.output.each_line.with_index.map { |i, index|
+            begin
+              puts "#{index + 1}/#{files.size} #{url}: #{i}"
+              JSON.parse(i.strip)["sha256"].as_s
+            rescue e
+              nil
+            end
+          }.reject { |i| i.nil? }.map { |i| i.to_s }.to_set
+          error = p.error.gets_to_end
+          puts "#{url} failed #{error}" unless error.empty?
+          {url, all_hashes - succeed}
+        end
+        ch.send(output)
+      end
+      ch
+    }
+    .flat_map { |ch| ch.receive }
+  puts("failed to upload #{failed}")
 end
 
 def sync_nostr(config, *, profiles : Bool, output_relays : Array(String))
