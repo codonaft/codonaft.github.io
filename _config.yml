@@ -123,12 +123,16 @@ theme_settings:
     profile_relays:
     - wss://profiles.nostr1.com
     - wss://user.kindpag.es
-    - wss://relay.vertexlab.io
+    - wss://purplepag.es
+    #- wss://relay.vertexlab.io
     relays:
-    - wss://nos.lol
+    - wss://adre.su
+    - wss://nostr.data.haus
+    - wss://nostr.twinkle.lol
     - wss://relay.mostr.pub
-    - wss://nostr.azzamo.net
-    #- wss://nostr.data.haus
+    - wss://relay.snort.social
+    #- wss://nos.lol
+    #- wss://nostr.azzamo.net
     #- wss://subnet.relays.land
     read_cache_relays:
     - wss://relay.primal.net
