@@ -138,8 +138,6 @@ theme_settings:
     - wss://relay.primal.net
     - wss://nostr.codonaft.com
     #- wss://archive.orly.dev
-    blossom_urls:
-    - https://nostr.download
 
     spam_api_overwrite: ''
     profile_relays_overwrite: []
@@ -167,8 +165,10 @@ theme_settings:
   p2p_player:
     swarm_prefix: https://media.codonaft.com
     media_urls:
-    - https://media.codonaft.com
-    - https://media-cached.codonaft.com
+    - https://cdn.hzrd149.com
+    - https://nostr.download
+    #- https://media.codonaft.com
+    #- https://media-cached.codonaft.com
     media_urls_overwrite: []
     trackers:
     - wss://media.codonaft.com/announce

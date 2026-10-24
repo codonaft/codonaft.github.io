@@ -72,13 +72,13 @@ COMMON_ROOT      = Path["_ohmyvps/alpine/alpine-root"]
 
 SERVER_MEDIA_DIR = Path["var/www"].join(PUBLIC_MEDIA_HOST)
 MEDIA_BUILD_DIR  = BUILD_DIR.join(MEDIA_HOST, SERVER_MEDIA_DIR)
-BLOSSOM_URLS     = ["https://nostr.download"] # TODO: read from config
+BLOSSOM_URLS     = ["https://cdn.hzrd149.com", "https://nostr.download"] # TODO: read from config
 
 # https://24242.io: unsupported content type: audio/x-mpegurl
 # https://blossom.ditto.pub upload stucks on the ~340th file
 # https://blossom.primal.net upload stucks on the ~40th file
 # https://blossom.yakihonne.com: Upload rejected: storage quota exceeded or unavailable
-# for i in $(ls -1 *.{m3u8,mp4,ts,webp} | sed 's!^!https://nostr.download/!') ; do wget -O /dev/null $i ; done
+# for i in $(ls -1 *.{m3u8,mp4,ts,vtt,webp} | sed 's!^!https://nostr.download/!') ; do wget -O /dev/null $i ; done
 
 MIRROR_FROM_TO = [
   {MEDIA_HOST, [{MIRROR_HOST, SERVER_MEDIA_DIR}]},
@@ -1480,7 +1480,7 @@ end
 
 def sync_blossom
   step("sync_blossom")
-  files = Dir.glob(MEDIA_BUILD_DIR.join("*.{m3u8,mp4,ts,webp}"))
+  files = Dir.glob(MEDIA_BUILD_DIR.join("*.{m3u8,mp4,ts,vtt,webp}"))
     .select { |i| File.file?(i) }
     .sort_by { |i| File.info(i).modification_time }
     .reverse

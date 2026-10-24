@@ -1,28 +1,10 @@
-{% if include.stream_url %}
- {% assign stream_url = include.stream_url %}
-{% else %}
- {% if include.id %}
- {% assign video_id = include.id %}
- {% else %}
- {% assign video_id = page.permalink | split: '/' | last %}
- {% endif %}
-
- {% assign media_urls = site.theme_settings.p2p_player.media_urls_overwrite | concat: site.theme_settings.p2p_player.media_urls %}
- {% assign stream_url_prefix = media_urls[0] | append: '/' | append: video_id %}
- {% if page.nostr.video.stream %}
-  {% assign blossom_server = site.theme_settings.nostr.blossom_urls[0] %}
-  {% assign stream_url = blossom_server | append: '/' | append: page.nostr.video.stream | append: ".m3u8" %}
-  {% assign thumbnail_url = blossom_server | append: '/' | append: page.nostr.video.thumbnail | append: ".webp" %}
- {% else %}
-  {% assign stream_url = stream_url_prefix | append: "/main.m3u8" %}
-  {% assign thumbnail_url = stream_url_prefix | append: "/thumbnail.webp" %}
- {% endif %}
-{% endif %}
+{% assign media_urls = site.theme_settings.p2p_player.media_urls_overwrite | concat: site.theme_settings.p2p_player.media_urls %}
+{% assign media_url = site.theme_settings.nostr.blossom_urls[0] | append: '/' %}
 
 <p style="text-align: center">
  <div class="p2p-player-container">
   <media-player
-   src="{{ stream_url }}"
+   src="{{ media_url | append: include.stream | append: ".m3u8" }}"
    {% if include.duration %}duration="{{ include.duration }}"{% endif %}
    playsInline
    preload="auto"
@@ -33,14 +15,12 @@
    <media-provider>
     <media-poster
      class="vds-poster"
-     src="{{ thumbnail_url }}"
+     src="{{ media_url | append: include.thumbnail | append: ".webp" }}"
      alt="{% if include.title %}{{ include.title | strip_html }}{% else %}{{ page.title | strip_html }}{% endif %}"
     ></media-poster>
-{% assign subtitles = include.subtitles | split: "," %}
-{% for i in subtitles %}
-{% assign subtitles_url = stream_url_prefix | append: "/" | append: i | append: ".vtt" %}
-    <track src="{{ subtitles_url }}" label="{{ i }}" language="{{ i }}" kind="subtitles" type="vtt" default />
-{% endfor %}
+{% if include.subtitles_en %}
+    <track src="{{ media_url | append: include.subtitles_en }}" label="en" language="en" kind="subtitles" type="vtt" default />
+{% endif %}
    </media-provider>
    <media-video-layout></media-video-layout>
   </media-player>

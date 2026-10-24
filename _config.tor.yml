@@ -20,7 +20,7 @@ theme_settings:
   foss_frontends:
     github: https://gothub.r4fo.com
 
-    reddit: https://red.artemislena.eu
+    reddit: http://red.lpoaj7z2zkajuhgnlltpeqh3zyq7wk2iyeggqaduhgxhyajtdt2j7wad.onion
 
     youtube: http://inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion
     #youtube: http://nerdvpneaggggfdiurknszkbmhvjndks5z5k3g5yp4nhphflh3n3boad.onion
@@ -31,5 +31,5 @@ theme_settings:
     stackexchange_android: http://anonymousoverflow.catsarchywsyuss6jdxlypsw5dc7owd5u5tr6bujxb7o6xw2hipqehyd.onion/exchange/android
     stackexchange_stats: http://anonymousoverflow.catsarchywsyuss6jdxlypsw5dc7owd5u5tr6bujxb7o6xw2hipqehyd.onion/exchange/stats
 
-    wikipedia_en: https://wikimore.private.coffee/wiki/en
-    wikipedia_ru: https://wikimore.private.coffee/wiki/ru
+    wikipedia_en: http://wikimore.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/wiki/en
+    wikipedia_ru: http://wikimore.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/wiki/ru
