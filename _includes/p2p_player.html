@@ -1,8 +1,8 @@
 {% assign media_urls = site.theme_settings.p2p_player.media_urls_overwrite | concat: site.theme_settings.p2p_player.media_urls %}
-{% assign media_url = site.theme_settings.nostr.blossom_urls[0] | append: '/' %}
+{% assign media_url = media_urls[0] | append: '/' %}
 
 <p style="text-align: center">
- <div class="p2p-player-container">
+ <div class="p2p-player-container" data-storyboard="{{ media_url | append: include.storyboard | append: '.webp' }}">
   <media-player
    src="{{ media_url | append: include.stream | append: ".m3u8" }}"
    {% if include.duration %}duration="{{ include.duration }}"{% endif %}
@@ -19,7 +19,7 @@
      alt="{% if include.title %}{{ include.title | strip_html }}{% else %}{{ page.title | strip_html }}{% endif %}"
     ></media-poster>
 {% if include.subtitles_en %}
-    <track src="{{ media_url | append: include.subtitles_en }}" label="en" language="en" kind="subtitles" type="vtt" default />
+    <track src="{{ media_url | append: include.subtitles_en | append: '.vtt' }}" label="en" language="en" kind="subtitles" type="vtt" default />
 {% endif %}
    </media-provider>
    <media-video-layout></media-video-layout>

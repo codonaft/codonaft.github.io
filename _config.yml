@@ -164,14 +164,16 @@ theme_settings:
 
   p2p_player:
     swarm_prefix: https://media.codonaft.com
-    media_urls:
-    - https://cdn.hzrd149.com
-    - https://nostr.download
+    media_urls: # https://blossomservers.com
     #- https://media.codonaft.com
     #- https://media-cached.codonaft.com
+    - https://blossom.data.haus
+    - https://cdn.hzrd149.com
+    - https://nostr.download
+    - https://blossom.nmail.li
     media_urls_overwrite: []
     trackers:
-    - wss://media.codonaft.com/announce
+    #- wss://media.codonaft.com/announce # FIXME
     - wss://tracker.webtorrent.dev
     #- wss://tracker.openwebtorrent.com
     ice_servers:

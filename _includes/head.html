@@ -101,12 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
  if (i2p) {
   document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.display = 'block')
  } else if (!onion) {
-  (async () => { try {
-   const mediaUrl = '{{ site.theme_settings.p2p_player.media_urls[0] }}';
-   const [ip, list] = await Promise.all([fetch(`${mediaUrl}/ip`, {mode: 'cors'}), fetch(`${mediaUrl}/torbulkexitlist`, {mode: 'cors'})]);
+  /*(async () => { try {
+   const [ip, list] = await Promise.all([fetch('https://4.ident.me'), fetch('https://check.torproject.org/torbulkexitlist')]);
    const onionExitnode = (await list.text()).split('\n').includes((await ip.text()).trim());
    if (onionExitnode) { document.querySelectorAll('.p2p-player-warning').forEach(i => i.style.display = 'block'); }
-  } catch (e) { console.error(e); } })();
+  } catch (e) { console.error(e); } })();*/ // FIXME
  }
 
  const mediaUrls = {{ media_urls | jsonify }}.filter(i => {
@@ -156,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
    }
   }
 
-  const url = new URL(getSource(player).href + '/../storyboard.webp').href;
+  const url = new URL(player.closest('div.p2p-player-container').dataset.storyboard).href;
   const videoLayout = player.querySelector('media-video-layout');
   videoLayout.thumbnails = { url, tileWidth, tileHeight, tiles };
  };
