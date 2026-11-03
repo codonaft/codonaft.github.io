@@ -1132,7 +1132,7 @@ def build_rust_app(
 
     apk add --update --no-cache git #{dependencies.join(" ")}
 
-    export CFLAGS=\\"-march=#{target_cpu} -O3 -mno-rdrnd -fstack-protector-all -fstack-clash-protection #{cflags}\\"
+    export CFLAGS=\\"-march=#{target_cpu} -O3 -pipe -march=native -mno-rdrnd -fPIE -fPIC -fstack-protector-all -fstack-clash-protection --param ssp-buffer-size=4 -Wstack-protector -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fdiagnostics-color=always #{cflags}\\"
     export CXXFLAGS=\\"\\${CFLAGS}\\"
     export FCFLAGS=\\"\\${CFLAGS}\\"
     export FFLAGS=\\"\\${CFLAGS}\\"
