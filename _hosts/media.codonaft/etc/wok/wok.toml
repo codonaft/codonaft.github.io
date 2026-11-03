@@ -34,14 +34,17 @@ bind = "127.0.0.1" # FIXME: "localhost"?
 port = 7777
 nofiles = 65536
 real_ip_header = "x-forwarded-for"
-max_websocket_payload_size = 131072
+max_websocket_payload_size = 2097152
 max_req_filter_size = 65536
 max_filters_per_req = 200
 auto_ping_seconds = 55
 enable_tcp_keepalive = false
+handshake_timeout_secs = 10
+frame_read_timeout_secs = 30
 query_timeslice_budget_us = 10000
 max_filter_limit = 500
 max_tags_per_filter = 3
+max_and_entries = 16
 max_filter_limit_count = 1000000
 max_total_events_per_req = 2000
 max_subs_per_connection = 200
@@ -61,12 +64,16 @@ req_monitor_threads = 3
 negentropy_threads = 2
 negentropy_enabled = true
 max_sync_events = 1000000
+sync_memory_per_connection = 268435456
+sync_memory_total = 1073741824
+sync_idle_timeout_secs = 60
 
 [relay.auth]
 enabled = true
 service_url = "wss://nostr.codonaft.com"
 restricted_read_kinds = [4, 78, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 1059, 1234, 21059, 22242, 24133, 24135, 27235, 25742, 30024, 30078, 30403, 30443, 31234]
 restrict_read_to_involved_pubkey = true
+restrict_writes = false
 
 [relay.info]
 name = "codonaft.com"

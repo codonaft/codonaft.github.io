@@ -32,19 +32,20 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.24.2"
+ALPINE_VERSION           = "3.24.3"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
-MIN_RUST_VERSION         = "1.98.1"
+RUST_STATIC_VERSION      = "1.99.1"
+MIN_RUST_DYNAMIC_VERSION = "1.96.1"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
 QUICSSH_ROBUST_VERSION   = "0.1.6"
 SHADOWSOCKS_VERSION      = "1.25.0"
 TINYLD_VERSION           = "1.3.4"
-WOK_VERSION              = "v0.4.0"
-WSTUNNEL_VERSION         = "v10.5.2"
+WOK_VERSION              = "v0.7.0"
+WSTUNNEL_VERSION         = "v11.1.0"
 
 CODEC_AV1  = "av01.0.09M.08.0.110.01.01.01.0"
 CODEC_H264 = "avc1.64002a"
@@ -260,7 +261,7 @@ def build(config)
     crate: "metasearch",
     branch: "large-images",
     git: URI.parse("https://github.com/alopatindev/metasearch2"),
-    dependencies: ["clang21-libclang", "cmake", "make", "g++"],
+    dependencies: ["clang22-libclang", "cmake", "make", "g++", "musl-dev"],
   )
 
   build_rust_app(
@@ -1123,9 +1124,9 @@ def build_rust_app(
     podman run --rm -it -v "#{bin_dir}:/build" "alpine:#{distro_version}" /bin/sh -c "
     set -xeuo pipefail
 
-    #{allow_dynamic_linking ? "apk add --update --no-cache 'cargo>=#{MIN_RUST_VERSION}' 'rust>=#{MIN_RUST_VERSION}'" : "
+    #{allow_dynamic_linking ? "apk add --update --no-cache 'cargo>=#{MIN_RUST_DYNAMIC_VERSION}' 'rust>=#{MIN_RUST_DYNAMIC_VERSION}'" : "
       apk add --update --no-cache rustup
-      rustup-init -y --profile minimal --default-toolchain '#{MIN_RUST_VERSION}'
+      rustup-init -y --profile minimal --default-toolchain '#{RUST_STATIC_VERSION}' --target x86_64-unknown-linux-musl
       source ~/.cargo/env
     "}
 
