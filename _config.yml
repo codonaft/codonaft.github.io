@@ -129,6 +129,7 @@ theme_settings:
     - wss://adre.su
     - wss://nostr.data.haus
     - wss://nostr.twinkle.lol
+    - wss://relay.momostr.pink
     - wss://relay.mostr.pub
     - wss://relay.snort.social
     #- wss://nos.lol

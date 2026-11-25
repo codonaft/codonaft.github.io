@@ -32,16 +32,16 @@ TARGET_CPU = {
   MIRROR_HOST => "broadwell",
 }
 
-ALPINE_VERSION           = "3.24.3"
+ALPINE_VERSION           = "3.24.4"
 AQUATIC_VERSION          = "0.9.0"
 BROWSER_DETECTOR_VERSION = "4.1.0"
 HLS_VERSION              = "1.5.15"
 MEDIA_CAPTIONS_VERSION   = "1.0.4"
 MEDIA_ICONS_VERSION      = "1.1.5"
-RUST_STATIC_VERSION      = "1.99.1"
+RUST_STATIC_VERSION      = "1.100.0"
 MIN_RUST_DYNAMIC_VERSION = "1.96.1"
 P2P_MEDIA_LOADER_VERSION = "2.0.1"
-QUICSSH_ROBUST_VERSION   = "0.1.6"
+QUICSSH_VERSION          = "1fd2c5611f1e7d62ef32111abb19b21bbd8dea79"
 SHADOWSOCKS_VERSION      = "1.25.0"
 TINYLD_VERSION           = "1.3.4"
 WOK_VERSION              = "v0.7.0"
@@ -276,8 +276,9 @@ def build(config)
   [MIRROR_HOST, MEDIA_HOST].each do |host|
     build_rust_app(
       host,
-      crate: "quicssh-rs-robust",
-      version: QUICSSH_ROBUST_VERSION,
+      crate: "quicssh-rs",
+      git: URI.parse("https://github.com/aruz/quicssh-rs"),
+      version: QUICSSH_VERSION,
       dependencies: ["gcc", "musl-dev"],
     )
 
@@ -1110,7 +1111,7 @@ def build_rust_app(
         if version.nil?
           ""
         else
-          branch.nil? ? " --tag #{version}" : " --rev #{version}"
+          branch.nil? && version.size != 40 ? " --tag #{version}" : " --rev #{version}"
         end
       branch = branch.nil? ? "" : " --branch #{branch}"
       "--git #{git}#{version}#{branch} #{crate}"
