@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from collections import OrderedDict
-from time import time
+from collections import defaultdict, deque, OrderedDict
+from time import monotonic
 import argparse
 import json
 import os
@@ -16,8 +16,10 @@ ALLOWED_PKS = f'{CONFIG_DIR}/allowed-pks.txt'
 MUTED_PKS = f'{CONFIG_DIR}/muted-pks.txt' # TODO: use wok scan + subscribe to kind 10000 instead for all allowed pks? minus the allowed pks themselves?
 BLOCKED_HOSTNAMES = f'{CONFIG_DIR}/blocked-hostnames.txt'
 MAX_MENTIONS = 20
+MAX_EMOJIS = 3
 NO_MENTION_KINDS = set([0, 3, 17, 20, 40, 41, 43, 44, 54, 443, 1984, 1985, 2003, 2004, 5128, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10011, 10012, 10013, 10015, 10020, 10030, 10050, 10051, 10054, 10063, 10064, 10096, 10154, 10312, 13194, 13534, 15128, 17375, 23194, 23195, 24242, 28935, 28936, 30000, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30015, 30017, 30018, 30019, 30020, 30023, 34550, 30000, 30003, 30030, 30040, 30041, 30063, 30267, 30311, 30312, 30313, 30402, 30617, 30618, 30818, 30819, 31922, 31923, 31924, 31925, 34235, 34236, 35128, 38383, 39089, 39092, 39701])
 MAX_REFERENCED_EVENTS = 127
+MAX_BYTES_PER_MIN = 1024 * 1024
 RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY = set([1234, 30024, 30078, 30403, 31234])
 ALLOWED_KINDS_FOR_EVERYONE = set([5, 62])
 UPDATE_INTERVAL_MIN = 5
@@ -27,6 +29,7 @@ allowed_pks = set()
 muted_pks = set()
 blocked_hostnames_pattern = None
 referenced_events = OrderedDict()
+author_to_deque_of_time_and_event_size = defaultdict(deque)
 
 
 def main():
@@ -62,6 +65,9 @@ def main():
             mentions = set(t[1] for t in tags if len(t) > 1 and t[0] == 'p')
             mentioned = bool(allowed_pks & mentions)
 
+            now = monotonic()
+            cutoff = now - 60
+
             response = {'id': eid}
 
             def reject(reason):
@@ -78,14 +84,31 @@ def main():
 
             # TODO: detect allowed by d-tag
 
-            if k in ALLOWED_KINDS_FOR_EVERYONE:
+            def remove_outdated_measurements():
+                for author, history in list(author_to_deque_of_time_and_event_size.items()):
+                    while history and history[0][0] <= cutoff:
+                        history.popleft()
+                    if not history:
+                        del recent[author]
+
+            transmitted_bytes_per_min = 0
+            if (not allowed_pk) and ((k in ALLOWED_KINDS_FOR_EVERYONE) or (k == 1059)):
+                history = author_to_deque_of_time_and_event_size[pk]
+                while history and history[0][0] <= cutoff:
+                    history.popleft()
+                history.append((now, len(line)))
+                transmitted_bytes_per_min = sum(size for _, size in history)
+            else:
+                remove_outdated_measurements()
+
+            if (transmitted_bytes_per_min > MAX_BYTES_PER_MIN) or (k in [31989, 31990]) or (['k', 'nym-sync'] in tags) or (['t', 'nym-vouches'] in tags) or (['t', 'nym-presence'] in tags):
+                reject('no abuse pls')
+            elif k in ALLOWED_KINDS_FOR_EVERYONE:
                 accept()
             elif (k in (restricted_read_kinds | RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY)) and len(mentions) == 0: # FIXME
                 reject('restricted event read kinds without p-tags are not supported')
             elif pk in muted_pks:
                 reject('muted by admin')
-            elif (k in [31989, 31990]) or (['k', 'nym-sync'] in tags) or (['t', 'nym-vouches'] in tags) or (['t', 'nym-presence'] in tags):
-                reject('no abuse pls')
             elif allowed_pk and (k in RESTRICTED_KINDS_FOR_ALLOWED_PKS_ONLY):
                 accept()
             elif k in restricted_read_kinds:
@@ -102,6 +125,8 @@ def main():
                     reject('no abuse pls')
                 elif len(mentions) > MAX_MENTIONS:
                     reject('too many mentions')
+                elif sum('\U0001F300' <= c <= '\U0001FAFF' for c in content) > MAX_EMOJIS:
+                    reject('too emojinal')
                 else:
                     accept()
             else:
@@ -116,7 +141,7 @@ def main():
 def update(last_update, wok_path, config_path):
     global blocked_hostnames_pattern
 
-    now = time()
+    now = monotonic()
     if now - last_update < UPDATE_INTERVAL_MIN * 60:
         return last_update
 
